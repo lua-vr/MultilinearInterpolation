@@ -1,0 +1,31 @@
+name = "multilinear-interpolation"
+version = "0.1.0"
+keywords = ["math"]
+defaultTargets = ["MultilinearInterpolation"]
+
+[leanOptions]
+pp.unicode.fun = true # pretty-prints `fun a ↦ b`
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+maxSynthPendingDepth = 3
+
+[[require]]
+name = "verso-blueprint"
+git = "https://github.com/leanprover/verso-blueprint"
+rev = "v4.31.0"
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.31.0"
+
+[[lean_lib]]
+name = "MultilinearInterpolation"
+
+[[lean_lib]]
+name = "Blueprint"
+precompileModules = false
+
+[[lean_exe]]
+name = "blueprint-gen"
+root = "BlueprintMain"
