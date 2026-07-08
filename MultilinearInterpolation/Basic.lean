@@ -1,3 +1,9 @@
+/-
+Copyright (c) 2025 Floris van Doorn. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Floris van Doorn, Jim Potergies, Michael Rothgang, Lua Viana Reis
+-/
+
 import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Measure.WithDensity
@@ -73,21 +79,29 @@ def finiteElements (A : QuasiENorm 𝓐) : AddSubmonoid 𝓐 where
 example : ‖x + y‖ₑ[A] ≤ A.C * (‖x‖ₑ[A] + ‖y‖ₑ[A]) :=
   A.enorm_add_le_mul x y
 
+/-- `J(t,x)` in Section 3.2. For `t = 1` this is the norm of `A₀ ⊓ A₁`. -/
+def minNorm (A₀ A₁ : QuasiENorm 𝓐) (t : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
+  max ‖x‖ₑ[A₀] (t * ‖x‖ₑ[A₁])
+
+/-- The minimum `A₀ ⊓ A₁` equipped with the norm `J(t,-)` -/
+def skewedMin (A₀ A₁ : QuasiENorm 𝓐) (t : ℝ≥0∞) : QuasiENorm 𝓐 where
+  enorm := ⟨minNorm A₀ A₁ t⟩
+  C := max A₀.C A₁.C
+  enorm_zero := by simp_rw [minNorm, QuasiENorm.enorm_zero, mul_zero, max_self]
+  enorm_add_le_mul x y :=
+    calc
+      max ‖x + y‖ₑ[A₀] (t * ‖x + y‖ₑ[A₁]) ≤
+        max (A₀.C * (‖x‖ₑ[A₀] + ‖y‖ₑ[A₀])) (A₁.C * (t * ‖x‖ₑ[A₁] + t * ‖y‖ₑ[A₁])) := by
+          rw [← mul_add t, mul_left_comm A₁.C t]
+          gcongr <;> apply enorm_add_le_mul
+      _ ≤ max A₀.C A₁.C * max (‖x‖ₑ[A₀] + ‖y‖ₑ[A₀]) (t * ‖x‖ₑ[A₁] + t * ‖y‖ₑ[A₁]) :=
+          max_mul_mul_le_max_mul_max'
+      _ ≤ max A₀.C A₁.C * (minNorm A₀ A₁ t x + minNorm A₀ A₁ t y) := by
+          gcongr
+          exact max_add_add_le_max_add_max
+
 instance : Min (QuasiENorm 𝓐) :=
-  ⟨fun A₀ A₁ => {
-    enorm := ⟨fun x ↦ max ‖x‖ₑ[A₀] ‖x‖ₑ[A₁]⟩
-    C := max A₀.C A₁.C
-    enorm_zero := by simp_rw [QuasiENorm.enorm_zero, max_self]
-    enorm_add_le_mul x y :=
-      calc
-        max ‖x + y‖ₑ[A₀] ‖x + y‖ₑ[A₁] ≤
-          max (A₀.C * (‖x‖ₑ[A₀] + ‖y‖ₑ[A₀])) (A₁.C * (‖x‖ₑ[A₁] + ‖y‖ₑ[A₁])) := by
-            gcongr <;> apply enorm_add_le_mul
-        _ ≤ max A₀.C A₁.C * max (‖x‖ₑ[A₀] + ‖y‖ₑ[A₀]) (‖x‖ₑ[A₁] + ‖y‖ₑ[A₁]) :=
-            max_mul_mul_le_max_mul_max'
-        _ ≤ max A₀.C A₁.C * (max ‖x‖ₑ[A₀] ‖x‖ₑ[A₁] + max ‖y‖ₑ[A₀] ‖y‖ₑ[A₁]) := by
-            gcongr
-            exact max_add_add_le_max_add_max }⟩
+  ⟨fun A₀ A₁ ↦ A₀.skewedMin A₁ 1⟩
 
 lemma inf_mono (h₀ : A₀ ≤ A₀') (h₁ : A₁ ≤ A₁') : A₀ ⊓ A₁ ≤ A₀' ⊓ A₁' := by
   sorry
@@ -96,15 +110,15 @@ lemma inf_equiv_inf (h₀ : A₀ ≈ A₀') (h₁ : A₁ ≈ A₁') : A₀ ⊓ A
   ⟨inf_mono h₀.le h₁.le, inf_mono h₀.ge h₁.ge⟩
 
 /-- `K(t,x)` in Section 3.1. For `t = 1` this is the norm of `A₀ + A₁`. -/
-def addNorm (A₀ A₁ : QuasiENorm 𝓐) (t : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
+def maxNorm (A₀ A₁ : QuasiENorm 𝓐) (t : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
   ⨅ (x₀ : 𝓐) (x₁ : 𝓐) (_h : x₀ + x₁ = x), ‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁]
 
 /-- The addition `A₀ + A₁` equipped with the norm `K(t,-)` -/
 def skewedAdd (A₀ A₁ : QuasiENorm 𝓐) (t : ℝ≥0∞) : QuasiENorm 𝓐 where
-  enorm := ⟨addNorm A₀ A₁ t⟩
+  enorm := ⟨maxNorm A₀ A₁ t⟩
   C := A₀.C + A₁.C -- maybe
   enorm_zero := by
-    simp_rw [← le_zero_iff]
+    simp_rw [← nonpos_iff_eq_zero]
     apply iInf₂_le_of_le 0 0
     simp
   enorm_add_le_mul x y := by
@@ -118,6 +132,9 @@ lemma skewedAdd_equiv_skewedAdd (h₀ : A₀ ≈ A₀') (h₁ : A₁ ≈ A₁') 
     skewedAdd A₀ A₁ t ≈ skewedAdd A₀' A₁' t :=
   ⟨skewedAdd_mono h₀.le h₁.le, skewedAdd_mono h₀.ge h₁.ge⟩
 
+instance : Max (QuasiENorm 𝓐) :=
+  ⟨fun A₀ A₁ ↦ A₀.skewedAdd A₁ 1⟩
+
 instance : Add (QuasiENorm 𝓐) :=
   ⟨fun A₀ A₁ ↦ A₀.skewedAdd A₁ 1⟩
 
@@ -129,19 +146,20 @@ lemma add_equiv_add (h₀ : A₀ ≈ A₀') (h₁ : A₁ ≈ A₁') : A₀ + A�
 
 -- Part of Lemma 3.1.1
 -- assume t ≠ ∞ if needed
-lemma monotone_addNorm (hx : ‖x‖ₑ[A₀ + A₁] < ∞) : Monotone (addNorm A₀ A₁ · x) := by
+lemma monotone_addNorm (hx : ‖x‖ₑ[A₀ + A₁] < ∞) : Monotone (maxNorm A₀ A₁ · x) := by
   sorry
 
 -- Part of Lemma 3.1.1 (if convenient: make the scalar ring `ℝ≥0`)
 -- assume t ≠ ∞ if needed
-lemma concave_addNorm (hx : ‖x‖ₑ[A₀ + A₁] < ∞) : ConcaveOn ℝ≥0∞ univ (addNorm A₀ A₁ · x) := by
+lemma concave_addNorm (hx : ‖x‖ₑ[A₀ + A₁] < ∞) : ConcaveOn ℝ≥0∞ univ (maxNorm A₀ A₁ · x) := by
   sorry
 
 -- Part of Lemma 3.1.1
 -- assume s ≠ 0, s ≠ ∞, t ≠ ∞ if needed
 -- probably this is more useful if reformulated without division
 lemma addNorm_le_mul (hx : ‖x‖ₑ[A₀ + A₁] < ∞) :
-    addNorm A₀ A₁ t x ≤ max 1 (t / s) * addNorm A₀ A₁ s x := by
+    maxNorm A₀ A₁ t x ≤ max 1 (t / s) * maxNorm A₀ A₁ s x := by
+
   sorry
 
 /-- The functional `Φ` in Section 3.1. Todo: better name. Todo: generalize type of `f`?
@@ -152,7 +170,7 @@ def functional (θ : ℝ) (q : ℝ≥0∞) (f : ℝ≥0∞ → ℝ≥0∞) : ℝ
 
 /- ‖-‖_{θ, q, K} in Section 3.1. -/
 def KNorm (A₀ A₁ : QuasiENorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
-  functional θ q (addNorm A₀ A₁ · x)
+  functional θ q (maxNorm A₀ A₁ · x)
 
 /-- The space K_{θ,q}(\bar{A}) in Section 3.1.
 In the book, this is defined to only be submonoid of the elements with finite norm.
@@ -240,7 +258,7 @@ def γKMethod' (θ : ℝ) (q : ℝ≥0∞) : ℝ≥0∞ := sorry
 
 /-- Part of Theorem 3.1.2 -/
 lemma addNorm_le_knorm (hx : ‖x‖ₑ[A₀ + A₁] < ∞) :
-    addNorm A₀ A₁ t x ≤ γKMethod' θ q * t ^ θ * KNorm A₀ A₁ θ q x  := by
+    maxNorm A₀ A₁ t x ≤ γKMethod' θ q * t ^ θ * KNorm A₀ A₁ θ q x  := by
   sorry
 
 -- Todo: ⊓, +, IsIntermediateSpace, AreInterpolationSpaces respect ≈
@@ -252,5 +270,24 @@ lemma areInterpolationSpaces_of_le_kmethod
     AreInterpolationSpaces A A₀ A₁ B B₀ B₁ (C_KMethod θ q) (D_KMethod θ q) :=
   areInterpolationSpaces_kmethod.equiv hA.symm .rfl .rfl hB.symm .rfl .rfl
 
+structure Couple where
+  protected carrier : Type*
+  protected [instAddMonoid : AddMonoid carrier]
+  protected fst : QuasiENorm carrier
+  protected snd : QuasiENorm carrier
+
+instance (A : Couple) : AddMonoid A.carrier := A.instAddMonoid
+
+namespace Couple
+
+variable (A : Couple)
+
+def sum := A.fst ⊔ A.snd
+
+def inter := A.fst ⊓ A.snd
+
+def kinterpolation (θ : ℝ) (q : ℝ≥0∞) := KMethod A.fst A.snd θ q
+
+end Couple
 
 end QuasiENorm
