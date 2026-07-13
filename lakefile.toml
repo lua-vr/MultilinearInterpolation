@@ -8,6 +8,9 @@ pp.unicode.fun = true # pretty-prints `fun a ↦ b`
 relaxedAutoImplicit = false
 weak.linter.mathlibStandardSet = true
 maxSynthPendingDepth = 3
+# temporary
+weak.linter.style.longLine = false
+weak.linter.style.header = false
 
 [[require]]
 name = "verso-blueprint"
@@ -20,11 +23,14 @@ scope = "leanprover-community"
 rev = "v4.31.0"
 
 [[lean_lib]]
-name = "MultilinearInterpolation"
-
-[[lean_lib]]
 name = "Blueprint"
 precompileModules = false
+
+[[lean_lib]]
+name = "Carleson"
+
+[[lean_lib]]
+name = "MultilinearInterpolation"
 
 [[lean_exe]]
 name = "blueprint-gen"
