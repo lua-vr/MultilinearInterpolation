@@ -15,13 +15,12 @@ Following
 
 noncomputable section
 
-open ENNReal Set MeasureTheory
-open scoped NNReal
+open ENNReal Set
 
 variable {𝓐 : Type*} [AddMonoid 𝓐] {𝓑 : Type*} [AddMonoid 𝓑]
 
 variable (𝓐) in
-structure QuasiENorm where
+structure EQuasinorm where
   protected enorm : ENorm 𝓐
   protected C : ℝ≥0∞
   protected C_lt : C < ∞ := by finiteness
@@ -29,23 +28,24 @@ structure QuasiENorm where
   enorm_add_le_mul : ∀ x y : 𝓐, ‖x + y‖ₑ ≤ C * (‖x‖ₑ + ‖y‖ₑ)
 
 -- Feel free to assume `θ ∈ Icc 0 1`, `1 ≤ q` and `q < ∞ → θ ∈ Ioo 0 1` whenever needed
-variable {A A₀ A₁ A' A₀' A₁' : QuasiENorm 𝓐} {t s : ℝ≥0∞} {x y z : 𝓐} {θ : ℝ} {q : ℝ≥0∞}
-  {B B₀ B₁ B' B₀' B₁' : QuasiENorm 𝓑} {C D : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞}
+variable {A A₀ A₁ A' A₀' A₁' : EQuasinorm 𝓐} {t s : ℝ≥0∞} {x y z : 𝓐} {θ : ℝ} {q : ℝ≥0∞}
+  {B B₀ B₁ B' B₀' B₁' : EQuasinorm 𝓑} {C D : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞}
 
-namespace QuasiENorm
+namespace EQuasinorm
 
-attribute [simp] QuasiENorm.enorm_zero
-attribute [aesop (rule_sets := [finiteness]) safe] QuasiENorm.C_lt max_lt
+attribute [simp] EQuasinorm.enorm_zero
+attribute [aesop (rule_sets := [finiteness]) safe] EQuasinorm.C_lt max_lt
 
 -- Todo: we need a delaborator for this.
 
-notation "‖" e "‖ₑ[" A "]" => @enorm _ (QuasiENorm.enorm A) e
+set_option quotPrecheck false in
+notation "‖" e "‖ₑ[" A "]" => @enorm _ (A).enorm e
 
 -- todo: make constant explicit
-instance : LE (QuasiENorm 𝓐) :=
+instance : LE (EQuasinorm 𝓐) :=
   ⟨fun A₀ A₁ => ∃ C : ℝ≥0∞, C ≠ ⊤ ∧ ∀ x, ‖x‖ₑ[A₁] ≤ C * ‖x‖ₑ[A₀]⟩
 
-instance : Preorder (QuasiENorm 𝓐) where
+instance : Preorder (EQuasinorm 𝓐) where
   le_refl A := ⟨1, by simp⟩
   le_trans A₀ A₁ A₂ := by
     intro ⟨C, h1C, h2C⟩ ⟨D, h1D, h2D⟩
@@ -57,7 +57,7 @@ instance : Preorder (QuasiENorm 𝓐) where
         apply h2C
 
 -- the equivalence relation stating that two norms are equivalent
-instance : Setoid (QuasiENorm 𝓐) := AntisymmRel.setoid _ (· ≤ ·)
+instance : Setoid (EQuasinorm 𝓐) := AntisymmRel.setoid _ (· ≤ ·)
 
 -- example (h : A₀ ≈ A₁) : A₀ ≤ A₁ := h.le
 -- example (h : A₀ ≈ A₁) : A₁ ≤ A₀ := h.ge
@@ -67,7 +67,7 @@ instance : Setoid (QuasiENorm 𝓐) := AntisymmRel.setoid _ (· ≤ ·)
 -- def Compatible (A₀ A₁ : QuasiENorm 𝓐) : Prop :=
 
 /-- the submonoid of finite elements -/
-def finiteElements (A : QuasiENorm 𝓐) : AddSubmonoid 𝓐 where
+def finiteElements (A : EQuasinorm 𝓐) : AddSubmonoid 𝓐 where
   carrier := { x | ‖x‖ₑ[A] < ∞ }
   zero_mem' := by simp
   add_mem' {x y} hx hy := by
@@ -79,14 +79,15 @@ example : ‖x + y‖ₑ[A] ≤ A.C * (‖x‖ₑ[A] + ‖y‖ₑ[A]) :=
   A.enorm_add_le_mul x y
 
 /-- `J(t,x)` in Section 3.2. For `t = 1` this is the norm of `A₀ ⊓ A₁`. -/
-def minNorm (A₀ A₁ : QuasiENorm 𝓐) (t : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
+def minNorm (A₀ A₁ : EQuasinorm 𝓐) (t : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
   max ‖x‖ₑ[A₀] (t * ‖x‖ₑ[A₁])
 
 /-- The minimum `A₀ ⊓ A₁` equipped with the norm `J(t,-)` -/
-def skewedMin (A₀ A₁ : QuasiENorm 𝓐) (t : ℝ≥0∞) : QuasiENorm 𝓐 where
+@[simps]
+def skewedMin (A₀ A₁ : EQuasinorm 𝓐) (t : ℝ≥0∞) : EQuasinorm 𝓐 where
   enorm := ⟨minNorm A₀ A₁ t⟩
   C := max A₀.C A₁.C
-  enorm_zero := by simp_rw [minNorm, QuasiENorm.enorm_zero, mul_zero, max_self]
+  enorm_zero := by simp_rw [minNorm, EQuasinorm.enorm_zero, mul_zero, max_self]
   enorm_add_le_mul x y :=
     calc
       max ‖x + y‖ₑ[A₀] (t * ‖x + y‖ₑ[A₁]) ≤
@@ -99,7 +100,7 @@ def skewedMin (A₀ A₁ : QuasiENorm 𝓐) (t : ℝ≥0∞) : QuasiENorm 𝓐 w
           gcongr
           exact max_add_add_le_max_add_max
 
-instance : Min (QuasiENorm 𝓐) :=
+instance : Min (EQuasinorm 𝓐) :=
   ⟨fun A₀ A₁ ↦ A₀.skewedMin A₁ 1⟩
 
 lemma inf_mono (h₀ : A₀ ≤ A₀') (h₁ : A₁ ≤ A₁') : A₀ ⊓ A₁ ≤ A₀' ⊓ A₁' := by
@@ -109,11 +110,12 @@ lemma inf_equiv_inf (h₀ : A₀ ≈ A₀') (h₁ : A₁ ≈ A₁') : A₀ ⊓ A
   ⟨inf_mono h₀.le h₁.le, inf_mono h₀.ge h₁.ge⟩
 
 /-- `K(t,x)` in Section 3.1. For `t = 1` this is the norm of `A₀ + A₁`. -/
-def maxNorm (A₀ A₁ : QuasiENorm 𝓐) (t : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
+@[simp]
+def maxNorm (A₀ A₁ : EQuasinorm 𝓐) (t : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
   ⨅ (x₀ : 𝓐) (x₁ : 𝓐) (_h : x₀ + x₁ = x), ‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁]
 
 /-- The addition `A₀ + A₁` equipped with the norm `K(t,-)` -/
-def skewedAdd (A₀ A₁ : QuasiENorm 𝓐) (t : ℝ≥0∞) : QuasiENorm 𝓐 where
+def skewedAdd (A₀ A₁ : EQuasinorm 𝓐) (t : ℝ≥0∞) : EQuasinorm 𝓐 where
   enorm := ⟨maxNorm A₀ A₁ t⟩
   C := A₀.C + A₁.C -- maybe
   enorm_zero := by
@@ -131,10 +133,10 @@ lemma skewedAdd_equiv_skewedAdd (h₀ : A₀ ≈ A₀') (h₁ : A₁ ≈ A₁') 
     skewedAdd A₀ A₁ t ≈ skewedAdd A₀' A₁' t :=
   ⟨skewedAdd_mono h₀.le h₁.le, skewedAdd_mono h₀.ge h₁.ge⟩
 
-instance : Max (QuasiENorm 𝓐) :=
+instance : Max (EQuasinorm 𝓐) :=
   ⟨fun A₀ A₁ ↦ A₀.skewedAdd A₁ 1⟩
 
-instance : Add (QuasiENorm 𝓐) :=
+instance : Add (EQuasinorm 𝓐) :=
   ⟨fun A₀ A₁ ↦ A₀.skewedAdd A₁ 1⟩
 
 lemma add_mono (h₀ : A₀ ≤ A₀') (h₁ : A₁ ≤ A₁') : A₀ + A₁ ≤ A₀' + A₁' :=
@@ -160,7 +162,7 @@ lemma addNorm_le_mul (hx : ‖x‖ₑ[A₀ + A₁] < ∞) :
     maxNorm A₀ A₁ t x ≤ max 1 (t / s) * maxNorm A₀ A₁ s x := by
   sorry
 
-structure IsIntermediateSpace (A A₀ A₁ : QuasiENorm 𝓐) : Prop where
+structure IsIntermediateSpace (A A₀ A₁ : EQuasinorm 𝓐) : Prop where
   inf_le : A₀ ⊓ A₁ ≤ A
   le_add : A ≤ A₀ + A₁
 
@@ -176,14 +178,14 @@ end IsIntermediateSpace
 -- Todo: find better name?
 -- question: how do we get real interpolation with a.e.-subadditivity:
 -- probably this works if we apply it to L^p-spaces (i.e. quotients of functions)
-structure IsSubadditiveOn (T : 𝓐 → 𝓑) (A : QuasiENorm 𝓐) (B : QuasiENorm 𝓑) (C D : ℝ≥0∞) :
+structure IsSubadditiveOn (T : 𝓐 → 𝓑) (A : EQuasinorm 𝓐) (B : EQuasinorm 𝓑) (C D : ℝ≥0∞) :
     Prop where
   bounded : ∀ x, ‖T x‖ₑ[B] ≤ C * ‖x‖ₑ[A]
   subadditive : ∀ x y, ‖T (x + y)‖ₑ[B] ≤ D * (‖T x‖ₑ[B] + ‖T y‖ₑ[B])
 
 -- `C = ‖T‖_{A, B}`
 -- perhaps we don't have to let `C` and `D` depend on all other parameters.
-structure AreInterpolationSpaces (A A₀ A₁ : QuasiENorm 𝓐) (B B₀ B₁ : QuasiENorm 𝓑)
+structure AreInterpolationSpaces (A A₀ A₁ : EQuasinorm 𝓐) (B B₀ B₁ : EQuasinorm 𝓑)
     (C D : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞) : Prop where
   isIntermediateSpace_fst : IsIntermediateSpace A A₀ A₁
   isIntermediateSpace_snd : IsIntermediateSpace B B₀ B₁
@@ -216,21 +218,21 @@ end AreInterpolationSpaces
 
 variable (𝓐) in
 structure Couple where
-  protected fst : QuasiENorm 𝓐
-  protected snd : QuasiENorm 𝓐
+  protected fst : EQuasinorm 𝓐
+  protected snd : EQuasinorm 𝓐
 
 namespace Couple
 
 variable (A : Couple 𝓐)
 
-def J := minNorm A.fst A.snd
+abbrev J := minNorm A.fst A.snd
 
-def min := A.fst ⊓ A.snd
+abbrev min := A.fst ⊓ A.snd
 
-def K := maxNorm A.fst A.snd
+abbrev K := maxNorm A.fst A.snd
 
-def max := A.fst ⊔ A.snd
+abbrev max := A.fst ⊔ A.snd
 
 end Couple
 
-end QuasiENorm
+end EQuasinorm

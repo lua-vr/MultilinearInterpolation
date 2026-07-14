@@ -4,28 +4,29 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jim Potergies, Michael Rothgang, Lua Viana Reis
 -/
 
-import MultilinearInterpolation.Basic
+import MultilinearInterpolation.Defs.EQuasinorm
 import VersoBlueprint
 
 set_option verso.blueprint.autoDeps true
 
 /-!
 Following
- *Interpolation Spaces, An Introduction* by  Jöran Bergh , Jörgen Löfström.
+ *Interpolation Spaces, An Introduction* by  Jöran Bergh , Jörgen Löfström,
+ Section 3.1.
 -/
 
 noncomputable section
 
-open ENNReal Set MeasureTheory
-open scoped NNReal
+open Set MeasureTheory EQuasinorm
+open scoped ENNReal NNReal
 
 variable {𝓐 : Type*} [AddMonoid 𝓐] {𝓑 : Type*} [AddMonoid 𝓑]
 
 -- Feel free to assume `θ ∈ Icc 0 1`, `1 ≤ q` and `q < ∞ → θ ∈ Ioo 0 1` whenever needed
-variable {A A₀ A₁ A' A₀' A₁' : QuasiENorm 𝓐} {t s : ℝ≥0∞} {x y z : 𝓐} {θ : ℝ} {q : ℝ≥0∞}
-  {B B₀ B₁ B' B₀' B₁' : QuasiENorm 𝓑} {C D : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞}
+variable {A A₀ A₁ A' A₀' A₁' : EQuasinorm 𝓐} {t s : ℝ≥0∞} {x y z : 𝓐} {θ : ℝ} {q : ℝ≥0∞}
+  {B B₀ B₁ B' B₀' B₁' : EQuasinorm 𝓑} {C D : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞}
 
-namespace QuasiENorm
+namespace EQuasinorm
 
 /-- The functional `Φ` in Section 3.1. Todo: better name. Todo: generalize type of `f`?
 If we put a σ-algebra + measure on `ℝ≥0∞` we can get rid of the `ofReal`s. -/
@@ -34,14 +35,14 @@ def functional (θ : ℝ) (q : ℝ≥0∞) (f : ℝ≥0∞ → ℝ≥0∞) : ℝ
     (volume.withDensity fun t ↦ (ENNReal.ofReal t)⁻¹)
 
 /- ‖-‖_{θ, q, K} in Section 3.1. -/
-def KNorm (A₀ A₁ : QuasiENorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
+def KNorm (A₀ A₁ : EQuasinorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
   functional θ q (maxNorm A₀ A₁ · x)
 
 /-- The space K_{θ,q}(\bar{A}) in Section 3.1.
 In the book, this is defined to only be submonoid of the elements with finite norm.
 We could do that as well, but actually, since we allow for infinite norms, we can take all elements.
 -/
-def KMethod (A₀ A₁ : QuasiENorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) : QuasiENorm 𝓐 where
+def KMethod (A₀ A₁ : EQuasinorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm 𝓐 where
   enorm := ⟨KNorm A₀ A₁ θ q⟩
   C := sorry
   C_lt := sorry
@@ -64,14 +65,14 @@ def C_KMethod (θ : ℝ) (q C₀ D₀ C₁ D₁ : ℝ≥0∞) : ℝ≥0∞ := so
 /-- The subadditivity constant for the K-method. -/
 def D_KMethod (θ : ℝ) (q C₀ D₀ C₁ D₁ : ℝ≥0∞) : ℝ≥0∞ := sorry
 
-/-- Theorem 3.1.2: The K-method in an interpolation functor. -/
-lemma areInterpolationSpaces_kmethod : AreInterpolationSpaces
-    (KMethod A₀ A₁ θ q) A₀ A₁ (KMethod B₀ B₁ θ q) B₀ B₁ (C_KMethod θ q) (D_KMethod θ q) := by
-  sorry
+-- /-- Theorem 3.1.2: The K-method in an interpolation functor. -/
+-- lemma areInterpolationSpaces_kmethod : AreInterpolationSpaces
+--     (KMethod A₀ A₁ θ q) A₀ A₁ (KMethod B₀ B₁ θ q) B₀ B₁ (C_KMethod θ q) (D_KMethod θ q) := by
+--   sorry
 
-/-- Part of Theorem 3.1.2 -/
-lemma isExactOfExponent_kmethod : IsExactOfExponent (C_KMethod θ q) θ := by
-  sorry
+-- /-- Part of Theorem 3.1.2 -/
+-- lemma isExactOfExponent_kmethod : IsExactOfExponent (C_KMethod θ q) θ := by
+--   sorry
 
 /-- The constant of inequality (6). -/
 def γKMethod' (θ : ℝ) (q : ℝ≥0∞) : ℝ≥0∞ := sorry
@@ -83,12 +84,12 @@ lemma addNorm_le_knorm (hx : ‖x‖ₑ[A₀ + A₁] < ∞) :
 
 -- Todo: ⊓, +, IsIntermediateSpace, AreInterpolationSpaces respect ≈
 
-/-- Theorem 3.1.2: If intermediate spaces are equivalent to the ones obtained by the K-method,
-then this gives rise to an interpolation space. -/
-lemma areInterpolationSpaces_of_le_kmethod
-    (hA : A ≈ KMethod A₀ A₁ θ q) (hB : B ≈ KMethod B₀ B₁ θ q) :
-    AreInterpolationSpaces A A₀ A₁ B B₀ B₁ (C_KMethod θ q) (D_KMethod θ q) :=
-  areInterpolationSpaces_kmethod.equiv hA.symm .rfl .rfl hB.symm .rfl .rfl
+-- /-- Theorem 3.1.2: If intermediate spaces are equivalent to the ones obtained by the K-method,
+-- then this gives rise to an interpolation space. -/
+-- lemma areInterpolationSpaces_of_le_kmethod
+--     (hA : A ≈ KMethod A₀ A₁ θ q) (hB : B ≈ KMethod B₀ B₁ θ q) :
+--     AreInterpolationSpaces A A₀ A₁ B B₀ B₁ (C_KMethod θ q) (D_KMethod θ q) :=
+--   areInterpolationSpaces_kmethod.equiv hA.symm .rfl .rfl hB.symm .rfl .rfl
 
 
 section DiscreteMethod
@@ -98,7 +99,7 @@ def discreteFunctional (θ : ℝ) (q : ℝ≥0∞) (f : ℤ → ℝ≥0∞) : �
   eLpNorm (fun (k : ℤ) ↦ 2 ^ (-k * θ) * f k) q Measure.count
 
 /-- ‖-‖_{λ ^ {θ, q}} in Section 3.1. -/
-def DiscreteKNorm (A₀ A₁ : QuasiENorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
+def DiscreteKNorm (A₀ A₁ : EQuasinorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
   discreteFunctional θ q (fun k ↦ maxNorm A₀ A₁ (2 ^ k) x)
 
 /-- The space K_{θ,q}(\bar{A}) in Section 3.1.
@@ -106,7 +107,7 @@ In the book, this is defined to only be submonoid of the elements with finite no
 We could do that as well, but actually, since we allow for infinite norms, we can take all elements.
 -/
 @[blueprint "DiscreteKMethod"]
-def DiscreteKMethod (A₀ A₁ : QuasiENorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) : QuasiENorm 𝓐 where
+def DiscreteKMethod (A₀ A₁ : EQuasinorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm 𝓐 where
   enorm := ⟨DiscreteKNorm A₀ A₁ θ q⟩
   C := sorry
   C_lt := sorry
@@ -120,4 +121,4 @@ lemma DiscreteKMethod_equiv_KMethod : DiscreteKMethod A₀ A₁ θ q ≈ KMethod
 
 end DiscreteMethod
 
-end QuasiENorm
+end EQuasinorm
