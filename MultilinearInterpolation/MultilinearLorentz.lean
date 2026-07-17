@@ -11,7 +11,7 @@ set_option verso.blueprint.autoDeps true
 
 noncomputable section
 
-namespace QuasiENorm
+namespace EQuasinorm
 
 open MeasureTheory
 open scoped ENNReal NNReal
@@ -21,8 +21,6 @@ variable {α : Type*} [mα : MeasurableSpace α] (μ : Measure α) {β : Type*} 
 
 def εCouple (ε : ℝ≥0∞) := eLorentzCouple μ β ε ∞ ε ∞
 
-def εProd (ε : ℝ≥0∞) : Fin m → Couple (AmbientSpace μ β) := fun _ ↦ εCouple μ ε
+def εProd (ε : ℝ≥0∞) : Fin m → Couple (α → β) := fun _ ↦ εCouple μ ε
 
-
-
-end QuasiENorm
+end EQuasinorm

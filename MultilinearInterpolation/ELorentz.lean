@@ -18,7 +18,7 @@ set_option verso.blueprint.autoDeps true
 
 noncomputable section
 
-namespace QuasiENorm
+namespace EQuasinorm
 
 open MeasureTheory
 open scoped ENNReal NNReal
@@ -34,7 +34,7 @@ lemma LorentzAddConst_pos {p q} : LorentzAddConst p q ≠ 0 := sorry
 
 open Classical in
 variable (β) in
-def eLorentz (p q : ℝ≥0∞) : QuasiENorm (α → β) where
+def eLorentz (p q : ℝ≥0∞) : EQuasinorm (α → β) where
   enorm := ⟨fun f ↦ if AEStronglyMeasurable f μ then eLorentzNorm f p q μ else ∞⟩
   C := LorentzAddConst p q
   C_lt := LorentzAddConst_lt_top
@@ -71,4 +71,4 @@ theorem eLorentz_equiv_kMethod_of_eq (p q₀ q₁ q : ℝ≥0∞) (t : ℝ≥0)
 
 end Interpolation
 
-end QuasiENorm
+end EQuasinorm
