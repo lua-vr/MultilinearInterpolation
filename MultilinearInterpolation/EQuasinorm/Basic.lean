@@ -7,6 +7,7 @@ Authors: Floris van Doorn, Jim Potergies, Michael Rothgang, Lua Viana Reis
 import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Measure.WithDensity
+import MultilinearInterpolation.ToMathlib.Topology.UniformSpace.OfFun
 
 /-!
 Following
@@ -26,10 +27,6 @@ structure EQuasinorm where
   protected C_lt : C < ∞ := by finiteness
   protected enorm_zero : ‖(0 : 𝓐)‖ₑ = 0
   enorm_add_le_mul : ∀ x y : 𝓐, ‖x + y‖ₑ ≤ C * (‖x‖ₑ + ‖y‖ₑ)
-
--- Feel free to assume `θ ∈ Icc 0 1`, `1 ≤ q` and `q < ∞ → θ ∈ Ioo 0 1` whenever needed
-variable {A A₀ A₁ A' A₀' A₁' : EQuasinorm 𝓐} {t s : ℝ≥0∞} {x y z : 𝓐} {θ : ℝ} {q : ℝ≥0∞}
-  {B B₀ B₁ B' B₀' B₁' : EQuasinorm 𝓑} {C D : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞}
 
 namespace EQuasinorm
 
@@ -59,12 +56,13 @@ instance : Preorder (EQuasinorm 𝓐) where
 -- the equivalence relation stating that two norms are equivalent
 instance : Setoid (EQuasinorm 𝓐) := AntisymmRel.setoid _ (· ≤ ·)
 
--- example (h : A₀ ≈ A₁) : A₀ ≤ A₁ := h.le
--- example (h : A₀ ≈ A₁) : A₁ ≤ A₀ := h.ge
+-- Feel free to assume `θ ∈ Icc 0 1`, `1 ≤ q` and `q < ∞ → θ ∈ Ioo 0 1` whenever needed
+variable {A A₀ A₁ A' A₀' A₁' : EQuasinorm 𝓐} {t s : ℝ≥0∞} {x y z : 𝓐} {θ : ℝ} {q : ℝ≥0∞}
+  {B B₀ B₁ B' B₀' B₁' : EQuasinorm 𝓑} {C D : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞}
 
--- Two spaces are compatible if they can both be embedded into the same topological additive monoid.
--- Hopefully this is vacuous in our reformulation.
--- def Compatible (A₀ A₁ : QuasiENorm 𝓐) : Prop :=
+-- variable [AddCommGroup 𝓐] in
+-- abbrev topology (A : EQuasinorm 𝓐) : UniformSpace 𝓐 :=
+--   .ofDist (fun x y ↦ ‖x - y‖ₑ[A]) dist_self dist_comm dist_triangle
 
 /-- the submonoid of finite elements -/
 def finiteElements (A : EQuasinorm 𝓐) : AddSubmonoid 𝓐 where
@@ -110,9 +108,37 @@ lemma inf_equiv_inf (h₀ : A₀ ≈ A₀') (h₁ : A₁ ≈ A₁') : A₀ ⊓ A
   ⟨inf_mono h₀.le h₁.le, inf_mono h₀.ge h₁.ge⟩
 
 /-- `K(t,x)` in Section 3.1. For `t = 1` this is the norm of `A₀ + A₁`. -/
-@[simp]
 def maxNorm (A₀ A₁ : EQuasinorm 𝓐) (t : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
-  ⨅ (x₀ : 𝓐) (x₁ : 𝓐) (_h : x₀ + x₁ = x), ‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁]
+  ⨅ (a : 𝓐 × 𝓐) (_h : x = a.fst + a.snd), ‖a.fst‖ₑ[A₀] + t * ‖a.snd‖ₑ[A₁]
+
+section MaxNorm
+
+lemma maxNorm_le_of_decomp {x x₀ x₁ : 𝓐} (h : x = x₀ + x₁) (t : ℝ≥0∞) :
+    A₀.maxNorm A₁ t x ≤ ‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁] :=
+  iInf₂_le (x₀, x₁) h
+
+lemma exists_decomp_lt_of_lt_maxNorm {x : 𝓐} {b : ℝ≥0∞} (h : A₀.maxNorm A₁ t x < b) :
+    ∃ x₀ x₁, x = x₀ + x₁ ∧ ‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁] < b := by
+  simpa [maxNorm, iInf_lt_iff] using h
+
+@[simp]
+lemma maxNorm_zero (t : ℝ≥0∞) : A₀.maxNorm A₁ t 0 = 0 := by
+  simpa using maxNorm_le_of_decomp (add_zero (0 : 𝓐)).symm t
+
+lemma maxNorm_add_le_mul (t : ℝ≥0∞) (x y : 𝓐) :
+    A₀.maxNorm A₁ t (x + y) ≤ max A₀.C A₁.C * (A₀.maxNorm A₁ t x + A₀.maxNorm A₁ t y) := by
+  suffices h : ∀ x₀ x₁, x = x₀ + x₁ → ∀ y₀ y₁, y = y₀ + y₁ →
+      A₀.maxNorm A₁ t (x + y) ≤ max A₀.C A₁.C * ((‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁]) + (‖y₀‖ₑ[A₀] + t * ‖y₁‖ₑ[A₁])) by
+    sorry
+    -- apply ENNReal.le_iInf₂_add_iInf₂
+    -- simpa only [Prod.forall] using h
+  intro x₀ x₁ hx y₀ y₁ hy
+  rw [add_add_add_comm, ← mul_add]
+  trans ‖x₀ + x₁‖ₑ[A₀] + t * ‖x₁ + y₁‖ₑ[A₁]
+  · sorry
+  · sorry
+
+end MaxNorm
 
 /-- The addition `A₀ + A₁` equipped with the norm `K(t,-)` -/
 def skewedAdd (A₀ A₁ : EQuasinorm 𝓐) (t : ℝ≥0∞) : EQuasinorm 𝓐 where
@@ -120,7 +146,7 @@ def skewedAdd (A₀ A₁ : EQuasinorm 𝓐) (t : ℝ≥0∞) : EQuasinorm 𝓐 w
   C := A₀.C + A₁.C -- maybe
   enorm_zero := by
     simp_rw [← nonpos_iff_eq_zero]
-    apply iInf₂_le_of_le 0 0
+    apply iInf_le_of_le 0
     simp
   enorm_add_le_mul x y := by
     sorry

@@ -36,7 +36,23 @@ instance : FunLike (MultisubadditiveMap M₁ M₂) (∀ i, M₁ i) M₂ where
   coe_injective f g h := by cases f; cases g; cases h; rfl
 
 def IsBoundedFor (T : MultisubadditiveMap M₁ M₂)
-    (e₁ : (i : ι) → EQuasinorm (M₁ i)) (e₂ : EQuasinorm M₂) (C : ℝ≥0) : Prop :=
-  ∀ x, ‖T x‖ₑ[e₂] ≤ C * ∏ i, ‖x i‖ₑ[e₁ i]
+    (e₁ : (i : ι) → EQuasinorm (M₁ i)) (e₂ : EQuasinorm M₂) (C : ℝ≥0∞) : Prop :=
+  C ≠ ⊤ ∧ ∀ x, ‖T x‖ₑ[e₂] ≤ C * ∏ i, ‖x i‖ₑ[e₁ i]
+
+variable (T : MultisubadditiveMap M₁ M₂) (e₁ : (i : ι) → EQuasinorm (M₁ i)) (e₂ : EQuasinorm M₂)
+  (C : ℝ≥0∞)
+
+section Continuity
+
+notation "ContinuousAt[" t₁ ", " t₂ "]" => @ContinuousAt _ _ t₁ t₂
+
+notation "UniformContinuous[" t₁ ", " t₂ "]" => @UniformContinuous _ _ t₁ t₂
+
+lemma IsBoundedFor.uniformContinuous (T : MultisubadditiveMap M₁ M₂) (hT : T.IsBoundedFor e₁ e₂ C)
+    (hT₂ : ContinuousAt T 0) :
+    UniformContinuous T :=
+  sorry
+
+end Continuity
 
 end MultisubadditiveMap
