@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jim Potergies, Michael Rothgang, Lua Viana Reis
 -/
 
-import MultilinearInterpolation.Defs.EQuasinorm
+import MultilinearInterpolation.EQuasinorm.Basic
 
 /-!
 Following
@@ -15,18 +15,18 @@ noncomputable section
 
 open scoped ENNReal NNReal
 
-variable {𝓐 : Type*} [AddMonoid 𝓐] {𝓑 : Type*} [AddMonoid 𝓑]
+variable {α : Type*} [AddMonoid α] {β : Type*} [AddMonoid β]
 
 /- This is `ESeminormedAddMonoid` as a structure but we don't fix a topology on 𝓐. -/
-variable (𝓐) in
-structure ESeminorm extends EQuasinorm 𝓐 where
+variable (α) in
+structure ESeminorm extends EQuasinorm α where
   protected C_eq_one : C = 1
   protected C := 1
 
-instance : Coe (ESeminorm 𝓐) (EQuasinorm 𝓐) where
+instance : Coe (ESeminorm α) (EQuasinorm α) where
   coe A := A.toEQuasinorm
 
-variable {A A₀ A₁ A' A₀' A₁' : ESeminorm 𝓐}
+variable {A A₀ A₁ A' A₀' A₁' : ESeminorm α}
 
 namespace ESeminorm
 
@@ -36,24 +36,24 @@ lemma enorm_add_le : ∀ x y, ‖x + y‖ₑ[A] ≤ ‖x‖ₑ[A] + ‖y‖ₑ[A
   simpa using A.enorm_add_le_mul
 
 /-- The minimum `A₀ ⊓ A₁` equipped with the norm `J(t,-)` -/
-def skewedMin (A₀ A₁ : ESeminorm 𝓐) (t : ℝ≥0∞) : ESeminorm 𝓐 where
+def skewedMin (A₀ A₁ : ESeminorm α) (t : ℝ≥0∞) : ESeminorm α where
   __ := A₀.toEQuasinorm.skewedMin A₁ t
   C_eq_one := by simp
 
-instance : Min (ESeminorm 𝓐) :=
+instance : Min (ESeminorm α) :=
   ⟨fun A₀ A₁ ↦ A₀.skewedMin A₁ 1⟩
 
-variable (𝓐) in
-structure Couple extends EQuasinorm.Couple 𝓐 where
+variable (α) in
+structure Couple extends EQuasinorm.Couple α where
   protected C_eq_one : fst.C = 1 ∧ snd.C = 1
 
 namespace Couple
 
-variable (A : Couple 𝓐)
+variable (A : Couple α)
 
-def fst' : ESeminorm 𝓐 := ⟨A.fst, A.C_eq_one.1⟩
+def fst' : ESeminorm α := ⟨A.fst, A.C_eq_one.1⟩
 
-def snd' : ESeminorm 𝓐 := ⟨A.snd, A.C_eq_one.2⟩
+def snd' : ESeminorm α := ⟨A.snd, A.C_eq_one.2⟩
 
 lemma enorm_add_le : ∀ x y, ‖x + y‖ₑ[A.fst] ≤ ‖x‖ₑ[A.fst] + ‖y‖ₑ[A.fst] :=
   A.fst'.enorm_add_le
