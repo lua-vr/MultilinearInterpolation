@@ -76,6 +76,17 @@ def finiteElements (A : EQuasinorm 𝓐) : AddSubmonoid 𝓐 where
 example : ‖x + y‖ₑ[A] ≤ A.C * (‖x‖ₑ[A] + ‖y‖ₑ[A]) :=
   A.enorm_add_le_mul x y
 
+section Pow
+
+def pow (A : EQuasinorm 𝓐) (p : ℝ) : EQuasinorm 𝓐 where
+  enorm := ⟨fun x ↦ ‖x‖ₑ[A] ^ p⟩
+  C := sorry
+  C_lt := sorry
+  enorm_zero := sorry
+  enorm_add_le_mul x y := sorry
+
+end Pow
+
 /-- `J(t,x)` in Section 3.2. For `t = 1` this is the norm of `A₀ ⊓ A₁`. -/
 def minNorm (A₀ A₁ : EQuasinorm 𝓐) (t : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
   max ‖x‖ₑ[A₀] (t * ‖x‖ₑ[A₁])

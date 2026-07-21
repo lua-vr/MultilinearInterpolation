@@ -26,7 +26,7 @@ structure ESeminorm extends EQuasinorm α where
 instance : Coe (ESeminorm α) (EQuasinorm α) where
   coe A := A.toEQuasinorm
 
-variable {A A₀ A₁ A' A₀' A₁' : ESeminorm α}
+variable {A : ESeminorm α}
 
 namespace ESeminorm
 
