@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis
 -/
 
-import MultilinearInterpolation.Defs.EQuasinorm
+import MultilinearInterpolation.EQuasinorm.WithEQuasinorm
 import Carleson.ToMathlib.RealInterpolation.Misc
 import VersoBlueprint
 
@@ -15,44 +15,44 @@ noncomputable section
 open EQuasinorm
 open scoped ENNReal NNReal
 
-variable {ι : Type*} [Fintype ι] {M₁ : ι → Type*} [∀ i, AddMonoid (M₁ i)] {M₂ : Type*}
-  [AddGroup M₂] [Lattice M₂]
+variable {ι : Type*} [Fintype ι] {α : ι → Type*} [∀ i, AddGroup (α i)] {β : Type*}
+  [AddGroup β] [Lattice β]
 
 /- I think it deserves this structure like `MultilinearMap`.
 We may want to define API for operations on multisubadditive maps.
 -/
-variable (M₁ M₂) in
+variable (α β) in
 open Function in
 structure MultisubadditiveMap where
-  toFun : (∀ i, M₁ i) → M₂
+  toFun : (∀ i, α i) → β
   subadditive :
-    ∀ [DecidableEq ι] (f : ∀ i, M₁ i) (i : ι) (x y : M₁ i),
+    ∀ [DecidableEq ι] (f : ∀ i, α i) (i : ι) (x y : α i),
     |toFun (update f i (x + y))| ≤ |toFun (update f i x)| + |toFun (update f i y)|
 
 namespace MultisubadditiveMap
 
-instance : FunLike (MultisubadditiveMap M₁ M₂) (∀ i, M₁ i) M₂ where
+instance : FunLike (MultisubadditiveMap α β) (∀ i, α i) β where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; cases h; rfl
 
-def IsBoundedFor (T : MultisubadditiveMap M₁ M₂)
-    (e₁ : (i : ι) → EQuasinorm (M₁ i)) (e₂ : EQuasinorm M₂) (C : ℝ≥0∞) : Prop :=
-  C ≠ ⊤ ∧ ∀ x, ‖T x‖ₑ[e₂] ≤ C * ∏ i, ‖x i‖ₑ[e₁ i]
+def IsBoundedFor (T : MultisubadditiveMap α β)
+    (A : (i : ι) → EQuasinorm (α i)) (B : EQuasinorm β) (C : ℝ≥0∞) : Prop :=
+  C ≠ ⊤ ∧ ∀ x, ‖T x‖ₑ[B] ≤ C * ∏ i, ‖x i‖ₑ[A i]
 
-variable (T : MultisubadditiveMap M₁ M₂) (e₁ : (i : ι) → EQuasinorm (M₁ i)) (e₂ : EQuasinorm M₂)
+variable (T : MultisubadditiveMap α β) (A : (i : ι) → EQuasinorm (α i)) (B : EQuasinorm β)
   (C : ℝ≥0∞)
 
-section Continuity
+def withEQuasinorm :
+    MultisubadditiveMap (fun i ↦ WithEQuasinorm (α i) (A i)) (WithEQuasinorm β B) :=
+  T
 
-notation "ContinuousAt[" t₁ ", " t₂ "]" => @ContinuousAt _ _ t₁ t₂
+namespace IsBoundedFor
 
-notation "UniformContinuous[" t₁ ", " t₂ "]" => @UniformContinuous _ _ t₁ t₂
-
-lemma IsBoundedFor.uniformContinuous (T : MultisubadditiveMap M₁ M₂) (hT : T.IsBoundedFor e₁ e₂ C)
-    (hT₂ : ContinuousAt T 0) :
-    UniformContinuous T :=
+lemma uniformContinuous (T : MultisubadditiveMap α β) (hT : T.IsBoundedFor A B C)
+    (hT₂ : ContinuousAt (T.withEQuasinorm A B) 0) :
+    UniformContinuous (T.withEQuasinorm A B) :=
   sorry
 
-end Continuity
+end IsBoundedFor
 
 end MultisubadditiveMap

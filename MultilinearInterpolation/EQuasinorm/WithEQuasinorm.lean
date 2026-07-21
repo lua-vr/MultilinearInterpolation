@@ -22,10 +22,14 @@ def WithEQuasinorm (α : Type*) [AddMonoid α] (_ : EQuasinorm α) := α
 
 namespace WithEQuasinorm
 
-instance {α} [AddMonoid α] {A} : ENorm (WithEQuasinorm α A) := A.enorm
+instance {α} [AddMonoid α] {A} : ENorm (WithEQuasinorm α A) :=
+  A.enorm
 
-instance {α} [AddGroup α] {A} : AddGroup (WithEQuasinorm α A) := inferInstanceAs (AddGroup α)
+instance {α} [AddMonoid α] [Lattice α] {A} : Lattice (WithEQuasinorm α A) :=
+  inferInstanceAs (Lattice α)
 
+instance {α} [AddGroup α] {A} : AddGroup (WithEQuasinorm α A) :=
+  inferInstanceAs (AddGroup α)
 
 /- Topology. -/
 
