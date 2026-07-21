@@ -35,18 +35,19 @@ instance : FunLike (MultisubadditiveMap α β) (∀ i, α i) β where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; cases h; rfl
 
-def IsBoundedFor (T : MultisubadditiveMap α β)
-    (A : (i : ι) → EQuasinorm (α i)) (B : EQuasinorm β) (C : ℝ≥0∞) : Prop :=
-  C ≠ ⊤ ∧ ∀ x, ‖T x‖ₑ[B] ≤ C * ∏ i, ‖x i‖ₑ[A i]
-
 variable (T : MultisubadditiveMap α β) (A : (i : ι) → EQuasinorm (α i)) (B : EQuasinorm β)
   (C : ℝ≥0∞)
+
+def IsBoundedFor : Prop :=
+  C ≠ ⊤ ∧ ∀ x, ‖T x‖ₑ[B] ≤ C * ∏ i, ‖x i‖ₑ[A i]
 
 def withEQuasinorm :
     MultisubadditiveMap (fun i ↦ WithEQuasinorm (α i) (A i)) (WithEQuasinorm β B) :=
   T
 
 namespace IsBoundedFor
+
+
 
 lemma uniformContinuous (T : MultisubadditiveMap α β) (hT : T.IsBoundedFor A B C)
     (hT₂ : ContinuousAt (T.withEQuasinorm A B) 0) :
