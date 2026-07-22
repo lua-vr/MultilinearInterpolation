@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jim Potergies, Michael Rothgang, Lua Viana Reis
 -/
 
-import MultilinearInterpolation.Defs.EQuasinorm
+import MultilinearInterpolation.EQuasinorm.Basic
 import VersoBlueprint
 
 set_option verso.blueprint.autoDeps true
