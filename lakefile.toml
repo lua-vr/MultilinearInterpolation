@@ -15,12 +15,12 @@ weak.linter.style.header = false
 [[require]]
 name = "verso-blueprint"
 git = "https://github.com/leanprover/verso-blueprint"
-rev = "v4.31.0"
+rev = "feat/attribute-first-authoring"
 
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "v4.31.0"
+rev = "v4.32.0"
 
 [[lean_lib]]
 name = "Blueprint"
