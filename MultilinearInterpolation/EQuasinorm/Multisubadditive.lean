@@ -15,7 +15,7 @@ noncomputable section
 open EQuasinorm
 open scoped ENNReal NNReal
 
-variable {ι : Type*} [Fintype ι] {α : ι → Type*} [∀ i, AddGroup (α i)] {β : Type*}
+variable {ι : Type*} [Fintype ι] {α : ι → Type*} [∀ i, AddMonoid (α i)] {β : Type*}
   [AddGroup β] [Lattice β]
 
 /- I think it deserves this structure like `MultilinearMap`.
@@ -47,7 +47,11 @@ def withEQuasinorm :
 
 namespace IsBoundedFor
 
+variable {ι : Type*} [Fintype ι] {α : ι → Type*} [∀ i, AddGroup (α i)] {β : Type*}
+  [AddGroup β] [Lattice β]
 
+variable (T : MultisubadditiveMap α β) (A : (i : ι) → EQuasinorm (α i)) (B : EQuasinorm β)
+  (C : ℝ≥0∞)
 
 lemma uniformContinuous (T : MultisubadditiveMap α β) (hT : T.IsBoundedFor A B C)
     (hT₂ : ContinuousAt (T.withEQuasinorm A B) 0) :

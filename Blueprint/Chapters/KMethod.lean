@@ -8,8 +8,10 @@ open Verso.Genre
 open Verso.Genre.Manual
 open Informal
 
-open InlineLean QuasiENorm
+open InlineLean EQuasinorm
 
 #doc (Manual) "K-Method" =>
+
+{blueprint_node "equasinorm"}
 
 Empty.

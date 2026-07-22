@@ -6,11 +6,8 @@ defaultTargets = ["MultilinearInterpolation"]
 [leanOptions]
 pp.unicode.fun = true # pretty-prints `fun a ↦ b`
 relaxedAutoImplicit = false
-weak.linter.mathlibStandardSet = true
 maxSynthPendingDepth = 3
-# temporary
-weak.linter.style.longLine = false
-weak.linter.style.header = false
+weak.doc.verso = true
 
 [[require]]
 name = "verso-blueprint"
@@ -38,6 +35,9 @@ precompileModules = false
 
 [[lean_lib]]
 name = "MultilinearInterpolation"
+[lean_lib.leanOptions]
+weak.linter.mathlibStandardSet = true
+weak.verso.blueprint.autoDeps = true
 
 [[lean_exe]]
 name = "blueprint-gen"

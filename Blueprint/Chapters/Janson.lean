@@ -10,6 +10,6 @@ open Informal
 
 #doc (Manual) "On interpolation of multi-linear operators" =>
 
-hello world
+Foo bar.
 
-{blueprint_node "k-interpolation-space"}
+{blueprint_node "isBoundedOn_of_mem_interior_Ω"}

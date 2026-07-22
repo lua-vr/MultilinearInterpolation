@@ -7,8 +7,6 @@ Authors: Floris van Doorn, Jim Potergies, Michael Rothgang, Lua Viana Reis
 import MultilinearInterpolation.EQuasinorm.Basic
 import VersoBlueprint
 
-set_option verso.blueprint.autoDeps true
-
 /-!
 Following
  *Interpolation Spaces, An Introduction* by  Jöran Bergh , Jörgen Löfström,
@@ -28,7 +26,7 @@ variable {A A₀ A₁ A' A₀' A₁' : EQuasinorm 𝓐} {t s : ℝ≥0∞} {x y 
 
 namespace EQuasinorm
 
-/-- The functional `Φ` in Section 3.1. Todo: better name. Todo: generalize type of `f`?
+/-- The functional $`Φ` in Section 3.1. Todo: better name. Todo: generalize type of `f`?
 If we put a σ-algebra + measure on `ℝ≥0∞` we can get rid of the `ofReal`s. -/
 def functional (θ : ℝ) (q : ℝ≥0∞) (f : ℝ≥0∞ → ℝ≥0∞) : ℝ≥0∞ :=
   eLpNorm ((Ioi 0).indicator fun t ↦ ENNReal.ofReal t ^ (- θ) * f (ENNReal.ofReal t)) q
@@ -38,7 +36,7 @@ def functional (θ : ℝ) (q : ℝ≥0∞) (f : ℝ≥0∞ → ℝ≥0∞) : ℝ
 def KNorm (A₀ A₁ : EQuasinorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
   functional θ q (maxNorm A₀ A₁ · x)
 
-/-- The space K_{θ,q}(\bar{A}) in Section 3.1.
+/-- The space $`K_{θ,q}(\bar{A})` in Section 3.1.
 In the book, this is defined to only be submonoid of the elements with finite norm.
 We could do that as well, but actually, since we allow for infinite norms, we can take all elements.
 -/
@@ -94,15 +92,15 @@ lemma addNorm_le_knorm (hx : ‖x‖ₑ[A₀ + A₁] < ∞) :
 
 section DiscreteMethod
 
-/-- The functional `Φ` in Section 3.1. Todo: better name. -/
+/-- The functional $`Φ` in Section 3.1. Todo: better name. -/
 def discreteFunctional (θ : ℝ) (q : ℝ≥0∞) (f : ℤ → ℝ≥0∞) : ℝ≥0∞ :=
   eLpNorm (fun (k : ℤ) ↦ 2 ^ (-k * θ) * f k) q Measure.count
 
-/-- ‖-‖_{λ ^ {θ, q}} in Section 3.1. -/
+/-- $`‖-‖_{λ ^ {θ, q}} in` Section 3.1. -/
 def DiscreteKNorm (A₀ A₁ : EQuasinorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
   discreteFunctional θ q (fun k ↦ maxNorm A₀ A₁ (2 ^ k) x)
 
-/-- The space K_{θ,q}(\bar{A}) in Section 3.1.
+/-- The space $`K_{θ,q}(\bar{A})` in Section 3.1.
 In the book, this is defined to only be submonoid of the elements with finite norm.
 We could do that as well, but actually, since we allow for infinite norms, we can take all elements.
 -/

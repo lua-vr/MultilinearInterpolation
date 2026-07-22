@@ -97,9 +97,10 @@ end Theorem1
 
 section Theorem2
 
-@[blueprint "isBoundedOn_of_mem_Ω"
+/-- Docstring. -/
+@[blueprint "isBoundedOn_of_mem_interior_Ω"
   (proofUses := [knorm_le_jInfNorm, EQuasinorm.DiscreteKMethod_equiv_KMethod])]
-theorem isBoundedOn_of_mem_Ω (θ) (hθ : θ ∈ interior (Ω T A B cα₀ cα)) :
+theorem isBoundedOn_of_mem_interior_Ω (θ) (hθ : θ ∈ interior (Ω T A B cα₀ cα)) :
     let θ₀ := cα₀ + ∑ i, cα i
     ∀ (q₀ : ℝ≥0∞) (q : ι → ℝ≥0∞) (hq : q₀⁻¹ ≤ ∑ i, (q i)⁻¹),
     ∃ C, T.IsBoundedFor (fun i ↦ (A i).kmethod (θ i) (q i)) (B.kmethod θ₀ q₀) C :=
