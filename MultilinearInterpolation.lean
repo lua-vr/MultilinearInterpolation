@@ -1,8 +1,9 @@
 import MultilinearInterpolation.AokiRolewicz
-import MultilinearInterpolation.Defs.EQuasinorm
-import MultilinearInterpolation.Defs.ESeminorm
-import MultilinearInterpolation.Defs.Multisubadditive
 import MultilinearInterpolation.ELorentz
+import MultilinearInterpolation.EQuasinorm.Basic
+import MultilinearInterpolation.EQuasinorm.ESeminorm
+import MultilinearInterpolation.EQuasinorm.Multisubadditive
+import MultilinearInterpolation.EQuasinorm.WithEQuasinorm
 import MultilinearInterpolation.Janson
 import MultilinearInterpolation.KMethod
 import MultilinearInterpolation.MultilinearLorentz
