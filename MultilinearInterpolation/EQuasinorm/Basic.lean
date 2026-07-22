@@ -8,6 +8,9 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Measure.WithDensity
 import MultilinearInterpolation.ToMathlib.Topology.UniformSpace.OfFun
+import VersoBlueprint
+
+set_option verso.blueprint.autoDeps true
 
 /-!
 Following
@@ -18,15 +21,23 @@ noncomputable section
 
 open ENNReal Set
 
-variable {𝓐 : Type*} [AddMonoid 𝓐] {𝓑 : Type*} [AddMonoid 𝓑]
+variable {α : Type*} [AddMonoid α] {β : Type*} [AddMonoid β]
 
-variable (𝓐) in
+variable (α) in
+/-- A quasinorm on a monoid `α` is a function `α → ℝ≥0∞` and a finite constant
+`C : ℝ≥0∞` that sends `0 : α` to zero and is `C`-subadditive. -/
+@[blueprint "equasinorm"]
 structure EQuasinorm where
-  protected enorm : ENorm 𝓐
+  /-- The raw `enorm` associated to the quasinorm. -/
+  protected enorm : ENorm α
+  /-- The subadditivity constant. -/
   protected C : ℝ≥0∞
+  /-- The subadditivity constant is finite. -/
   protected C_lt : C < ∞ := by finiteness
-  protected enorm_zero : ‖(0 : 𝓐)‖ₑ = 0
-  enorm_add_le_mul : ∀ x y : 𝓐, ‖x + y‖ₑ ≤ C * (‖x‖ₑ + ‖y‖ₑ)
+  /-- The enorm of zero is zero. -/
+  protected enorm_zero : ‖(0 : α)‖ₑ = 0
+  /-- The quasinorm is `C`-subadditive. -/
+  enorm_add_le_mul : ∀ x y : α, ‖x + y‖ₑ ≤ C * (‖x‖ₑ + ‖y‖ₑ)
 
 namespace EQuasinorm
 
@@ -39,10 +50,10 @@ set_option quotPrecheck false in
 notation "‖" e "‖ₑ[" A "]" => @enorm _ (A).enorm e
 
 -- todo: make constant explicit
-instance : LE (EQuasinorm 𝓐) :=
+instance : LE (EQuasinorm α) :=
   ⟨fun A₀ A₁ => ∃ C : ℝ≥0∞, C ≠ ⊤ ∧ ∀ x, ‖x‖ₑ[A₁] ≤ C * ‖x‖ₑ[A₀]⟩
 
-instance : Preorder (EQuasinorm 𝓐) where
+instance : Preorder (EQuasinorm α) where
   le_refl A := ⟨1, by simp⟩
   le_trans A₀ A₁ A₂ := by
     intro ⟨C, h1C, h2C⟩ ⟨D, h1D, h2D⟩
@@ -54,18 +65,18 @@ instance : Preorder (EQuasinorm 𝓐) where
         apply h2C
 
 -- the equivalence relation stating that two norms are equivalent
-instance : Setoid (EQuasinorm 𝓐) := AntisymmRel.setoid _ (· ≤ ·)
+instance : Setoid (EQuasinorm α) := AntisymmRel.setoid _ (· ≤ ·)
 
 -- Feel free to assume `θ ∈ Icc 0 1`, `1 ≤ q` and `q < ∞ → θ ∈ Ioo 0 1` whenever needed
-variable {A A₀ A₁ A' A₀' A₁' : EQuasinorm 𝓐} {t s : ℝ≥0∞} {x y z : 𝓐} {θ : ℝ} {q : ℝ≥0∞}
-  {B B₀ B₁ B' B₀' B₁' : EQuasinorm 𝓑} {C D : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞}
+variable {A A₀ A₁ A' A₀' A₁' : EQuasinorm α} {t s : ℝ≥0∞} {x y z : α} {θ : ℝ} {q : ℝ≥0∞}
+  {B B₀ B₁ B' B₀' B₁' : EQuasinorm β} {C D : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞}
 
 -- variable [AddCommGroup 𝓐] in
 -- abbrev topology (A : EQuasinorm 𝓐) : UniformSpace 𝓐 :=
 --   .ofDist (fun x y ↦ ‖x - y‖ₑ[A]) dist_self dist_comm dist_triangle
 
 /-- the submonoid of finite elements -/
-def finiteElements (A : EQuasinorm 𝓐) : AddSubmonoid 𝓐 where
+def finiteElements (A : EQuasinorm α) : AddSubmonoid α where
   carrier := { x | ‖x‖ₑ[A] < ∞ }
   zero_mem' := by simp
   add_mem' {x y} hx hy := by
@@ -78,7 +89,7 @@ example : ‖x + y‖ₑ[A] ≤ A.C * (‖x‖ₑ[A] + ‖y‖ₑ[A]) :=
 
 section Pow
 
-def pow (A : EQuasinorm 𝓐) (p : ℝ) : EQuasinorm 𝓐 where
+def pow (A : EQuasinorm α) (p : ℝ) : EQuasinorm α where
   enorm := ⟨fun x ↦ ‖x‖ₑ[A] ^ p⟩
   C := sorry
   C_lt := sorry
@@ -88,12 +99,12 @@ def pow (A : EQuasinorm 𝓐) (p : ℝ) : EQuasinorm 𝓐 where
 end Pow
 
 /-- `J(t,x)` in Section 3.2. For `t = 1` this is the norm of `A₀ ⊓ A₁`. -/
-def minNorm (A₀ A₁ : EQuasinorm 𝓐) (t : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
+def minNorm (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
   max ‖x‖ₑ[A₀] (t * ‖x‖ₑ[A₁])
 
 /-- The minimum `A₀ ⊓ A₁` equipped with the norm `J(t,-)` -/
 @[simps]
-def skewedMin (A₀ A₁ : EQuasinorm 𝓐) (t : ℝ≥0∞) : EQuasinorm 𝓐 where
+def skewedMin (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨minNorm A₀ A₁ t⟩
   C := max A₀.C A₁.C
   enorm_zero := by simp_rw [minNorm, EQuasinorm.enorm_zero, mul_zero, max_self]
@@ -109,7 +120,7 @@ def skewedMin (A₀ A₁ : EQuasinorm 𝓐) (t : ℝ≥0∞) : EQuasinorm 𝓐 w
           gcongr
           exact max_add_add_le_max_add_max
 
-instance : Min (EQuasinorm 𝓐) :=
+instance : Min (EQuasinorm α) :=
   ⟨fun A₀ A₁ ↦ A₀.skewedMin A₁ 1⟩
 
 lemma inf_mono (h₀ : A₀ ≤ A₀') (h₁ : A₁ ≤ A₁') : A₀ ⊓ A₁ ≤ A₀' ⊓ A₁' := by
@@ -118,25 +129,26 @@ lemma inf_mono (h₀ : A₀ ≤ A₀') (h₁ : A₁ ≤ A₁') : A₀ ⊓ A₁ �
 lemma inf_equiv_inf (h₀ : A₀ ≈ A₀') (h₁ : A₁ ≈ A₁') : A₀ ⊓ A₁ ≈ A₀' ⊓ A₁' :=
   ⟨inf_mono h₀.le h₁.le, inf_mono h₀.ge h₁.ge⟩
 
-/-- `K(t,x)` in Section 3.1. For `t = 1` this is the norm of `A₀ + A₁`. -/
-def maxNorm (A₀ A₁ : EQuasinorm 𝓐) (t : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
-  ⨅ (a : 𝓐 × 𝓐) (_h : x = a.fst + a.snd), ‖a.fst‖ₑ[A₀] + t * ‖a.snd‖ₑ[A₁]
+/-- $`K(t,x)` in Section 3.1. For $`t = 1` this is the norm of $`A₀ ⊔ A₁`. -/
+@[blueprint "quasinorm-k"]
+def maxNorm (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
+  ⨅ (a : α × α) (_h : x = a.fst + a.snd), ‖a.fst‖ₑ[A₀] + t * ‖a.snd‖ₑ[A₁]
 
 section MaxNorm
 
-lemma maxNorm_le_of_decomp {x x₀ x₁ : 𝓐} (h : x = x₀ + x₁) (t : ℝ≥0∞) :
+lemma maxNorm_le_of_decomp {x x₀ x₁ : α} (h : x = x₀ + x₁) (t : ℝ≥0∞) :
     A₀.maxNorm A₁ t x ≤ ‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁] :=
   iInf₂_le (x₀, x₁) h
 
-lemma exists_decomp_lt_of_lt_maxNorm {x : 𝓐} {b : ℝ≥0∞} (h : A₀.maxNorm A₁ t x < b) :
+lemma exists_decomp_lt_of_lt_maxNorm {x : α} {b : ℝ≥0∞} (h : A₀.maxNorm A₁ t x < b) :
     ∃ x₀ x₁, x = x₀ + x₁ ∧ ‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁] < b := by
   simpa [maxNorm, iInf_lt_iff] using h
 
 @[simp]
 lemma maxNorm_zero (t : ℝ≥0∞) : A₀.maxNorm A₁ t 0 = 0 := by
-  simpa using maxNorm_le_of_decomp (add_zero (0 : 𝓐)).symm t
+  simpa using maxNorm_le_of_decomp (add_zero (0 : α)).symm t
 
-lemma maxNorm_add_le_mul (t : ℝ≥0∞) (x y : 𝓐) :
+lemma maxNorm_add_le_mul (t : ℝ≥0∞) (x y : α) :
     A₀.maxNorm A₁ t (x + y) ≤ max A₀.C A₁.C * (A₀.maxNorm A₁ t x + A₀.maxNorm A₁ t y) := by
   suffices h : ∀ x₀ x₁, x = x₀ + x₁ → ∀ y₀ y₁, y = y₀ + y₁ →
       A₀.maxNorm A₁ t (x + y) ≤ max A₀.C A₁.C * ((‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁]) + (‖y₀‖ₑ[A₀] + t * ‖y₁‖ₑ[A₁])) by
@@ -152,7 +164,8 @@ lemma maxNorm_add_le_mul (t : ℝ≥0∞) (x y : 𝓐) :
 end MaxNorm
 
 /-- The addition `A₀ + A₁` equipped with the norm `K(t,-)` -/
-def skewedAdd (A₀ A₁ : EQuasinorm 𝓐) (t : ℝ≥0∞) : EQuasinorm 𝓐 where
+@[blueprint "quasinorm-max"]
+def skewedAdd (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨maxNorm A₀ A₁ t⟩
   C := A₀.C + A₁.C -- maybe
   enorm_zero := by
@@ -170,10 +183,10 @@ lemma skewedAdd_equiv_skewedAdd (h₀ : A₀ ≈ A₀') (h₁ : A₁ ≈ A₁') 
     skewedAdd A₀ A₁ t ≈ skewedAdd A₀' A₁' t :=
   ⟨skewedAdd_mono h₀.le h₁.le, skewedAdd_mono h₀.ge h₁.ge⟩
 
-instance : Max (EQuasinorm 𝓐) :=
+instance : Max (EQuasinorm α) :=
   ⟨fun A₀ A₁ ↦ A₀.skewedAdd A₁ 1⟩
 
-instance : Add (EQuasinorm 𝓐) :=
+instance : Add (EQuasinorm α) :=
   ⟨fun A₀ A₁ ↦ A₀.skewedAdd A₁ 1⟩
 
 lemma add_mono (h₀ : A₀ ≤ A₀') (h₁ : A₁ ≤ A₁') : A₀ + A₁ ≤ A₀' + A₁' :=
@@ -199,7 +212,7 @@ lemma addNorm_le_mul (hx : ‖x‖ₑ[A₀ + A₁] < ∞) :
     maxNorm A₀ A₁ t x ≤ max 1 (t / s) * maxNorm A₀ A₁ s x := by
   sorry
 
-structure IsIntermediateSpace (A A₀ A₁ : EQuasinorm 𝓐) : Prop where
+structure IsIntermediateSpace (A A₀ A₁ : EQuasinorm α) : Prop where
   inf_le : A₀ ⊓ A₁ ≤ A
   le_add : A ≤ A₀ + A₁
 
@@ -215,18 +228,18 @@ end IsIntermediateSpace
 -- Todo: find better name?
 -- question: how do we get real interpolation with a.e.-subadditivity:
 -- probably this works if we apply it to L^p-spaces (i.e. quotients of functions)
-structure IsSubadditiveOn (T : 𝓐 → 𝓑) (A : EQuasinorm 𝓐) (B : EQuasinorm 𝓑) (C D : ℝ≥0∞) :
+structure IsSubadditiveOn (T : α → β) (A : EQuasinorm α) (B : EQuasinorm β) (C D : ℝ≥0∞) :
     Prop where
   bounded : ∀ x, ‖T x‖ₑ[B] ≤ C * ‖x‖ₑ[A]
   subadditive : ∀ x y, ‖T (x + y)‖ₑ[B] ≤ D * (‖T x‖ₑ[B] + ‖T y‖ₑ[B])
 
 -- `C = ‖T‖_{A, B}`
 -- perhaps we don't have to let `C` and `D` depend on all other parameters.
-structure AreInterpolationSpaces (A A₀ A₁ : EQuasinorm 𝓐) (B B₀ B₁ : EQuasinorm 𝓑)
+structure AreInterpolationSpaces (A A₀ A₁ : EQuasinorm α) (B B₀ B₁ : EQuasinorm β)
     (C D : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞) : Prop where
   isIntermediateSpace_fst : IsIntermediateSpace A A₀ A₁
   isIntermediateSpace_snd : IsIntermediateSpace B B₀ B₁
-  prop : ∀ C₀ D₀ C₁ D₁ (T : 𝓐 → 𝓑), IsSubadditiveOn T A₀ B₀ C₀ D₀ → IsSubadditiveOn T A₁ B₁ C₁ D₁ →
+  prop : ∀ C₀ D₀ C₁ D₁ (T : α → β), IsSubadditiveOn T A₀ B₀ C₀ D₀ → IsSubadditiveOn T A₁ B₁ C₁ D₁ →
     IsSubadditiveOn T A B (C C₀ D₀ C₁ D₁) (D C₀ D₀ C₁ D₁)
 
 /-- `T` is of exponent `θ` w.r.t. constant `E` if `C ≤ E * C₀ ^ (1 - θ) * C₁ ^ θ` -/
@@ -253,14 +266,14 @@ protected lemma equiv (hI : AreInterpolationSpaces A A₀ A₁ B B₀ B₁ C D)
 
 end AreInterpolationSpaces
 
-variable (𝓐) in
+variable (α) in
 structure Couple where
-  protected fst : EQuasinorm 𝓐
-  protected snd : EQuasinorm 𝓐
+  protected fst : EQuasinorm α
+  protected snd : EQuasinorm α
 
 namespace Couple
 
-variable (A : Couple 𝓐)
+variable (A : Couple α)
 
 abbrev J := minNorm A.fst A.snd
 
