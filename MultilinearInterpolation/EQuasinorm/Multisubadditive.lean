@@ -8,7 +8,9 @@ import MultilinearInterpolation.EQuasinorm.WithEQuasinorm
 import Carleson.ToMathlib.RealInterpolation.Misc
 import VersoBlueprint
 
-set_option verso.blueprint.autoDeps true
+/-!
+Defines {lit}`MultiSubadditiveMap`s.
+-/
 
 noncomputable section
 
@@ -23,6 +25,8 @@ We may want to define API for operations on multisubadditive maps.
 -/
 variable (α β) in
 open Function in
+/-- A map $`(∀ i, α i) → β` -/
+@[blueprint "multisubadditivemap"]
 structure MultisubadditiveMap where
   toFun : (∀ i, α i) → β
   subadditive :

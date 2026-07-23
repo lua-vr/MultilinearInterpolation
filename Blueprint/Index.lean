@@ -6,6 +6,7 @@ import VersoBlueprint.Commands.Summary
 import Blueprint.Chapters.EQuasinorm
 import Blueprint.Chapters.Janson
 import Blueprint.Chapters.KMethod
+import Blueprint.Chapters.Multisubadditive
 import Blueprint.Bibliography
 
 open Verso.Genre Manual Informal Bibliography
@@ -24,6 +25,7 @@ easier for me than the alternatives. These difficulties may be improved in the
 future.
 
 {include 0 EQuasinorm}
+{include 0 Multisubadditive}
 {include 0 KMethod}
 {include 0 Janson}
 

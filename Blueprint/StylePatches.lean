@@ -236,9 +236,56 @@ html.bp-fold-code-init details.bp_code_panel[open] > :not(summary) {
 }
 "##
 
+/--
+Show the Lean declaration name(s) in each statement block's heading pill.
+
+The heading emitted by verso-blueprint only carries the kind and number
+("Definition 2.1"); the Lean names are only present inside the adjacent
+"Lean code for ..." panel, on the rendered declarations' `data-decl`
+attributes. Since the block HTML comes from the upstream package, copy the
+names into the heading client-side on load.
+-/
+def declNamesInHeadingJs : String := r##"(function () {
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('.bp_wrapper[class*="bp_kind_"]').forEach(function (block) {
+      var panel = block.nextElementSibling;
+      if (!panel || !panel.classList.contains("bp_code_panel_wrapper")) return;
+      var row = block.querySelector(":scope > .bp_heading > .bp_heading_title_row");
+      if (!row || row.querySelector(".bp_heading_decl_name")) return;
+      var seen = {};
+      panel.querySelectorAll("[data-decl]").forEach(function (decl) {
+        var name = decl.getAttribute("data-decl");
+        if (!name || seen[name]) return;
+        seen[name] = true;
+        var span = document.createElement("span");
+        span.className = "bp_heading_decl_name";
+        span.textContent = name;
+        row.appendChild(span);
+      });
+    });
+  });
+})();
+"##
+
+def declNamesInHeadingCss : String := r##"
+.bp_heading_decl_name {
+  font-family: var(--verso-code-font-family, monospace);
+  font-size: 0.9em;
+  color: var(--bp-color-text-muted, #555);
+}
+
+.bp_heading_decl_name::before {
+  content: "·";
+  margin-right: 0.35rem;
+  font-family: var(--verso-structure-font-family, sans-serif);
+}
+"##
+
 open Verso.Output.Html in
 def manualBoxHead : Array Html := #[
   {{ <style> {{ Verso.Output.Html.text false manualBoxCss }} </style> }},
   {{ <style> {{ Verso.Output.Html.text false foldCodePanelsCss }} </style> }},
-  {{ <script> {{ Verso.Output.Html.text false foldCodePanelsJs }} </script> }}
+  {{ <script> {{ Verso.Output.Html.text false foldCodePanelsJs }} </script> }},
+  {{ <style> {{ Verso.Output.Html.text false declNamesInHeadingCss }} </style> }},
+  {{ <script> {{ Verso.Output.Html.text false declNamesInHeadingJs }} </script> }}
 ]
