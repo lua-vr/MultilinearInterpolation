@@ -76,7 +76,7 @@ def D_KMethod (θ : ℝ) (q C₀ D₀ C₁ D₁ : ℝ≥0∞) : ℝ≥0∞ := so
 def γKMethod' (θ : ℝ) (q : ℝ≥0∞) : ℝ≥0∞ := sorry
 
 /-- Part of Theorem 3.1.2 -/
-lemma addNorm_le_knorm (hx : ‖x‖ₑ[A₀ + A₁] < ∞) :
+lemma addNorm_le_knorm (hx : ‖x‖ₑ[A₀ ⊔ A₁] < ∞) :
     maxNorm A₀ A₁ t x ≤ γKMethod' θ q * t ^ θ * KNorm A₀ A₁ θ q x  := by
   sorry
 
