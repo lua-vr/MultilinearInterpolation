@@ -34,12 +34,13 @@ def functional (θ : ℝ) (q : ℝ≥0∞) (f : ℝ≥0∞ → ℝ≥0∞) : ℝ
 
 /- ‖-‖_{θ, q, K} in Section 3.1. -/
 def KNorm (A₀ A₁ : EQuasinorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
-  functional θ q (maxNorm A₀ A₁ · x)
+  functional θ q (supNorm A₀ A₁ · x)
 
 /-- The space $`K_{θ,q}(\bar{A})` in Section 3.1.
 In the book, this is defined to only be submonoid of the elements with finite norm.
 We could do that as well, but actually, since we allow for infinite norms, we can take all elements.
 -/
+@[blueprint_]
 def KMethod (A₀ A₁ : EQuasinorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm 𝓐 where
   enorm := ⟨KNorm A₀ A₁ θ q⟩
   C := sorry
@@ -77,7 +78,7 @@ def γKMethod' (θ : ℝ) (q : ℝ≥0∞) : ℝ≥0∞ := sorry
 
 /-- Part of Theorem 3.1.2 -/
 lemma addNorm_le_knorm (hx : ‖x‖ₑ[A₀ ⊔ A₁] < ∞) :
-    maxNorm A₀ A₁ t x ≤ γKMethod' θ q * t ^ θ * KNorm A₀ A₁ θ q x  := by
+    supNorm A₀ A₁ t x ≤ γKMethod' θ q * t ^ θ * KNorm A₀ A₁ θ q x  := by
   sorry
 
 -- Todo: ⊓, +, IsIntermediateSpace, AreInterpolationSpaces respect ≈
@@ -98,13 +99,13 @@ def discreteFunctional (θ : ℝ) (q : ℝ≥0∞) (f : ℤ → ℝ≥0∞) : �
 
 /-- $`‖-‖_{λ ^ {θ, q}} in` Section 3.1. -/
 def DiscreteKNorm (A₀ A₁ : EQuasinorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) (x : 𝓐) : ℝ≥0∞ :=
-  discreteFunctional θ q (fun k ↦ maxNorm A₀ A₁ (2 ^ k) x)
+  discreteFunctional θ q (fun k ↦ supNorm A₀ A₁ (2 ^ k) x)
 
 /-- The space $`K_{θ,q}(\bar{A})` in Section 3.1.
 In the book, this is defined to only be submonoid of the elements with finite norm.
 We could do that as well, but actually, since we allow for infinite norms, we can take all elements.
 -/
-@[blueprint "DiscreteKMethod"]
+@[blueprint_]
 def DiscreteKMethod (A₀ A₁ : EQuasinorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm 𝓐 where
   enorm := ⟨DiscreteKNorm A₀ A₁ θ q⟩
   C := sorry
@@ -113,7 +114,7 @@ def DiscreteKMethod (A₀ A₁ : EQuasinorm 𝓐) (θ : ℝ) (q : ℝ≥0∞) : 
   enorm_add_le_mul := sorry
 
 /- Lemma 3.1.3. -/
-@[blueprint "DiscreteKMethod_equiv_KMethod"]
+@[blueprint_]
 lemma DiscreteKMethod_equiv_KMethod : DiscreteKMethod A₀ A₁ θ q ≈ KMethod A₀ A₁ θ q := by
   sorry
 
