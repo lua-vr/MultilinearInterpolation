@@ -7,10 +7,7 @@ Authors: Floris van Doorn, Jim Potergies, Michael Rothgang, Lua Viana Reis
 import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Measure.WithDensity
-import MultilinearInterpolation.ToMathlib.Topology.UniformSpace.OfFun
 import VersoBlueprint
-
-set_option verso.blueprint.autoDeps true
 
 /-!
 Following
@@ -24,11 +21,11 @@ open ENNReal Set
 variable {α : Type*} [AddMonoid α] {β : Type*} [AddMonoid β]
 
 variable (α) in
-/-- A quasinorm on a monoid `α` is a function `α → ℝ≥0∞` and a finite constant
-`C : ℝ≥0∞` that sends `0 : α` to zero and is `C`-subadditive. -/
+/-- A quasinorm on a monoid $`α` is a function $`α → [0,∞]` and a finite constant
+$`C` that sends $`0 : α` to zero and is $`C`-subadditive. -/
 @[blueprint "equasinorm"]
 structure EQuasinorm where
-  /-- The raw `enorm` associated to the quasinorm. -/
+  /-- The raw {name}`enorm` associated to the quasinorm. -/
   protected enorm : ENorm α
   /-- The subadditivity constant. -/
   protected C : ℝ≥0∞
@@ -36,7 +33,7 @@ structure EQuasinorm where
   protected C_lt : C < ∞ := by finiteness
   /-- The enorm of zero is zero. -/
   protected enorm_zero : ‖(0 : α)‖ₑ = 0
-  /-- The quasinorm is `C`-subadditive. -/
+  /-- The quasinorm is {lit}`C`-subadditive. -/
   enorm_add_le_mul : ∀ x y : α, ‖x + y‖ₑ ≤ C * (‖x‖ₑ + ‖y‖ₑ)
 
 namespace EQuasinorm
@@ -44,10 +41,19 @@ namespace EQuasinorm
 attribute [simp] EQuasinorm.enorm_zero
 attribute [aesop (rule_sets := [finiteness]) safe] EQuasinorm.C_lt max_lt
 
--- Todo: we need a delaborator for this.
-
 set_option quotPrecheck false in
 notation "‖" e "‖ₑ[" A "]" => @enorm _ (A).enorm e
+
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Delaborate {lit}`@enorm _ A.enorm e` back to the notation {lit}`‖e‖ₑ[A]`. -/
+@[app_delab enorm]
+def delabEQuasinormEnorm : Delab := do
+  let e ← getExpr
+  guard <| e.isAppOfArity ``enorm 3
+  guard <| e.appFn!.appArg!.isAppOfArity ``EQuasinorm.enorm 3
+  let A ← withAppFn <| withAppArg <| withAppArg delab
+  let x ← withAppArg delab
+  `(‖$x‖ₑ[$A])
 
 -- todo: make constant explicit
 instance : LE (EQuasinorm α) :=
@@ -74,15 +80,6 @@ variable {A A₀ A₁ A' A₀' A₁' : EQuasinorm α} {t s : ℝ≥0∞} {x y z 
 -- variable [AddCommGroup 𝓐] in
 -- abbrev topology (A : EQuasinorm 𝓐) : UniformSpace 𝓐 :=
 --   .ofDist (fun x y ↦ ‖x - y‖ₑ[A]) dist_self dist_comm dist_triangle
-
-/-- the submonoid of finite elements -/
-def finiteElements (A : EQuasinorm α) : AddSubmonoid α where
-  carrier := { x | ‖x‖ₑ[A] < ∞ }
-  zero_mem' := by simp
-  add_mem' {x y} hx hy := by
-    calc
-      ‖x + y‖ₑ[A] ≤ A.C * (‖x‖ₑ[A] + ‖y‖ₑ[A]) := by apply enorm_add_le_mul
-      _ < ∞ := by finiteness
 
 example : ‖x + y‖ₑ[A] ≤ A.C * (‖x‖ₑ[A] + ‖y‖ₑ[A]) :=
   A.enorm_add_le_mul x y
