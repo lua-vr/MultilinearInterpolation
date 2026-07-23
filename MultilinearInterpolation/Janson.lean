@@ -10,10 +10,6 @@ import MultilinearInterpolation.KMethod
 import Carleson.ToMathlib.RealInterpolation.Misc
 import VersoBlueprint
 
-set_option verso.blueprint.autoDeps true
-
-noncomputable section
-
 /-!
 Following
  *On interpolation of multi-linear operators* by Svante Janson.
@@ -51,7 +47,7 @@ lemma knorm_le_jInfNorm (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1) (r q : ℝ≥0
 end JInfNormEquiv
 
 variable {ι : Type*} [Fintype ι] {α : ι → Type*} [∀ i, AddGroup (α i)] {β : Type*}
-  [AddGroup β] [Lattice β]
+  [AddMonoid β] [Preorder β] [Abs β]
 
 variable (T : MultisubadditiveMap α β) (A : (i : ι) → Couple (α i)) (B : Couple β)
 

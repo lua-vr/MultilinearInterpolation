@@ -13,7 +13,11 @@ open EQuasinorm
 htmlSplit := .never
 %%%
 
-See the note {ref "group-or-monoid"}[Group or Monoid].
+We work with multi-subadditive maps. Those have their definition explained in
+{bpref "multisubadditivemap"}[] below. They also have a definition of being
+bounded in {bpref "IsBoundedFor"}[].
+
+Also see the note {ref "group-or-monoid"}[Group or Monoid].
 
 {blueprint_node "multisubadditivemap"}
 

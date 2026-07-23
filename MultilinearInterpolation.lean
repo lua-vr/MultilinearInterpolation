@@ -2,9 +2,9 @@ import MultilinearInterpolation.AokiRolewicz
 import MultilinearInterpolation.ELorentz
 import MultilinearInterpolation.EQuasinorm.Basic
 import MultilinearInterpolation.EQuasinorm.ESeminorm
+import MultilinearInterpolation.EQuasinorm.FiniteLocus
 import MultilinearInterpolation.EQuasinorm.Multisubadditive
-import MultilinearInterpolation.EQuasinorm.WithEQuasinorm
 import MultilinearInterpolation.Janson
 import MultilinearInterpolation.KMethod
+import MultilinearInterpolation.Mathlib.Topology.UniformSpace.OfFun
 import MultilinearInterpolation.MultilinearLorentz
-import MultilinearInterpolation.ToMathlib.Topology.UniformSpace.OfFun
