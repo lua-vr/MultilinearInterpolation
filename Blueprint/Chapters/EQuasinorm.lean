@@ -6,7 +6,7 @@ import MultilinearInterpolation
 
 open Verso.Genre Manual Informal
 
-set_option verso.docstring.allowMissing true
+set_option verso.blueprint.foldCodeBlocks true
 
 #doc (Manual) "Extended quasinorms" =>
 %%%
@@ -14,10 +14,10 @@ htmlSplit := .never
 %%%
 
 Interpolation deals with compatible couples of spaces equipped with a
-quasinorm, which are defined as subspaces of some ambient space `α`. For this
+quasinorm, which are defined as subspaces of some ambient space $`α`. For this
 reason, we represent each subspace with a quasinorm as an extended quasinorm in
-`α`. Points that are outside of the subspace have their extended norm assigned
-to be `+∞`.
+$`α`. Points that are outside of the subspace have their extended norm assigned
+to be $`+∞`.
 
 In the previous paragraph, we have not specified what notion of "space" we are
 dealing with, and we have not specified a topology on the ambient space. For

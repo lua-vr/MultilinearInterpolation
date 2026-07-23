@@ -43,7 +43,7 @@ def fontHead : Array Html := #[
 /--
 Restyle blueprint statement blocks (theorem/lemma/definition/...) to match the
 look of the Verso manual's `.namedocs` docstring boxes: a rounded `#98B2C0`
-box with a floating kind pill at the top left and a rule above the body.
+box with the kind + number heading at the top left and a rule above the body.
 Scoped to the default "blueprint" style so the style switcher's "modern" and
 "bold" options are unaffected. Pure CSS: the emitted block HTML is unchanged.
 -/
@@ -54,7 +54,7 @@ html[data-bp-style="blueprint"] .bp_wrapper[class*="bp_kind_"] {
   border: 1px solid #98B2C0;
   border-radius: 0.5rem;
   background: var(--bp-color-surface, #fff);
-  padding: var(--verso--box-padding, 1rem) 0 0;
+  padding: 0.5rem 0 0;
   margin-top: var(--verso--box-vertical-margin, 1.5rem);
   margin-bottom: var(--verso--box-vertical-margin, 1.5rem);
   box-shadow: none;
@@ -66,36 +66,25 @@ html[data-bp-style="blueprint"] .bp_wrapper[class*="bp_kind_"]:has(+ .bp_code_pa
   margin-bottom: 0.5rem;
 }
 
-/* The kind + number becomes a floating pill, like `.namedocs .label`. */
-html:not([data-bp-style]) .bp_wrapper[class*="bp_kind_"] > .bp_heading > .bp_heading_title_row,
-html[data-bp-style="blueprint"] .bp_wrapper[class*="bp_kind_"] > .bp_heading > .bp_heading_title_row {
-  position: absolute;
-  top: -0.65rem;
-  left: 1rem;
+/* Kind and number separated by a plain word space, not the upstream 11ch
+   alignment column. */
+html:not([data-bp-style]) .bp_heading_title_row_statement,
+html[data-bp-style="blueprint"] .bp_heading_title_row_statement {
   display: inline-flex;
   align-items: baseline;
-  column-gap: 0.35rem;
-  background: var(--bp-color-surface, #fff);
-  border: 1px solid #98B2C0;
-  border-radius: 1rem;
-  padding: 0 0.5rem 0.125rem;
-  font-family: var(--verso-structure-font-family, sans-serif);
-  font-size: small;
-  font-style: normal;
-  font-weight: normal;
-  color: var(--bp-color-text-muted, #555);
+  column-gap: 0.3em;
 }
 
-html:not([data-bp-style]) .bp_wrapper[class*="bp_kind_"] > .bp_heading > .bp_heading_title_row .bp_label,
-html[data-bp-style="blueprint"] .bp_wrapper[class*="bp_kind_"] > .bp_heading > .bp_heading_title_row .bp_label {
+/* Likewise in the "Lean code for ... [number]" panel summaries, where the
+   label additionally carries the generic 0.5rem left margin. */
+html:not([data-bp-style]) .bp_code_panel summary .bp_heading_title_row,
+html[data-bp-style="blueprint"] .bp_code_panel summary .bp_heading_title_row {
+  gap: 0.3em;
+}
+
+html:not([data-bp-style]) .bp_code_panel summary .bp_code_summary_label,
+html[data-bp-style="blueprint"] .bp_code_panel summary .bp_code_summary_label {
   margin-left: 0;
-  min-width: 0;
-  text-align: left;
-}
-
-html:not([data-bp-style]) .bp_wrapper[class*="bp_kind_"] > .bp_heading > .bp_heading_title_row .bp_label::after,
-html[data-bp-style="blueprint"] .bp_wrapper[class*="bp_kind_"] > .bp_heading > .bp_heading_title_row .bp_label::after {
-  content: none;
 }
 
 /* No rule or extra gap under headings (also covers code-panel summaries). */
@@ -105,11 +94,11 @@ html[data-bp-style="blueprint"] .bp_heading {
   padding-bottom: 0;
 }
 
-/* Header strip: only the extras (uses / used-by / code badges) stay in flow. */
+/* Header strip: title at the left, extras at the right, all in flow. */
 html:not([data-bp-style]) .bp_wrapper[class*="bp_kind_"] > .bp_heading,
 html[data-bp-style="blueprint"] .bp_wrapper[class*="bp_kind_"] > .bp_heading {
   border-bottom: none;
-  padding: 0 var(--verso--box-padding, 1rem);
+  padding: 0 var(--verso--box-padding, 1rem) 0.5rem;
 }
 
 /* Body: separated by a rule, like `.namedocs .text`. */
@@ -243,16 +232,20 @@ The heading emitted by verso-blueprint only carries the kind and number
 ("Definition 2.1"); the Lean names are only present inside the adjacent
 "Lean code for ..." panel, on the rendered declarations' `data-decl`
 attributes. Since the block HTML comes from the upstream package, copy the
-names into the heading client-side on load.
+names into the heading client-side on load. The span is inserted after the
+title row (not inside it: the statement title row is a fixed two-column
+grid), so the heading's flex layout places it right of "Definition 2.1".
 -/
 def declNamesInHeadingJs : String := r##"(function () {
   document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll('.bp_wrapper[class*="bp_kind_"]').forEach(function (block) {
       var panel = block.nextElementSibling;
       if (!panel || !panel.classList.contains("bp_code_panel_wrapper")) return;
-      var row = block.querySelector(":scope > .bp_heading > .bp_heading_title_row");
-      if (!row || row.querySelector(".bp_heading_decl_name")) return;
+      var heading = block.querySelector(":scope > .bp_heading");
+      var row = heading && heading.querySelector(":scope > .bp_heading_title_row");
+      if (!row || heading.querySelector(".bp_heading_decl_name")) return;
       var seen = {};
+      var anchor = row;
       panel.querySelectorAll("[data-decl]").forEach(function (decl) {
         var name = decl.getAttribute("data-decl");
         if (!name || seen[name]) return;
@@ -260,7 +253,8 @@ def declNamesInHeadingJs : String := r##"(function () {
         var span = document.createElement("span");
         span.className = "bp_heading_decl_name";
         span.textContent = name;
-        row.appendChild(span);
+        anchor.insertAdjacentElement("afterend", span);
+        anchor = span;
       });
     });
   });
@@ -270,14 +264,9 @@ def declNamesInHeadingJs : String := r##"(function () {
 def declNamesInHeadingCss : String := r##"
 .bp_heading_decl_name {
   font-family: var(--verso-code-font-family, monospace);
-  font-size: 0.9em;
+  font-size: 0.85em;
+  font-weight: normal;
   color: var(--bp-color-text-muted, #555);
-}
-
-.bp_heading_decl_name::before {
-  content: "·";
-  margin-right: 0.35rem;
-  font-family: var(--verso-structure-font-family, sans-serif);
 }
 "##
 
