@@ -18,7 +18,7 @@ open Blueprint.Chapters
 {include 0 EQuasinorm}
 {include 0 Multisubadditive}
 {include 0 KMethod}
-{include 0 Janson}
+{includeBlueprintModule MultilinearInterpolation.Janson (title := "Interpolation of multi-linear operators")}
 
 # Notes
 %%%

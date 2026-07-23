@@ -1,10 +1,11 @@
 /-
-Copyright (c) 2025 Floris van Doorn. All rights reserved.
+Copyright (c) 2026 Lua Viana Reis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Jim Potergies, Michael Rothgang, Lua Viana Reis
+Authors: Lua Viana Reis
 -/
 
 import MultilinearInterpolation.EQuasinorm.Basic
+import Blueprint.BlueprintAttr
 
 /-!
 Following
@@ -19,7 +20,9 @@ variable {α : Type*} [AddMonoid α] {β : Type*} [AddMonoid β]
 
 /- This is `ESeminormedAddMonoid` as a structure but we don't fix a topology on 𝓐. -/
 variable (α) in
+@[blueprint_]
 structure ESeminorm extends EQuasinorm α where
+  /-- The constant $`C` equals 1. -/
   protected C_eq_one : C = 1
   protected C := 1
 
@@ -35,13 +38,13 @@ attribute [simp] ESeminorm.C_eq_one
 lemma enorm_add_le : ∀ x y, ‖x + y‖ₑ[A] ≤ ‖x‖ₑ[A] + ‖y‖ₑ[A] := by
   simpa using A.enorm_add_le_mul
 
-/-- The minimum `A₀ ⊓ A₁` equipped with the norm `J(t,-)` -/
-def skewedMin (A₀ A₁ : ESeminorm α) (t : ℝ≥0∞) : ESeminorm α where
-  __ := A₀.toEQuasinorm.skewedMin A₁ t
+/-- The minimum $`A₀ ⊓ A₁` equipped with the norm $`J(t,-)` -/
+def skewedInf (A₀ A₁ : ESeminorm α) (t : ℝ≥0∞) : ESeminorm α where
+  __ := A₀.toEQuasinorm.skewedInf A₁ t
   C_eq_one := by simp
 
 instance : Min (ESeminorm α) :=
-  ⟨fun A₀ A₁ ↦ A₀.skewedMin A₁ 1⟩
+  ⟨fun A₀ A₁ ↦ A₀.skewedInf A₁ 1⟩
 
 variable (α) in
 structure Couple extends EQuasinorm.Couple α where

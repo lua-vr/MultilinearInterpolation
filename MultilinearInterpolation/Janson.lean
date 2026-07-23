@@ -8,7 +8,7 @@ import MultilinearInterpolation.EQuasinorm.Multisubadditive
 import MultilinearInterpolation.EQuasinorm.ESeminorm
 import MultilinearInterpolation.KMethod
 import Carleson.ToMathlib.RealInterpolation.Misc
-import VersoBlueprint
+import Blueprint.BlueprintAttr
 
 /-!
 Following
@@ -31,7 +31,7 @@ variable (A : Couple α)
 namely in Theorem 2. So instead of constructing a QuasiENorm for `jInfNorm` and
 stating equivalence, it should be enough to prove the bound directly. -/
 
-@[blueprint "jInfNorm"]
+@[blueprint_]
 def jInfNorm (θ : ℝ) (r q : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
   ⨅ (N : ℕ) (a : Fin (2 * N) → α) (_ : ∑ n, a n = x),
     eLpNorm (fun k : Fin (2 * N) ↦
@@ -39,7 +39,7 @@ def jInfNorm (θ : ℝ) (r q : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
       r ^ (-θ * n) * A.J (r ^ n) (a k)) q Measure.count
 
 /-- Lemma 1. -/
-@[blueprint "knorm_le_jInfNorm"]
+@[blueprint_]
 lemma knorm_le_jInfNorm (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1) (r q : ℝ≥0∞) (hr : 0 < r ∧ r ≠ 1 ∧ r < ⊤) :
     ∃ (C : ℝ≥0∞), C ≠ ⊤ ∧ ∀ x, A.knorm θ q x ≤ C * jInfNorm A θ r q x :=
   sorry
@@ -66,7 +66,7 @@ def Ω : Set (ι → ℝ) :=
 section Theorem1
 
 /-- Lemma 2, part 1. -/
-@[blueprint "mem_Ω_iff"]
+@[blueprint_]
 lemma mem_Ω_iff : ∀ θ, θ ∈ Ω T A B cα₀ cα ↔
     let θ₀ := cα₀ + ∑ i, cα i
     ∃ C : ℝ≥0∞, C ≠ ⊤ ∧
@@ -75,6 +75,7 @@ lemma mem_Ω_iff : ∀ θ, θ ∈ Ω T A B cα₀ cα ↔
   sorry
 
 /-- Lemma 2, part 2. -/
+@[blueprint_]
 lemma knorm_of_mem_Ω : ∀ θ, θ ∈ Ω T A B cα₀ cα →
     let θ₀ := cα₀ + ∑ i, cα i
     ∃ C : ℝ≥0∞, C ≠ ⊤ ∧
@@ -84,7 +85,7 @@ lemma knorm_of_mem_Ω : ∀ θ, θ ∈ Ω T A B cα₀ cα →
   sorry
 
 /-- Theorem 1. -/
-@[blueprint "convex_Ω"
+@[blueprint_
   (proofUses := [mem_Ω_iff])]
 theorem convex_Ω : Convex ℝ (Ω T A B cα₀ cα) := sorry
 
@@ -94,7 +95,7 @@ end Theorem1
 section Theorem2
 
 /-- Docstring. -/
-@[blueprint "isBoundedOn_of_mem_interior_Ω"
+@[blueprint_
   (proofUses := [knorm_le_jInfNorm, EQuasinorm.DiscreteKMethod_equiv_KMethod])]
 theorem isBoundedOn_of_mem_interior_Ω (θ) (hθ : θ ∈ interior (Ω T A B cα₀ cα)) :
     let θ₀ := cα₀ + ∑ i, cα i

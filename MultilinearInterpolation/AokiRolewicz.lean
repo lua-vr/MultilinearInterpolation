@@ -22,6 +22,18 @@ open scoped NNReal ENNReal
 
 variable [AddCommMonoid α] (A : EQuasinorm α) (p : ℝ)
 
+namespace EQuasinorm
+
+@[blueprint_]
+def pow (A : EQuasinorm α) (p : ℝ) : EQuasinorm α where
+  enorm := ⟨fun x ↦ ‖x‖ₑ[A] ^ p⟩
+  C := sorry
+  C_lt := sorry
+  enorm_zero := sorry
+  enorm_add_le_mul x y := sorry
+
+end EQuasinorm
+
 def EQuasinorm.aokiRolewiczSeminorm : ESeminorm α where
   enorm := ⟨ fun a ↦ ⨅ (n : ℕ) (a' : Fin n → α) (h : ∑ i, a' i = a), ∑ j, ‖a' j‖ₑ[A] ^ p ⟩
   enorm_zero := sorry
