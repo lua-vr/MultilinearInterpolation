@@ -7,10 +7,14 @@ Authors: Lua Viana Reis
 import MultilinearInterpolation.EQuasinorm.WithEQuasinorm
 import Carleson.ToMathlib.RealInterpolation.Misc
 import VersoBlueprint
+import Verso
+import VersoManual
 
 /-!
 Defines {lit}`MultiSubadditiveMap`s.
 -/
+
+open Verso.Genre Manual Informal InlineLean
 
 noncomputable section
 
@@ -25,7 +29,13 @@ We may want to define API for operations on multisubadditive maps.
 -/
 variable (α β) in
 open Function in
-/-- A map $`(∀ i, α i) → β` -/
+/-- A map $`f \colon ∏_i  α_i → β` that is subadditive in the sense that forall $`i \in ι`,
+$$`|f(a_1, \dots, a_i + b_i, \dots, a_k)| ≤
+|f(a_1, \dots, a_i, \dots, a_k)| + |f(a_1, \dots, b_i, \dots, a_k)|.`
+
+For a function-valued $`f`, this should be the pointwise absolute value, not
+the norm of the function, and the inequality above lives in $`β`. To make sense
+of $`|·|`, we assume $`β` is a lattice and an additive group. -/
 @[blueprint "multisubadditivemap"]
 structure MultisubadditiveMap where
   toFun : (∀ i, α i) → β
@@ -42,6 +52,7 @@ instance : FunLike (MultisubadditiveMap α β) (∀ i, α i) β where
 variable (T : MultisubadditiveMap α β) (A : (i : ι) → EQuasinorm (α i)) (B : EQuasinorm β)
   (C : ℝ≥0∞)
 
+@[blueprint "IsBoundedFor"]
 def IsBoundedFor : Prop :=
   C ≠ ⊤ ∧ ∀ x, ‖T x‖ₑ[B] ≤ C * ∏ i, ‖x i‖ₑ[A i]
 
