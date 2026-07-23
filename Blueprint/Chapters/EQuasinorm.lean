@@ -1,6 +1,7 @@
 import Verso
 import VersoManual
 import VersoBlueprint
+import Blueprint.Commands
 
 import MultilinearInterpolation
 
@@ -37,8 +38,4 @@ bounded for the space which has the desired properties. Showing that the
 interpolation spaces satisfy more properties depending on the properties of the
 starting couple may also be done in a separate step later.
 
-{blueprint_node "equasinorm"}
-
-{blueprint_node "quasinorm-k"}
-
-{blueprint_node "quasinorm-max"}
+{blueprint_nodes_in EQuasinorm}

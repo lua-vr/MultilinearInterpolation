@@ -35,7 +35,7 @@
    "type": "git",
    "subDir": null,
    "scope": "",
-   "rev": "f76804782366197793a8634fe3c2fa2165caf9fe",
+   "rev": "e67fefccce215a47890383979f68949c29fd91a8",
    "name": "«verso-blueprint»",
    "manifestFile": "lake-manifest.json",
    "inputRev": "feat/attribute-first-authoring",
