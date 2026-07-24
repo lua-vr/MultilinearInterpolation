@@ -135,6 +135,13 @@ html[data-bp-style="blueprint"] .bp_wrapper.bp_code_panel_wrapper {
     var(--bp-box-border-color, var(--bp-color-border-soft));
 }
 
+/* Upright statement text: upstream italicizes the body of "plain"-style
+   blocks (theorem, lemma, proposition, ...). */
+.bp_wrapper.bp_style_plain .bp_content,
+div.theorem-style-plain div[class$="_thmcontent"] {
+  font-style: normal;
+}
+
 /* ---- Flatten the verso-blueprint chrome: no gradients, no drop shadows. ----
    Functional box-shadow rings (focus outlines, :target highlights) are kept. */
 
