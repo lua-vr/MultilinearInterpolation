@@ -5,10 +5,7 @@ Authors: Lua Viana Reis
 -/
 
 import MultilinearInterpolation.KMethod
-import VersoBlueprint
 import Carleson.ToMathlib.MeasureTheory.Function.LorentzSpace.Basic
-
-set_option verso.blueprint.autoDeps true
 
 /-!
  Defines `eLorentzNorm` as a `QuasiENorm`, then shows it is an interpolation
@@ -34,6 +31,7 @@ lemma LorentzAddConst_pos {p q} : LorentzAddConst p q ≠ 0 := sorry
 
 open Classical in
 variable (β) in
+@[blueprint_]
 def eLorentz (p q : ℝ≥0∞) : EQuasinorm (α → β) where
   enorm := ⟨fun f ↦ if AEStronglyMeasurable f μ then eLorentzNorm f p q μ else ∞⟩
   C := LorentzAddConst p q
@@ -54,10 +52,18 @@ section Interpolation
 variable [ESeminormedAddMonoid β] [ContinuousAdd β]
 
 variable (β) in
+@[blueprint_]
 def eLorentzCouple (p₀ p₁ q₀ q₁ : ℝ≥0∞) : Couple (α → β) :=
   ⟨eLorentz μ β p₀ q₀, eLorentz μ β p₁ q₁⟩
 
-/-- BL Theorem 5.3.1. -/
+/-- For a Banach couple $`A = (A_0,A_1)` given by two Lorentz spaces
+$`A_0 = L_{p_0,q_0}` and $`A_1 = L_{p_1,q_1}` where $`p_0,p_1,q_0,q_1 \in (0,\infty]`,
+then for all $`0 < \theta < 1` and $`q \in (0,\infty]`, the real interpolation space
+$`(A)_{\theta,q}` is the Lorentz space $`L_{p,q}` where
+$`p^{-1} = (1 - \theta) p_0^{-1} + \theta p_1^{-1}` when $`p_0 \neq p_1`, and the same is true
+for $`p_0 = p_1` provided that $`q^{-1} = (1 - \theta) q_0^{-1} + \theta q_1^{-1}`.
+-/
+@[blueprint_]
 theorem eLorentz_equiv_kMethod_of_neq (p₀ q₀ p₁ q₁ q p : ℝ≥0∞) (hp₀₁ : p₀ ≠ p₁) (t : ℝ≥0)
     (hpos : 0 < p₀ ∧ 0 < p₁ ∧ 0 < q₀ ∧ 0 < q₁ ∧ 0 < q) (hp : p⁻¹ = (1 - t) / p₀ + t / p₁) :
     eLorentz μ β p q ≈ (eLorentzCouple μ β p₀ q₀ p₁ q₁).kmethod t q :=

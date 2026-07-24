@@ -73,6 +73,15 @@ instance : Preorder (EQuasinorm α) where
 -- the equivalence relation stating that two norms are equivalent
 instance : Setoid (EQuasinorm α) := AntisymmRel.setoid _ (· ≤ ·)
 
+/-- The quasinorm raised to a power $`p`, as a quasinorm. -/
+@[blueprint_]
+def pow (A : EQuasinorm α) (p : ℝ) : EQuasinorm α where
+  enorm := ⟨fun x ↦ ‖x‖ₑ[A] ^ p⟩
+  C := sorry
+  C_lt := sorry
+  enorm_zero := sorry
+  enorm_add_le_mul x y := sorry
+
 -- Feel free to assume `θ ∈ Icc 0 1`, `1 ≤ q` and `q < ∞ → θ ∈ Ioo 0 1` whenever needed
 variable {A A₀ A₁ A' A₀' A₁' : EQuasinorm α} {t s : ℝ≥0∞} {x y z : α} {θ : ℝ} {q : ℝ≥0∞}
   {B B₀ B₁ B' B₀' B₁' : EQuasinorm β} {C D : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞}
@@ -100,6 +109,8 @@ def skewedInf (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
           gcongr
           exact max_add_add_le_max_add_max
 
+/-- The minimum $`A₀ ⊓ A₁`, with norm $`J(t,1)`. -/
+@[blueprint_]
 instance : Min (EQuasinorm α) :=
   ⟨fun A₀ A₁ ↦ A₀.skewedInf A₁ 1⟩
 
@@ -246,8 +257,12 @@ protected lemma equiv (hI : AreInterpolationSpaces A A₀ A₁ B B₀ B₁ C D)
 end AreInterpolationSpaces
 
 variable (α) in
+/-- A couple of two {name}`EQuasinorm`s on the same {name}`AddMonoid`. -/
+@[blueprint_]
 structure Couple where
+  /-- The first quasinorm. -/
   protected fst : EQuasinorm α
+  /-- The second quasinorm. -/
   protected snd : EQuasinorm α
 
 namespace Couple

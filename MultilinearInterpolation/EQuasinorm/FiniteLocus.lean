@@ -41,10 +41,6 @@ noncomputable section Topology
 variable {α : Type*} [AddGroup α] {A : EQuasinorm α}
 
 -- instance : AddGroup (WithEQuasinorm α A) := inferInstanceAs (AddGroup α)
-
-/- FIXME: here we want the group structure to be compatible in that ‖- x‖ = ‖x‖.
-Otherwise there is no uniform structure. -/
-
 -- instance : UniformSpace (WithEQuasinorm α A) :=
 --   .ofEdist A.C A.C_lt.ne (fun x y ↦ ‖x - y‖ₑ) (by simp)
 --     sorry
