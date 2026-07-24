@@ -181,6 +181,6 @@
    "inputRev": "main",
    "inherited": true,
    "configFile": "lakefile.lean"}],
- "name": "«multilinear-interpolation»",
+ "name": "MultilinearInterpolation",
  "lakeDir": ".lake",
  "fixedToolchain": false}
