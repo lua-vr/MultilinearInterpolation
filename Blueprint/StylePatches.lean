@@ -196,6 +196,29 @@ html[data-bp-style="bold"] .bp_wrapper {
   background: var(--bp-color-surface);
   box-shadow: none;
 }
+
+/* Hide the bottom-left "Style" switcher (blueprint/modern/bold). Its script
+   still runs and still sets `data-bp-style` on <html>, so the saved/default
+   style keeps applying; only the control is gone. */
+#bp-style-switcher {
+  display: none;
+}
+
+/* Drop the declaration's own docstring inside the "Lean code for ..." panels:
+   it repeats what the blueprint statement above it already says. Docstrings in
+   hover tooltips and in structure-field subdocs are untouched.
+   Both element names are needed: Verso emits `pre.docstring` and its loader
+   script replaces it with a marked-rendered `div.docstring`. */
+.bp_code_panel .bp_external_decl_rendered .bp_external_decl_body > pre.docstring,
+.bp_code_panel .bp_external_decl_rendered .bp_external_decl_body > div.docstring {
+  display: none;
+}
+
+/* ... and don't leave the padding of a body that held nothing else. */
+.bp_code_panel .bp_external_decl_rendered
+  .bp_external_decl_body:not(:has(> :not(pre.docstring, div.docstring))) {
+  padding: 0;
+}
 "##
 
 /--
