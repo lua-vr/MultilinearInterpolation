@@ -18,9 +18,9 @@ htmlSplit := .never
 Broadly speaking, we want to formalize a version of interpolation for {bpref "MultisubadditiveMap"}[multisubadditive]
 operators that starts with a set of points where the operator is known to have restricted weak type,
 and concludes that it has strong type in the interior of the convex hull of the points. For that,
-we use abstract $`K`-theory and the results in {citet janson}[] to get a stronger result stated
+we use abstract $`K`-theory and the results in {citet janson}[] to get a general result stated
 in terms of abstract interpolation spaces, and then use isomorphisms between the abstract
-interpolation spaces and Lorentz spaces to transport those results to Lorentz spaces.
+interpolation spaces and Lorentz spaces to transport that result to Lorentz spaces.
 
 More concretely, fix a finite index set $`ι`, a {bpref "MultisubadditiveMap"}[multisubadditive]
 operator $`T`, {bpref "EQuasinorm.Couple"}[couples] of {bpref "EQuasinorm"}[quasinorms] $`A_i` for
