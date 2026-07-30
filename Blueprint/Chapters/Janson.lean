@@ -8,4 +8,4 @@ open Verso.Genre
 open Verso.Genre.Manual
 open Informal
 
-#doc (Manual) "On interpolation of multi-linear operators" =>
+#doc (Manual) "Janson" =>

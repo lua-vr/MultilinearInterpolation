@@ -1,0 +1,375 @@
+{
+    "layoutSaver.layout": {
+        "layout": {
+            "orientation": 0,
+            "groups": [
+                {
+                    "size": 639
+                },
+                {
+                    "size": 583,
+                    "groups": [
+                        {
+                            "size": 552
+                        },
+                        {
+                            "size": 552
+                        }
+                    ]
+                }
+            ]
+        },
+        "documents": [
+            {
+                "relativePath": "lakefile.toml",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".github/workflows/lean_action_ci.yml",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "Blueprint/Chapters/Multisubadditive.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "Blueprint/Chapters/KMethod.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "BlueprintMain.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "Blueprint/StylePatches.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "Blueprint/Index.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "Blueprint/Chapters/Overview.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "Blueprint/Chapters/AokiRolewicz.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Topology/UniformSpace/Defs.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "Blueprint/Chapters/EQuasinorm.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "lean-toolchain",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Analysis/Normed/Ring/Basic.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Analysis/Normed/Lp/WithLp.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Analysis/Normed/Lp/PiLp.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Analysis/Normed/Group/Basic.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "/home/lua/.elan/toolchains/leanprover--lean4---v4.31.0/src/lean/Init/Data/Subtype/Order.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "MultilinearInterpolation/EQuasinorm/Basic.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "Blueprint/BlueprintAttr.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "Blueprint/Commands.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "MultilinearInterpolation/EQuasinorm/ESeminorm.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "MultilinearInterpolation/EQuasinorm/FiniteLocus.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "MultilinearInterpolation/Mathlib/Topology/UniformSpace/OfFun.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/MeasureTheory/Function/LpSpace/Basic.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Analysis/Normed/Lp/ProdLp.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "README.md",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Topology/MetricSpace/Pseudo/Defs.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Topology/UniformSpace/OfFun.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Topology/MetricSpace/Defs.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Data/ENat/Lattice.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Data/ENNReal/Operations.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Order/CompleteLattice/Group.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Algebra/Order/Group/Lattice.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "/home/lua/.elan/toolchains/leanprover--lean4---v4.31.0/src/lean/Init/Coe.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "MultilinearInterpolation/AokiRolewicz.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Order/SetNotation.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Analysis/Normed/Group/Defs.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Analysis/Normed/Module/Normalize.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Analysis/Normed/MulAction.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Algebra/Order/Hom/Basic.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/LinearAlgebra/Multilinear/Basic.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "MultilinearInterpolation/Janson.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "Blueprint/Chapters/Janson.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/verso/src/verso-manual/VersoManual/Bibliography.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/verso-blueprint/src/VersoBlueprint/Cite.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "MultilinearInterpolation/KMethod.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/verso-blueprint/src/VersoBlueprint/ExternalDeclRender.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "MultilinearInterpolation/EQuasinorm/Multisubadditive.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Data/ENNReal/BigOperators.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Topology/EMetricSpace/Lipschitz.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Order/Minimal.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Algebra/Order/Group/Unbundled/Abs.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/MeasureTheory/Function/AEEqFun.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "MultilinearInterpolation/MultilinearLorentz.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "MultilinearInterpolation/ELorentz.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Analysis/Normed/Module/TransferInstance.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Logic/Equiv/Defs.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "/home/lua/.elan/toolchains/leanprover--lean4---v4.31.0/src/lean/Init/Core.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/MeasureTheory/Function/StronglyMeasurable/AEStronglyMeasurable.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/mathlib/Mathlib/Data/FunLike/Basic.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".gitignore",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "MultilinearInterpolation.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/verso-blueprint/src/VersoBlueprint/PreviewManifest.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": ".lake/packages/verso/src/verso-manual/VersoManual.lean",
+                "column": 1,
+                "pinned": false
+            },
+            {
+                "relativePath": "MultilinearInterpolation/Janson.lean",
+                "column": 2,
+                "pinned": false
+            },
+            {
+                "relativePath": "MultilinearInterpolation/EQuasinorm/Basic.lean",
+                "column": 2,
+                "pinned": false
+            },
+            {
+                "relativePath": "Blueprint/Chapters/Multisubadditive.lean",
+                "column": 2,
+                "pinned": false
+            },
+            {
+                "relativePath": "MultilinearInterpolation/EQuasinorm/Multisubadditive.lean",
+                "column": 2,
+                "pinned": false
+            },
+            {
+                "relativePath": "MultilinearInterpolation/ELorentz.lean",
+                "column": 2,
+                "pinned": false
+            },
+            {
+                "relativePath": "Blueprint/Index.lean",
+                "column": 2,
+                "pinned": false
+            }
+        ]
+    }
+}

@@ -95,6 +95,44 @@ meta def graftSelectedNodes (opts : NodeRenderOptions)
 
 end Blueprint
 
+namespace Blueprint
+
+-- Inline note: its contents are rendered in red.
+inline_extension Inline.note where
+  usePackages := ["xcolor"]
+  traverse _id _data _contents := pure none
+  toTeX :=
+    open Verso.Output.TeX in
+    some <| fun go _id _data content => do
+      let content ← content.mapM go
+      pure <| .seq (#[.raw "\\textcolor{red}{"] ++ content ++ #[.raw "}"])
+  toHtml :=
+    open Verso.Output.Html in
+    some <| fun go _id _data content => do
+      pure {{ <span class="bp_note">{{← content.mapM go}}</span> }}
+  extraCss := [
+    r#"
+.bp_note {
+  color: var(--bp-note-color, #c62828);
+}
+
+.bp_note::before {
+  content: "note: ";
+}
+"#
+  ]
+
+end Blueprint
+
+open Blueprint in
+/--
+Inline note rendered in red: {lit}`{note}[needs a better bound]`.
+-/
+@[role]
+meta def note : RoleExpanderOf Unit
+  | (), contents => do
+    ``(Verso.Doc.Inline.other Inline.note #[$[$(← contents.mapM elabInline)],*])
+
 open Blueprint in
 /--
 Render every Blueprint node whose label starts with the given prefix, in

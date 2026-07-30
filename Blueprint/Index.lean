@@ -19,11 +19,7 @@ open Blueprint.Chapters
 
 The main goal of this blueprint is to make the formalization understandable by contributors and
 interested readers. In particular, it is meant to give an overview of the whole proof while also
-explaining particular choices made during the formalization. It is meant as a place for contributors
-to record those choices.
-
-It aims to not contain LLM-generated text, or at least LLM-generated text lacking accountability. By
-submitting text, you agree to consider it to be your own words.
+explaining particular choices made during the formalization.
 
 {include 0 Overview}
 {include 0 EQuasinorm}
