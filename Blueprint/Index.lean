@@ -30,7 +30,7 @@ It aims to not contain LLM-generated text.
 {include 0 KMethod}
 {includeBlueprintModule MultilinearInterpolation.Janson (title := "Interpolation of multi-linear operators")}
 
-# Notes and TODOs
+# Notes
 %%%
 htmlSplit := .never
 %%%
@@ -59,15 +59,18 @@ results in `ELorentz`, because they depend on the class `ESeminormedAddMonoid`.
 `verso-blueprint` is developed using LLMs and despite working well in some aspects, does not as I
 would like in others. The web style of its components is not very formal and it does not emit proper
 $`\LaTeX` for the theorems and similar constructs. I chose to make some patches to its style in the
-module `Blueprint.StylePatches`, and I used an LLM to fight those issues introduced by some LLM.
+module `Blueprint.StylePatches`, and I used an LLM to fight those issues introduced by some LLM. I
+don't know if those patches introduce other problems.
 
 Despite that, it seemed to be the easiest option to integrate with the project
 and it has the benefit of being written in Lean, so hacking it is easier for me
 than the alternatives.
 
 Some feature requests:
+- Add a place to write informal proofs or informal comments about the proofs other than the
+  theorem statements.
 - Add a `details` spoiler in definitions and proofs showing the bodies of the declarations
-   (preferably with the Verso hovers :).
+   (preferably with the Verso hovers 🙂).
 
 {blueprint_bibliography}
 {blueprint_graph}
