@@ -17,18 +17,20 @@ open Blueprint.Chapters
 
 #doc (Manual) "Multilinear interpolation" =>
 
-The main goal of this blueprint is to make the formalization understandable by both contributors and
+The main goal of this blueprint is to make the formalization understandable by contributors and
 interested readers. In particular, it is meant to give an overview of the whole proof while also
-explaining particular choices made during the formalization.
+explaining particular choices made during the formalization. It is meant as a place for contributors
+to record those choices.
 
-It aims to not contain LLM-generated text.
+It aims to not contain LLM-generated text, or at least LLM-generated text lacking accountability. By
+submitting text, you agree to consider it to be your own words.
 
 {include 0 Overview}
 {include 0 EQuasinorm}
 {include 0 Multisubadditive}
-{includeBlueprintModule MultilinearInterpolation.AokiRolewicz}
 {include 0 KMethod}
 {includeBlueprintModule MultilinearInterpolation.Janson (title := "Interpolation of multi-linear operators")}
+{includeBlueprintModule MultilinearInterpolation.AokiRolewicz (title := "The Aoki-Rolewicz theorem")}
 
 # Notes
 %%%
