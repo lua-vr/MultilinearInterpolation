@@ -12,7 +12,7 @@ weak.doc.verso = true
 [[require]]
 name = "verso-blueprint"
 git = "https://github.com/leanprover/verso-blueprint"
-rev = "feat/attribute-first-authoring"
+rev = "feat/backport-v432-attribute-first-authoring"
 
 [[require]]
 name = "carleson"

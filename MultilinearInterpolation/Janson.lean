@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Lua Viana Reis. All rights reserved.
+Copyright (c) 2026 Lua Viana Reis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis
 -/
@@ -44,7 +44,7 @@ def jInfNorm (θ : ℝ) (r q : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
 /-- Lemma 1. -/
 @[blueprint_]
 lemma knorm_le_jInfNorm (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1) (r q : ℝ≥0∞) (hr : 0 < r ∧ r ≠ 1 ∧ r < ⊤) :
-    ∃ (C : ℝ≥0∞), C < ∞ ∧ ∀ x, A.knorm θ q x ≤ C * jInfNorm A θ r q x :=
+    ∃ (C : ℝ≥0∞), C < ∞ ∧ ∀ x, ‖x‖ₑ[A.kmethod θ q] ≤ C * jInfNorm A θ r q x :=
   sorry
 
 end JInfNormEquiv
@@ -82,7 +82,7 @@ section Theorem1
 lemma mem_Ω_iff : ∀ θ, θ ∈ Ω T A B cα₀ cα ↔
     let θ₀ := cα₀ + ∑ i, cα i
     ∃ C : ℝ≥0∞, C < ∞ ∧
-    ∀ (a : (i : ι) → α i), B.knorm θ₀ ⊤ (T a) ≤
+    ∀ (a : (i : ι) → α i), ‖T a‖ₑ[B.kmethod θ₀ ∞]  ≤
     C * ∏ i, ‖a i‖ₑ[(A i).fst] ^ (1 - θ i : ℝ) * ‖a i‖ₑ[(A i).snd] ^ (θ i : ℝ) := by
   sorry
 
@@ -114,7 +114,7 @@ exponents with $`q_0^{-1} \le \sum_i q_i^{-1}`.
 This is stronger than mere membership in $`Ω`, where the $`q_i,q_0` are under an existential.
 -/
 @[blueprint_
-  (proofUses := [knorm_le_jInfNorm, EQuasinorm.DiscreteKMethod_equiv_KMethod])]
+  (proofUses := [knorm_le_jInfNorm, EQuasinorm.KMethod.discreteKMethod_equiv_kmethod])]
 theorem isBoundedOn_of_mem_interior_Ω (θ) (hθ : θ ∈ interior (Ω T A B cα₀ cα)) :
     let θ₀ := cα₀ + ∑ i, cα i
     ∀ (q₀ : ℝ≥0∞) (q : ι → ℝ≥0∞) (hq : q₀⁻¹ ≤ ∑ i, (q i)⁻¹),

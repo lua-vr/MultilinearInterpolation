@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Lua Viana Reis. All rights reserved.
+Copyright (c) 2026 Lua Viana Reis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis
 -/
@@ -11,7 +11,7 @@ import Verso
 import VersoManual
 
 /-!
-Defines {lit}`MultiSubadditiveMap`s.
+# Definition of {lit}`MultiSubadditiveMap`s.
 -/
 
 open Verso.Genre Manual Informal InlineLean
@@ -77,7 +77,7 @@ class SolidAbs (B : EQuasinorm β) : Prop where
   lt_top_iff {x : β} : ‖x‖ₑ[B] < ∞ ↔ ‖|x|ₑ‖ₑ[B] < ∞
   solid {x y : β} : |x|ₑ ≤ |y|ₑ → ‖x‖ₑ[B] ≤ ‖y‖ₑ[B]
 
-instance (B : EQuasinorm β) [SolidAbs B] : Abs B.finiteLocus :=
+instance (B : EQuasinorm β) [SolidAbs B] : Abs B.FiniteLocus :=
   ⟨fun x ↦ ⟨|x.val|ₑ, SolidAbs.lt_top_iff.mp x.prop⟩⟩
 
 namespace IsBoundedFor
@@ -85,7 +85,7 @@ namespace IsBoundedFor
 variable [SolidAbs B] (C : ℝ≥0∞) (hT : T.IsBoundedFor A B C)
 
 include hT in
-def toFiniteLocus : MultisubadditiveMap (fun i ↦ (A i).finiteLocus) B.finiteLocus where
+def toFiniteLocus : MultisubadditiveMap (fun i ↦ (A i).FiniteLocus) B.FiniteLocus where
   toFun x := by
     use T (x · |>.val)
     apply hT.right (x · |>.val) |>.trans_lt
@@ -93,10 +93,6 @@ def toFiniteLocus : MultisubadditiveMap (fun i ↦ (A i).finiteLocus) B.finiteLo
     intro i _
     exact (x i).prop
   subadditive := sorry
-
--- lemma uniformContinuous (hT₂ : ContinuousAt hT.toFiniteLocus 0) :
---     UniformContinuous hT.toFiniteLocus :=
---   sorry
 
 end IsBoundedFor
 

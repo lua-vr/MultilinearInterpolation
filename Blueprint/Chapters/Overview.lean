@@ -109,6 +109,12 @@ any point in the interior of $`\Omega`, as long as $`p_0⁻¹ ≤ ∑_i p_i⁻¹
 
 # Dealing with quasinorms
 
-# Extending from the intersection
+The argument in {citet janson}[] uses {bpref "ESeminorm"}[seminorms], which are the special case of
+quasinorms when the constant $`C = 1`. It's a theorem that every $`C`-quasinorm is equivalent to a
+seminorm raised to the power $`p` such that $`(2 C) ^ p = 2`.
 
-I am choosing not to write this section now, because I am not sure of its necessity.
+{blueprint_node "aokiRolewicz_pow_equiv_self"}
+
+
+
+# Extending from the intersection to the closure

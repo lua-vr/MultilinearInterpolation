@@ -9,6 +9,8 @@ public import Mathlib.Topology.UniformSpace.Defs
 public import Mathlib.Data.ENNReal.Lemmas
 public import Mathlib.Data.ENNReal.Inv
 
+/-! # A more general `UniformSpace.ofFun`. -/
+
 @[expose] public section
 
 open Filter Set
@@ -47,7 +49,6 @@ def ofEdist (C : ℝ≥0∞) (hC : C ≠ ⊤) (d : X → X → ℝ≥0∞) (refl
     (symm : ∀ x y, d x y = d y x)
     (quasi : ∀ x y z, d x z ≤ C * (d x y + d y z)) : UniformSpace X :=
   .ofFun' d refl symm fun ε hε ↦ by
-    /- llm-filled, unreviewed proof. -/
     refine ⟨ε / (2 * (C + 1)),
       ENNReal.div_pos hε.ne' (fun h => absurd h (by finiteness)), fun x y z h₁ h₂ => ?_⟩
     calc d x z ≤ C * (d x y + d y z) := quasi x y z
