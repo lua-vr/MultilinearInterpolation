@@ -16,13 +16,13 @@ noncomputable section
 open Set MeasureTheory EQuasinorm
 open scoped ENNReal NNReal
 
-variable {α β : Type*} [AddMonoid α] [AddMonoid β]
-  {A₀ A₁ : EQuasinorm α} {t s : ℝ≥0∞} {x y z : α} {θ : ℝ} {q : ℝ≥0∞}
+variable {α β : Type*} [AddMonoid α] {A₀ A₁ : EQuasinorm α}
+  {t s : ℝ≥0∞} {x y z : α} {θ : ℝ} {q : ℝ≥0∞}
 
 namespace EQuasinorm
 
 /-- The functional
-$$`Φ_{θ,q}(φ(t)) = ( ∫_0^∞ (t^{-θ} φ(t))^q dt/t )^{1/q}`.
+$$`Φ_{θ,q}(φ(t)) = \left( ∫_0^∞ (t^{-θ} φ(t))^q dt/t \right)^{1/q}.`
 -/
 @[blueprint_]
 def phiFunctional (θ : ℝ) (q : ℝ≥0∞) (f : ℝ≥0∞ → ℝ≥0∞) : ℝ≥0∞ :=
