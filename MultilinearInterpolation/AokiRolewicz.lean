@@ -32,6 +32,6 @@ def EQuasinorm.aokiRolewicz (hp : (2 * A.C) ^ p = 2) : ESeminorm α where
 
 variable {A p} in
 @[blueprint_]
-lemma aokiRolewiczSeminorm_pow_equiv_self (hp : (2 * A.C) ^ p = 2) :
+theorem aokiRolewicz_pow_equiv_self (hp : (2 * A.C) ^ p = 2) :
     (A.aokiRolewicz p hp).pow p ≈ A :=
   sorry
