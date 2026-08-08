@@ -88,15 +88,15 @@ variable {A A₀ A₁ A' A₀' A₁' : EQuasinorm α} {t s : ℝ≥0∞} {x y z 
 
 /-- $`J(t,x)` in Section 3.2. For $`t = 1` this is the norm of $`A₀ ⊓ A₁`. -/
 @[blueprint_]
-def infNorm (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
+def jNorm (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
   max ‖x‖ₑ[A₀] (t * ‖x‖ₑ[A₁])
 
 /-- The minimum $`A₀ ⊓ A₁` equipped with the norm $`J(t,-)`. -/
 @[simps, blueprint_]
 def skewedInf (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
-  enorm := ⟨infNorm A₀ A₁ t⟩
+  enorm := ⟨jNorm A₀ A₁ t⟩
   C := max A₀.C A₁.C
-  enorm_zero := by simp_rw [infNorm, EQuasinorm.enorm_zero, mul_zero, max_self]
+  enorm_zero := by simp_rw [jNorm, EQuasinorm.enorm_zero, mul_zero, max_self]
   enorm_add_le_mul x y :=
     calc
       max ‖x + y‖ₑ[A₀] (t * ‖x + y‖ₑ[A₁]) ≤
@@ -105,7 +105,7 @@ def skewedInf (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
           gcongr <;> apply enorm_add_le_mul
       _ ≤ max A₀.C A₁.C * max (‖x‖ₑ[A₀] + ‖y‖ₑ[A₀]) (t * ‖x‖ₑ[A₁] + t * ‖y‖ₑ[A₁]) :=
           max_mul_mul_le_max_mul_max'
-      _ ≤ max A₀.C A₁.C * (infNorm A₀ A₁ t x + infNorm A₀ A₁ t y) := by
+      _ ≤ max A₀.C A₁.C * (jNorm A₀ A₁ t x + jNorm A₀ A₁ t y) := by
           gcongr
           exact max_add_add_le_max_add_max
 
@@ -122,28 +122,28 @@ lemma inf_equiv_inf (h₀ : A₀ ≈ A₀') (h₁ : A₁ ≈ A₁') : A₀ ⊓ A
 
 /-- $`K(t,x)` in Section 3.1. For $`t = 1` this is the norm of $`A₀ ⊔ A₁`. -/
 @[blueprint_]
-def supNorm (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
+def kNorm (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
   ⨅ (a : α × α) (_h : x = a.fst + a.snd), ‖a.fst‖ₑ[A₀] + t * ‖a.snd‖ₑ[A₁]
 
 section MaxNorm
 
-lemma supNorm_le_of_decomp {x x₀ x₁ : α} (h : x = x₀ + x₁) (t : ℝ≥0∞) :
-    A₀.supNorm A₁ t x ≤ ‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁] :=
+lemma kNorm_le_of_decomp {x x₀ x₁ : α} (h : x = x₀ + x₁) (t : ℝ≥0∞) :
+    A₀.kNorm A₁ t x ≤ ‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁] :=
   iInf₂_le (x₀, x₁) h
 
-lemma exists_decomp_lt_of_lt_supNorm {x : α} {b : ℝ≥0∞} (h : A₀.supNorm A₁ t x < b) :
+lemma exists_decomp_lt_of_lt_kNorm {x : α} {b : ℝ≥0∞} (h : A₀.kNorm A₁ t x < b) :
     ∃ x₀ x₁, x = x₀ + x₁ ∧ ‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁] < b := by
-  simpa [supNorm, iInf_lt_iff] using h
+  simpa [kNorm, iInf_lt_iff] using h
 
 @[simp, blueprint_]
-lemma supNorm_zero (t : ℝ≥0∞) : A₀.supNorm A₁ t 0 = 0 := by
-  simpa using supNorm_le_of_decomp (add_zero (0 : α)).symm t
+lemma kNorm_zero (t : ℝ≥0∞) : A₀.kNorm A₁ t 0 = 0 := by
+  simpa using kNorm_le_of_decomp (add_zero (0 : α)).symm t
 
 @[simp, blueprint_]
-lemma supNorm_add_le_mul (t : ℝ≥0∞) (x y : α) :
-    A₀.supNorm A₁ t (x + y) ≤ max A₀.C A₁.C * (A₀.supNorm A₁ t x + A₀.supNorm A₁ t y) := by
+lemma kNorm_add_le_mul (t : ℝ≥0∞) (x y : α) :
+    A₀.kNorm A₁ t (x + y) ≤ max A₀.C A₁.C * (A₀.kNorm A₁ t x + A₀.kNorm A₁ t y) := by
   suffices h : ∀ x₀ x₁, x = x₀ + x₁ → ∀ y₀ y₁, y = y₀ + y₁ →
-      A₀.supNorm A₁ t (x + y) ≤
+      A₀.kNorm A₁ t (x + y) ≤
       max A₀.C A₁.C * ((‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁]) + (‖y₀‖ₑ[A₀] + t * ‖y₁‖ₑ[A₁])) by
     sorry
     -- apply ENNReal.le_iInf₂_add_iInf₂
@@ -156,10 +156,10 @@ lemma supNorm_add_le_mul (t : ℝ≥0∞) (x y : α) :
 
 end MaxNorm
 
-/-- The addition $`A₀ + A₁` equipped with the norm `K(t,-)` -/
+/-- The supremum $`A₀ ⊔ A₁` equipped with the norm $`K(t,-)`. -/
 @[blueprint_]
 def skewedSup (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
-  enorm := ⟨supNorm A₀ A₁ t⟩
+  enorm := ⟨kNorm A₀ A₁ t⟩
   C := A₀.C + A₁.C -- maybe
   enorm_zero := by
     simp_rw [← nonpos_iff_eq_zero]
@@ -187,20 +187,48 @@ lemma sup_equiv_sup (h₀ : A₀ ≈ A₀') (h₁ : A₁ ≈ A₁') : A₀ ⊔ A
 
 -- Part of Lemma 3.1.1
 -- assume t ≠ ∞ if needed
-lemma monotone_supNorm (hx : ‖x‖ₑ[A₀ ⊔ A₁] < ∞) : Monotone (supNorm A₀ A₁ · x) := by
+lemma monotone_kNorm (hx : ‖x‖ₑ[A₀ ⊔ A₁] < ∞) : Monotone (kNorm A₀ A₁ · x) := by
   sorry
 
 -- Part of Lemma 3.1.1 (if convenient: make the scalar ring `ℝ≥0`)
 -- assume t ≠ ∞ if needed
-lemma concave_supNorm (hx : ‖x‖ₑ[A₀ ⊔ A₁] < ∞) : ConcaveOn ℝ≥0∞ univ (supNorm A₀ A₁ · x) := by
+lemma concave_kNorm (hx : ‖x‖ₑ[A₀ ⊔ A₁] < ∞) : ConcaveOn ℝ≥0∞ univ (kNorm A₀ A₁ · x) := by
   sorry
 
 -- Part of Lemma 3.1.1
 -- assume s ≠ 0, s ≠ ∞, t ≠ ∞ if needed
 -- probably this is more useful if reformulated without division
-lemma supNorm_le_mul (hx : ‖x‖ₑ[A₀ ⊔ A₁] < ∞) :
-    supNorm A₀ A₁ t x ≤ max 1 (t / s) * supNorm A₀ A₁ s x := by
+lemma kNorm_le_mul (hx : ‖x‖ₑ[A₀ ⊔ A₁] < ∞) :
+    kNorm A₀ A₁ t x ≤ max 1 (t / s) * kNorm A₀ A₁ s x := by
   sorry
+
+variable (α) in
+/-- A couple of two {name}`EQuasinorm`s on the same {name}`AddMonoid`. -/
+@[blueprint_]
+structure Couple where
+  /-- The first quasinorm. -/
+  protected fst : EQuasinorm α
+  /-- The second quasinorm. -/
+  protected snd : EQuasinorm α
+
+namespace Couple
+
+variable (A : Couple α)
+
+abbrev jNorm := EQuasinorm.jNorm A.fst A.snd
+
+abbrev inf := A.fst ⊓ A.snd
+
+abbrev kNorm := EQuasinorm.kNorm A.fst A.snd
+
+abbrev sup := A.fst ⊔ A.snd
+
+end Couple
+
+end EQuasinorm
+
+
+/- TODO: consider if there is useful API below.
 
 structure IsIntermediateSpace (A A₀ A₁ : EQuasinorm α) : Prop where
   inf_le : A₀ ⊓ A₁ ≤ A
@@ -208,7 +236,8 @@ structure IsIntermediateSpace (A A₀ A₁ : EQuasinorm α) : Prop where
 
 namespace IsIntermediateSpace
 
-protected lemma equiv (hI : IsIntermediateSpace A A₀ A₁) (h : A ≈ A') (h₀ : A₀ ≈ A₀') (h₁ : A₁ ≈ A₁') :
+protected lemma equiv (hI : IsIntermediateSpace A A₀ A₁) (h : A ≈ A') (h₀ : A₀ ≈ A₀')
+  (h₁ : A₁ ≈ A₁') :
   IsIntermediateSpace A' A₀' A₁' where
     inf_le := inf_equiv_inf h₀ h₁ |>.ge.trans hI.inf_le |>.trans h.le
     le_sup := h.ge.trans hI.le_sup |>.trans <| sup_equiv_sup h₀ h₁ |>.le
@@ -256,27 +285,4 @@ protected lemma equiv (hI : AreInterpolationSpaces A A₀ A₁ B B₀ B₁ C D)
 
 end AreInterpolationSpaces
 
-variable (α) in
-/-- A couple of two {name}`EQuasinorm`s on the same {name}`AddMonoid`. -/
-@[blueprint_]
-structure Couple where
-  /-- The first quasinorm. -/
-  protected fst : EQuasinorm α
-  /-- The second quasinorm. -/
-  protected snd : EQuasinorm α
-
-namespace Couple
-
-variable (A : Couple α)
-
-abbrev J := infNorm A.fst A.snd
-
-abbrev min := A.fst ⊓ A.snd
-
-abbrev K := supNorm A.fst A.snd
-
-abbrev max := A.fst ⊔ A.snd
-
-end Couple
-
-end EQuasinorm
+-/

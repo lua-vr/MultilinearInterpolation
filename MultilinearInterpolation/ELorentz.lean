@@ -65,13 +65,13 @@ $`p^{-1} = (1 - \theta) p_0^{-1} + \theta p_1^{-1}`.
 @[blueprint_]
 theorem eLorentz_equiv_kMethod_of_neq (p₀ q₀ p₁ q₁ q p : ℝ≥0∞) (hp₀₁ : p₀ ≠ p₁) (t : ℝ≥0)
     (hpos : 0 < p₀ ∧ 0 < p₁ ∧ 0 < q₀ ∧ 0 < q₁ ∧ 0 < q) (hp : p⁻¹ = (1 - t) / p₀ + t / p₁) :
-    eLorentz μ β p q ≈ (eLorentzCouple μ β p₀ q₀ p₁ q₁).kmethod t q :=
+    eLorentz μ β p q ≈ (eLorentzCouple μ β p₀ q₀ p₁ q₁).kMethod t q :=
   sorry
 
 /-- BL Theorem 5.3.1. -/
 theorem eLorentz_equiv_kMethod_of_eq (p q₀ q₁ q : ℝ≥0∞) (t : ℝ≥0)
     (hpos : 0 < p ∧ 0 < q₀ ∧ 0 < q₁ ∧ 0 < q) (hq : q⁻¹ = (1 - t) / q₀ + t / q₁) :
-    eLorentz μ β p q ≈ (eLorentzCouple μ β p q₀ p q₁).kmethod t q :=
+    eLorentz μ β p q ≈ (eLorentzCouple μ β p q₀ p q₁).kMethod t q :=
   sorry
 
 end Interpolation
