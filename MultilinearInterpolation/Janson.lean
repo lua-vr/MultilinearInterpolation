@@ -16,7 +16,7 @@ Following
 
 noncomputable section
 
-open Set ESeminorm MeasureTheory
+open Set EQuasinorm MeasureTheory
 open scoped ENNReal NNReal
 
 
@@ -30,16 +30,16 @@ variable (A : Couple α)
 $$`\inf\Bigl\{\,\bigl\|\{r^{-\theta n}J(r^{n},a_{n},\bar{A}_{i})\}_{-N}^{N}\bigr\|_{\ell^{q}}
  : N<\infty \ \text{ and } \ \sum_{-N}^{N}a_{n}=a\,\Bigr\}.` -/
 @[blueprint]
-def jInfNorm (θ : ℝ) (r q : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
+def jInfNorm (θ : ℝ) (q : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
   ⨅ (N : ℕ) (a : Fin (2 * N) → α) (_ : ∑ n, a n = x),
     eLpNorm (fun k : Fin (2 * N) ↦
       let n : ℝ := k - N
-      r ^ (-θ * n) * A.jNorm (r ^ n) (a k)) q Measure.count
+      2 ^ (-θ * n) * A.jNorm (2 ^ n) (a k)) q Measure.count
 
 /-- Lemma 1. -/
 @[blueprint]
-lemma jInfNorm_le_kNorm (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1) (r q : ℝ≥0∞) (hr : 0 < r ∧ r ≠ 1 ∧ r < ⊤) :
-    ∃ (C : ℝ≥0∞), C < ∞ ∧ ∀ x, jInfNorm A θ r q x ≤ C * ‖x‖ₑ[A.kMethod θ q] :=
+lemma jInfNorm_le_kNorm (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1) (q : ℝ≥0∞) :
+    ∃ (C : ℝ≥0∞), C < ∞ ∧ ∀ x, jInfNorm A θ q x ≤ C * ‖x‖ₑ[A.kMethod θ q] :=
   sorry
 
 end JInfNormEquiv
@@ -78,7 +78,7 @@ lemma mem_Ω_iff : ∀ θ, θ ∈ Ω T A B cα₀ cα ↔
     let θ₀ := cα₀ + ∑ i, cα i
     ∃ C : ℝ≥0∞, C < ∞ ∧
     ∀ (a : (i : ι) → α i), ‖T a‖ₑ[B.kMethod θ₀ ∞]  ≤
-    C * ∏ i, ‖a i‖ₑ[(A i).fstₛ] ^ (1 - θ i : ℝ) * ‖a i‖ₑ[(A i).sndₛ] ^ (θ i : ℝ) := by
+    C * ∏ i, ‖a i‖ₑ[(A i).fst] ^ (1 - θ i : ℝ) * ‖a i‖ₑ[(A i).snd] ^ (θ i : ℝ) := by
   sorry
 
 /-- Lemma 2, part 2. -/
@@ -88,7 +88,7 @@ lemma knorm_of_mem_Ω : ∀ θ, θ ∈ Ω T A B cα₀ cα →
     ∃ C : ℝ≥0∞, C < ∞ ∧
     ∀ (t : ℝ≥0∞),
     ∀ (a : (i : ι) → α i), B.kNorm t (T a) ≤
-    C * t ^ cα₀ * ∏ i, ‖a i‖ₑ[(A i).fstₛ] ^ (1 - θ i : ℝ) * ‖a i‖ₑ[(A i).sndₛ] ^ (θ i : ℝ) :=
+    C * t ^ cα₀ * ∏ i, ‖a i‖ₑ[(A i).fst] ^ (1 - θ i) * ‖a i‖ₑ[(A i).snd] ^ (θ i) :=
   sorry
 
 /-- The set $`Ω` is convex. In particular, if we do not care about the choice of $`q_i`s, then

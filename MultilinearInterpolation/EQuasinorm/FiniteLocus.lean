@@ -16,7 +16,7 @@ namespace EQuasinorm
 variable {α : Type*} [AddMonoid α] (A : EQuasinorm α)
 
 /-- the submonoid of finite elements -/
-def FiniteLocus (A : EQuasinorm α) : AddSubmonoid α where
+def finiteLocus (A : EQuasinorm α) : AddSubmonoid α where
   carrier := { x | ‖x‖ₑ[A] < ∞ }
   zero_mem' := by simp
   add_mem' {x y} hx hy := by
@@ -26,7 +26,7 @@ def FiniteLocus (A : EQuasinorm α) : AddSubmonoid α where
 
 namespace FiniteLocus
 
-instance : Norm A.FiniteLocus := ⟨(‖·‖ₑ[A].toReal)⟩
+instance : Norm A.finiteLocus := ⟨(‖·‖ₑ[A].toReal)⟩
 
 /- Let's not talk about topology.
 

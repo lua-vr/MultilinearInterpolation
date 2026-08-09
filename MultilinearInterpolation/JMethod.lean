@@ -17,10 +17,10 @@ respect to the quasinorm? (it's possible, but how feasible?) -/
 
 noncomputable section
 
-open Set MeasureTheory EQuasinorm
+open Set MeasureTheory EQuasinorm Filter
 open scoped ENNReal NNReal
 
-variable {α β : Type*} [AddGroup α]
+variable {α β : Type*} [AddCommGroup α]
   {A₀ A₁ : EQuasinorm α} {t s : ℝ≥0∞} {x y z : α} {θ : ℝ} {q : ℝ≥0∞}
 
 namespace EQuasinorm
@@ -41,9 +41,14 @@ section Discrete
 
 /-- The discrete version of $`J_{θ,q}(\bar{A})`. Since {name}`jNorm` is a norm
 on the intersection, it is defined as an infimum over all representations of $`a`,
-which are sequences $`(uₙ)ₙ` with $`uₙ ∈ Δ(A)` and $`‖a - ∑ₙ uₙ‖ₑ = 0`. -/
+which are sequences $`(uₙ)ₙ` with $`\|a - ∑ₙ uₙ\|ₑ = 0`, of
+$$`Φ_{θ,q}(φ) = \left( ∑_{k ∈ ℤ} (2^{-k θ} J(2^k, u_k))^q \right)^{1/q}.`
+
+We don't assume $`uₙ ∈ Δ(A)` here as it will (likely) be unecessary. -/
+@[blueprint]
 def discreteJMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm α where
-  enorm := sorry
+  enorm := ⟨fun a ↦ ⨅ (u : ℤ → α) (hu : Tendsto (fun s : Finset ℤ ↦ ∑ k ∈ s, u k) atTop sorry),
+    discretePhiFunctional θ q (fun k ↦ jNorm A₀ A₁ (2 ^ k) (u k))⟩
   C := sorry
   C_lt := sorry
   enorm_zero := sorry

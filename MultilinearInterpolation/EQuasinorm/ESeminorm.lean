@@ -20,8 +20,7 @@ variable {α : Type*} [AddMonoid α] {β : Type*} [AddMonoid β]
 variable (α) in
 /-- An {lit}`ESeminorm` is an {name}`EQuasinorm` such that $`C = 1`.
 
-This is {name}`ESeminormedAddMonoid` as a structure, and without fixing a topology on 𝓐.
--/
+This is {name}`ESeminormedAddMonoid` as a structure, and without fixing a topology on 𝓐. -/
 @[blueprint]
 structure ESeminorm extends EQuasinorm α where
   /-- The constant $`C` equals 1. -/

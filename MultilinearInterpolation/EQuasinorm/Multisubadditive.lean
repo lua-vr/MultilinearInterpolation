@@ -5,10 +5,9 @@ Authors: Lua Viana Reis
 -/
 
 import MultilinearInterpolation.EQuasinorm.FiniteLocus
+import MultilinearInterpolation.Modulus
 import Carleson.ToMathlib.RealInterpolation.Misc
 import VersoBlueprint
-import Verso
-import VersoManual
 
 /-!
 # Definition of {lit}`MultiSubadditiveMap`s.
@@ -22,11 +21,6 @@ open EQuasinorm
 open scoped ENNReal NNReal
 
 variable {ι : Type*} [Fintype ι] {α : ι → Type*} [∀ i, AddMonoid (α i)] {β : Type*} [AddMonoid β]
-
-class Abs β where
-  toFun : β → β
-
-notation "|" e "|ₑ" => Abs.toFun e
 
 variable [Abs β] [Preorder β]
 
@@ -57,12 +51,36 @@ instance : FunLike (MultisubadditiveMap α β) (∀ i, α i) β where
 variable (T : MultisubadditiveMap α β) (A : (i : ι) → EQuasinorm (α i)) (B : EQuasinorm β)
   (C : ℝ≥0∞)
 
+section Solid
+
+variable [Abs.IsModulus β] [DecidableEq ι] [B.IsSolid] (Bₛ : ESeminorm β)
+  [Bₛ.toEQuasinorm.IsSolid] (f : ∀ i, α i) (i : ι) (x y : α i)
+
+omit [Fintype ι]
+
+open Function in
+/-- {lit}`EQuasinorm.IsSolid.enorm_le_mul_of_abs_le` applied to {lit}`subadditive`. -/
+@[blueprint]
+lemma enorm_update_add_le_mul :
+    ‖T (update f i (x + y))‖ₑ[B] ≤
+      B.C * (‖T (update f i x)‖ₑ[B] + ‖T (update f i y)‖ₑ[B]) :=
+  IsSolid.enorm_le_mul_of_abs_le (T.subadditive f i x y)
+
+open Function in
+/-- {lit}`enorm_update_add_le_mul` for an {lit}`ESeminorm`. -/
+@[blueprint]
+lemma enorm_update_add_le :
+    ‖T (update f i (x + y))‖ₑ[Bₛ] ≤ ‖T (update f i x)‖ₑ[Bₛ] + ‖T (update f i y)‖ₑ[Bₛ] :=
+  ESeminorm.enorm_le_of_abs_le (T.subadditive f i x y)
+
+end Solid
+
 /-- A multisubadditive operator is bounded for quasinorms $`A_i`, $`B` and a finite constant $`C` if
 for all $`x = (x_i)_{i ∈ ι}`,
 $$`\|T x\|_{B} ≤ C ∏_{i∈ ι} \|x_i\|_{A_i}`. -/
 @[blueprint]
 def IsBoundedFor : Prop :=
-  C < ∞ ∧ ∀ x, ‖T x‖ₑ[B] ≤ C * ∏ i, ‖x i‖ₑ[A i]
+  C < ∞ ∧ ∀ x, (∀ i, ‖x i‖ₑ[A i] < ∞) → ‖T x‖ₑ[B] ≤ C * ∏ i, ‖x i‖ₑ[A i]
 
 /-- The operator $`T` is bounded if, and only if, it is bounded between the
 same quasinorms raised to a common power. -/
@@ -70,30 +88,5 @@ same quasinorms raised to a common power. -/
 lemma isBoundedFor_iff_isBoundedFor_pow :
     T.IsBoundedFor A B C ↔ T.IsBoundedFor (fun i ↦ (A i).pow p) (B.pow p) C :=
   sorry
-
-/- Continuity-/
-
-class SolidAbs (B : EQuasinorm β) : Prop where
-  lt_top_iff {x : β} : ‖x‖ₑ[B] < ∞ ↔ ‖|x|ₑ‖ₑ[B] < ∞
-  solid {x y : β} : |x|ₑ ≤ |y|ₑ → ‖x‖ₑ[B] ≤ ‖y‖ₑ[B]
-
-instance (B : EQuasinorm β) [SolidAbs B] : Abs B.FiniteLocus :=
-  ⟨fun x ↦ ⟨|x.val|ₑ, SolidAbs.lt_top_iff.mp x.prop⟩⟩
-
-namespace IsBoundedFor
-
-variable [SolidAbs B] (C : ℝ≥0∞) (hT : T.IsBoundedFor A B C)
-
-include hT in
-def toFiniteLocus : MultisubadditiveMap (fun i ↦ (A i).FiniteLocus) B.FiniteLocus where
-  toFun x := by
-    use T (x · |>.val)
-    apply hT.right (x · |>.val) |>.trans_lt
-    apply ENNReal.mul_lt_top hT.left (ENNReal.prod_lt_top _)
-    intro i _
-    exact (x i).prop
-  subadditive := sorry
-
-end IsBoundedFor
 
 end MultisubadditiveMap

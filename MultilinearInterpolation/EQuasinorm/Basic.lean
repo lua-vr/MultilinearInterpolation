@@ -18,7 +18,7 @@ noncomputable section
 
 open ENNReal Set
 
-variable {α : Type*} [AddMonoid α] {β : Type*} [AddMonoid β]
+variable {α : Type*} [AddMonoid α]
 
 variable (α) in
 /-- A quasinorm on a monoid $`α` is a function $`α → [0,∞]` and a finite constant
@@ -83,8 +83,7 @@ def pow (A : EQuasinorm α) (p : ℝ) : EQuasinorm α where
   enorm_add_le_mul x y := sorry
 
 -- Feel free to assume `θ ∈ Icc 0 1`, `1 ≤ q` and `q < ∞ → θ ∈ Ioo 0 1` whenever needed
-variable {A A₀ A₁ A' A₀' A₁' : EQuasinorm α} {t s : ℝ≥0∞} {x y z : α} {θ : ℝ} {q : ℝ≥0∞}
-  {B B₀ B₁ B' B₀' B₁' : EQuasinorm β} {C D : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞}
+variable {A₀ A₁ A₀' A₁' : EQuasinorm α} {t s : ℝ≥0∞} {x y z : α} {θ : ℝ} {q : ℝ≥0∞}
 
 /-- $`J(t,x)` in Section 3.2. For $`t = 1` this is the norm of $`A₀ ⊓ A₁`. -/
 @[blueprint]
@@ -120,12 +119,43 @@ lemma inf_mono (h₀ : A₀ ≤ A₀') (h₁ : A₁ ≤ A₁') : A₀ ⊓ A₁ �
 lemma inf_equiv_inf (h₀ : A₀ ≈ A₀') (h₁ : A₁ ≈ A₁') : A₀ ⊓ A₁ ≈ A₀' ⊓ A₁' :=
   ⟨inf_mono h₀.le h₁.le, inf_mono h₀.ge h₁.ge⟩
 
+section jNorm
+
+lemma enorm_fst_le_jNorm : ‖x‖ₑ[A₀] ≤ jNorm A₀ A₁ t x := le_max_left ..
+
+lemma mul_enorm_snd_le_jNorm : t * ‖x‖ₑ[A₁] ≤ jNorm A₀ A₁ t x := le_max_right ..
+
+lemma enorm_rpow_mul_enorm_rpow_le_jNorm (hθ₀ : 0 ≤ θ) (hθ₁ : θ ≤ 1) :
+    t ^ θ * (‖x‖ₑ[A₀] ^ (1 - θ) * ‖x‖ₑ[A₁] ^ θ) ≤ jNorm A₀ A₁ t x :=
+  calc
+    _ = ‖x‖ₑ[A₀] ^ (1 - θ) * (t * ‖x‖ₑ[A₁]) ^ θ := by
+      rw [ENNReal.mul_rpow_of_nonneg _ _ hθ₀]; ring
+    _ ≤ jNorm A₀ A₁ t x ^ (1 - θ) * jNorm A₀ A₁ t x ^ θ := by
+      gcongr
+      exacts [le_max_left .., le_max_right ..]
+    _ = jNorm A₀ A₁ t x := by
+      rw [← ENNReal.rpow_add_of_nonneg _ _ (sub_nonneg.2 hθ₁) hθ₀]
+      simp
+
+@[blueprint]
+lemma enorm_rpow_mul_enorm_rpow_le_rpow_neg_mul_jNorm
+    (hθ₀ : 0 ≤ θ) (hθ₁ : θ ≤ 1) (ht₀ : t ≠ 0) (ht : t ≠ ∞) :
+    ‖x‖ₑ[A₀] ^ (1 - θ) * ‖x‖ₑ[A₁] ^ θ ≤ t ^ (-θ) * jNorm A₀ A₁ t x := by
+  calc
+    _ = t ^ (-θ) * (t ^ θ * (‖x‖ₑ[A₀] ^ (1 - θ) * ‖x‖ₑ[A₁] ^ θ)) := by
+      rw [← mul_assoc, ← ENNReal.rpow_add _ _ ht₀ ht]; simp
+    _ ≤ t ^ (-θ) * jNorm A₀ A₁ t x := by
+      gcongr
+      exact enorm_rpow_mul_enorm_rpow_le_jNorm hθ₀ hθ₁
+
+end jNorm
+
 /-- $`K(t,x)` in Section 3.1. For $`t = 1` this is the norm of $`A₀ ⊔ A₁`. -/
 @[blueprint]
 def kNorm (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
   ⨅ (a : α × α) (_h : x = a.fst + a.snd), ‖a.fst‖ₑ[A₀] + t * ‖a.snd‖ₑ[A₁]
 
-section MaxNorm
+section kNorm
 
 lemma kNorm_le_of_decomp {x x₀ x₁ : α} (h : x = x₀ + x₁) (t : ℝ≥0∞) :
     A₀.kNorm A₁ t x ≤ ‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁] :=
@@ -154,7 +184,7 @@ lemma kNorm_add_le_mul (t : ℝ≥0∞) (x y : α) :
   · sorry
   · sorry
 
-end MaxNorm
+end kNorm
 
 /-- The supremum $`A₀ ⊔ A₁` equipped with the norm $`K(t,-)`. -/
 @[blueprint]

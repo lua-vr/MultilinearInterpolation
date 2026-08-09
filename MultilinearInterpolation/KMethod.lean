@@ -23,14 +23,16 @@ variable {α β : Type*} [AddMonoid α] {A₀ A₁ : EQuasinorm α}
 namespace EQuasinorm
 
 /-- The functional
-$$`Φ_{θ,q}(φ(t)) = \left( ∫_0^∞ (t^{-θ} φ(t))^q dt/t \right)^{1/q}.`
+$$`Φ_{θ,q}(φ) = \left( ∫_0^∞ (t^{-θ} φ(t))^q dt/t \right)^{1/q}.`
 -/
 @[blueprint]
 def phiFunctional (θ : ℝ) (q : ℝ≥0∞) (f : ℝ≥0∞ → ℝ≥0∞) : ℝ≥0∞ :=
   eLpNorm (fun (t : ℝ) ↦ t.toNNReal ^ (-θ) * f t.toNNReal) q
     (volume.withDensity (·.toNNReal⁻¹) |>.restrict (Ioi 0))
 
-/-- The discrete version of {name}`phiFunctional`. -/
+/-- The discrete version of {name}`phiFunctional`, defined as
+$$`Φ_{θ,q}(φ) = \left( ∑_{k ∈ ℤ} (2^{-k θ} φ(k))^q \right)^{1/q}.`
+-/
 @[blueprint]
 def discretePhiFunctional (θ : ℝ) (q : ℝ≥0∞) (f : ℤ → ℝ≥0∞) : ℝ≥0∞ :=
   eLpNorm (fun (k : ℤ) ↦ 2 ^ (-k * θ) * f k) q
@@ -78,13 +80,15 @@ end EQuasinorm
 namespace ESeminorm
 
 /-- The {name}`EQuasinorm.kMethod` as an {name}`ESeminorm`. -/
-@[blueprint]
+@[blueprint
+  (uses := [EQuasinorm.kMethod])]
 def kMethod (A₀ A₁ : ESeminorm α) (θ : ℝ) (q : ℝ≥0∞) : ESeminorm α where
   __ := EQuasinorm.kMethod A₀ A₁ θ q
   C_eq_one := sorry
 
 /-- The {name}`EQuasinorm.discreteKMethod` as an {name}`ESeminorm`. -/
-@[blueprint]
+@[blueprint
+  (uses := [EQuasinorm.discreteKMethod])]
 def discreteKMethod (A₀ A₁ : ESeminorm α) (θ : ℝ) (q : ℝ≥0∞) : ESeminorm α where
   __ := EQuasinorm.discreteKMethod A₀ A₁ θ q
   C_eq_one := sorry
