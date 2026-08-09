@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Jim Potergies, Michael Rothgang, Lua Viana Reis
 -/
 
 import MultilinearInterpolation.EQuasinorm.Basic
+import MultilinearInterpolation.EQuasinorm.ESeminorm
 import VersoBlueprint
 
 /-!
@@ -35,8 +36,6 @@ def discretePhiFunctional (θ : ℝ) (q : ℝ≥0∞) (f : ℤ → ℝ≥0∞) :
   eLpNorm (fun (k : ℤ) ↦ 2 ^ (-k * θ) * f k) q
     Measure.count
 
-namespace KMethod
-
 /-- The space $`K_{θ,q}(\bar{A})` in Section 3.1. -/
 @[blueprint_]
 def kMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm α where
@@ -64,19 +63,43 @@ lemma discreteKMethod_equiv_kmethod : discreteKMethod A₀ A₁ θ q ≈ kMethod
 
 end Discrete
 
-end KMethod
+namespace Couple
+
+variable (A : Couple α)
+
+abbrev kMethod := EQuasinorm.kMethod A.fst A.snd
+
+abbrev discreteKMethod := EQuasinorm.discreteKMethod A.fst A.snd
+
+end Couple
+
+end EQuasinorm
+
+namespace ESeminorm
+
+/-- The {name}`EQuasinorm.kMethod` as an {name}`ESeminorm`. -/
+@[blueprint]
+def kMethod (A₀ A₁ : ESeminorm α) (θ : ℝ) (q : ℝ≥0∞) : ESeminorm α where
+  __ := EQuasinorm.kMethod A₀ A₁ θ q
+  C_eq_one := sorry
+
+/-- The {name}`EQuasinorm.discreteKMethod` as an {name}`ESeminorm`. -/
+@[blueprint]
+def discreteKMethod (A₀ A₁ : ESeminorm α) (θ : ℝ) (q : ℝ≥0∞) : ESeminorm α where
+  __ := EQuasinorm.discreteKMethod A₀ A₁ θ q
+  C_eq_one := sorry
 
 namespace Couple
 
 variable (A : Couple α)
 
-abbrev kMethod := KMethod.kMethod A.fst A.snd
+abbrev kMethod := ESeminorm.kMethod A.fstₛ A.sndₛ
 
-abbrev discreteKMethod := KMethod.discreteKMethod A.fst A.snd
+abbrev discreteKMethod := ESeminorm.discreteKMethod A.fstₛ A.sndₛ
 
 end Couple
 
-end EQuasinorm
+end ESeminorm
 
 /- I don't think those are necessary for Janson's.-/
 

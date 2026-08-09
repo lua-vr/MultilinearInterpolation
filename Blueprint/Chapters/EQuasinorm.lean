@@ -38,3 +38,4 @@ interpolation spaces satisfy more properties depending on the properties of the
 starting couple may also be done as a separate step later.
 
 {blueprint_nodes_in EQuasinorm}
+{blueprint_nodes_in ESeminorm}

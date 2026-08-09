@@ -79,7 +79,7 @@ lemma mem_Ω_iff : ∀ θ, θ ∈ Ω T A B cα₀ cα ↔
     let θ₀ := cα₀ + ∑ i, cα i
     ∃ C : ℝ≥0∞, C < ∞ ∧
     ∀ (a : (i : ι) → α i), ‖T a‖ₑ[B.kMethod θ₀ ∞]  ≤
-    C * ∏ i, ‖a i‖ₑ[(A i).fst] ^ (1 - θ i : ℝ) * ‖a i‖ₑ[(A i).snd] ^ (θ i : ℝ) := by
+    C * ∏ i, ‖a i‖ₑ[(A i).fstₛ] ^ (1 - θ i : ℝ) * ‖a i‖ₑ[(A i).sndₛ] ^ (θ i : ℝ) := by
   sorry
 
 /-- Lemma 2, part 2. -/
@@ -89,7 +89,7 @@ lemma knorm_of_mem_Ω : ∀ θ, θ ∈ Ω T A B cα₀ cα →
     ∃ C : ℝ≥0∞, C < ∞ ∧
     ∀ (t : ℝ≥0∞),
     ∀ (a : (i : ι) → α i), B.kNorm t (T a) ≤
-    C * t ^ cα₀ * ∏ i, ‖a i‖ₑ[(A i).fst] ^ (1 - θ i : ℝ) * ‖a i‖ₑ[(A i).snd] ^ (θ i : ℝ) :=
+    C * t ^ cα₀ * ∏ i, ‖a i‖ₑ[(A i).fstₛ] ^ (1 - θ i : ℝ) * ‖a i‖ₑ[(A i).sndₛ] ^ (θ i : ℝ) :=
   sorry
 
 /-- The set $`Ω` is convex. In particular, if we do not care about the choice of $`q_i`s, then
@@ -110,7 +110,7 @@ exponents with $`q_0^{-1} \le \sum_i q_i^{-1}`.
 This is stronger than mere membership in $`Ω`, where the $`q_i,q_0` are under an existential.
 -/
 @[blueprint_
-  (proofUses := [jInfNorm_le_kNorm, EQuasinorm.KMethod.discreteKMethod_equiv_kmethod])]
+  (proofUses := [jInfNorm_le_kNorm, EQuasinorm.discreteKMethod_equiv_kmethod])]
 theorem isBoundedOn_of_mem_interior_Ω (θ) (hθ : θ ∈ interior (Ω T A B cα₀ cα)) :
     let θ₀ := cα₀ + ∑ i, cα i
     ∀ (q₀ : ℝ≥0∞) (q : ι → ℝ≥0∞) (hq : q₀⁻¹ ≤ ∑ i, (q i)⁻¹),
