@@ -41,7 +41,7 @@ $$`|f(a_1, \dots, a_i + b_i, \dots, a_k)| ≤
 
 For a function-valued $`f`, this should be the pointwise absolute value, not
 the norm of the function, and the inequality above lives in $`β`. -/
-@[blueprint_]
+@[blueprint]
 structure MultisubadditiveMap where
   toFun : (∀ i, α i) → β
   subadditive :
@@ -60,13 +60,13 @@ variable (T : MultisubadditiveMap α β) (A : (i : ι) → EQuasinorm (α i)) (B
 /-- A multisubadditive operator is bounded for quasinorms $`A_i`, $`B` and a finite constant $`C` if
 for all $`x = (x_i)_{i ∈ ι}`,
 $$`\|T x\|_{B} ≤ C ∏_{i∈ ι} \|x_i\|_{A_i}`. -/
-@[blueprint_]
+@[blueprint]
 def IsBoundedFor : Prop :=
   C < ∞ ∧ ∀ x, ‖T x‖ₑ[B] ≤ C * ∏ i, ‖x i‖ₑ[A i]
 
 /-- The operator $`T` is bounded if, and only if, it is bounded between the
 same quasinorms raised to a common power. -/
-@[blueprint_]
+@[blueprint]
 lemma isBoundedFor_iff_isBoundedFor_pow :
     T.IsBoundedFor A B C ↔ T.IsBoundedFor (fun i ↦ (A i).pow p) (B.pow p) C :=
   sorry

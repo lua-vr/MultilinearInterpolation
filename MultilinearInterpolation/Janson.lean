@@ -8,7 +8,6 @@ import MultilinearInterpolation.EQuasinorm.Multisubadditive
 import MultilinearInterpolation.EQuasinorm.ESeminorm
 import MultilinearInterpolation.KMethod
 import Carleson.ToMathlib.RealInterpolation.Misc
-import Blueprint.BlueprintAttr
 
 /-!
 Following
@@ -30,7 +29,7 @@ variable (A : Couple α)
 /-- The norm
 $$`\inf\Bigl\{\,\bigl\|\{r^{-\theta n}J(r^{n},a_{n},\bar{A}_{i})\}_{-N}^{N}\bigr\|_{\ell^{q}}
  : N<\infty \ \text{ and } \ \sum_{-N}^{N}a_{n}=a\,\Bigr\}.` -/
-@[blueprint_]
+@[blueprint]
 def jInfNorm (θ : ℝ) (r q : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
   ⨅ (N : ℕ) (a : Fin (2 * N) → α) (_ : ∑ n, a n = x),
     eLpNorm (fun k : Fin (2 * N) ↦
@@ -38,7 +37,7 @@ def jInfNorm (θ : ℝ) (r q : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
       r ^ (-θ * n) * A.jNorm (r ^ n) (a k)) q Measure.count
 
 /-- Lemma 1. -/
-@[blueprint_]
+@[blueprint]
 lemma jInfNorm_le_kNorm (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1) (r q : ℝ≥0∞) (hr : 0 < r ∧ r ≠ 1 ∧ r < ⊤) :
     ∃ (C : ℝ≥0∞), C < ∞ ∧ ∀ x, jInfNorm A θ r q x ≤ C * ‖x‖ₑ[A.kMethod θ q] :=
   sorry
@@ -64,7 +63,7 @@ $$`\Omega = \Bigl\{ (θ_i)_{i ∈ ι} \in [0,1]^ι :
 The value of the parameters $`q,q_i` are under an existential, and are not specified
 for the points of this set.
 -/
-@[blueprint_]
+@[blueprint]
 def Ω : Set (ι → ℝ) :=
   {θ | let θ₀ := cα₀ + ∑ i, cα i * θ i
     ∃ (q₀ : ℝ≥0∞) (q : ι → ℝ≥0∞),
@@ -74,7 +73,7 @@ def Ω : Set (ι → ℝ) :=
 section Theorem1
 
 /-- Lemma 2, part 1. -/
-@[blueprint_]
+@[blueprint]
 lemma mem_Ω_iff : ∀ θ, θ ∈ Ω T A B cα₀ cα ↔
     let θ₀ := cα₀ + ∑ i, cα i
     ∃ C : ℝ≥0∞, C < ∞ ∧
@@ -83,7 +82,7 @@ lemma mem_Ω_iff : ∀ θ, θ ∈ Ω T A B cα₀ cα ↔
   sorry
 
 /-- Lemma 2, part 2. -/
-@[blueprint_]
+@[blueprint]
 lemma knorm_of_mem_Ω : ∀ θ, θ ∈ Ω T A B cα₀ cα →
     let θ₀ := cα₀ + ∑ i, cα i
     ∃ C : ℝ≥0∞, C < ∞ ∧
@@ -95,7 +94,7 @@ lemma knorm_of_mem_Ω : ∀ θ, θ ∈ Ω T A B cα₀ cα →
 /-- The set $`Ω` is convex. In particular, if we do not care about the choice of $`q_i`s, then
 $`T` is bounded in the convex hull of the $`(θ_i)_i`s for which it is already known to be bounded.
 -/
-@[blueprint_
+@[blueprint
   (proofUses := [mem_Ω_iff])]
 theorem convex_Ω : Convex ℝ (Ω T A B cα₀ cα) := sorry
 
@@ -109,7 +108,7 @@ $`T \colon \prod_i (A_i)_{θ_i,q_i} \to B_{θ_0,q_0}` is bounded for every choic
 exponents with $`q_0^{-1} \le \sum_i q_i^{-1}`.
 This is stronger than mere membership in $`Ω`, where the $`q_i,q_0` are under an existential.
 -/
-@[blueprint_
+@[blueprint
   (proofUses := [jInfNorm_le_kNorm, EQuasinorm.discreteKMethod_equiv_kmethod])]
 theorem isBoundedOn_of_mem_interior_Ω (θ) (hθ : θ ∈ interior (Ω T A B cα₀ cα)) :
     let θ₀ := cα₀ + ∑ i, cα i

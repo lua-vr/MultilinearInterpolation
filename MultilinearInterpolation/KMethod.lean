@@ -25,19 +25,19 @@ namespace EQuasinorm
 /-- The functional
 $$`Φ_{θ,q}(φ(t)) = \left( ∫_0^∞ (t^{-θ} φ(t))^q dt/t \right)^{1/q}.`
 -/
-@[blueprint_]
+@[blueprint]
 def phiFunctional (θ : ℝ) (q : ℝ≥0∞) (f : ℝ≥0∞ → ℝ≥0∞) : ℝ≥0∞ :=
   eLpNorm (fun (t : ℝ) ↦ t.toNNReal ^ (-θ) * f t.toNNReal) q
     (volume.withDensity (·.toNNReal⁻¹) |>.restrict (Ioi 0))
 
 /-- The discrete version of {name}`phiFunctional`. -/
-@[blueprint_]
+@[blueprint]
 def discretePhiFunctional (θ : ℝ) (q : ℝ≥0∞) (f : ℤ → ℝ≥0∞) : ℝ≥0∞ :=
   eLpNorm (fun (k : ℤ) ↦ 2 ^ (-k * θ) * f k) q
     Measure.count
 
 /-- The space $`K_{θ,q}(\bar{A})` in Section 3.1. -/
-@[blueprint_]
+@[blueprint]
 def kMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨fun x ↦ phiFunctional θ q (kNorm A₀ A₁ · x)⟩
   C := sorry
@@ -48,7 +48,7 @@ def kMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm
 section Discrete
 
 /-- The discrete version of $`K_{θ,q}(\bar{A})`. -/
-@[blueprint_]
+@[blueprint]
 def discreteKMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨fun x ↦ discretePhiFunctional θ q (fun k ↦ kNorm A₀ A₁ (2 ^ k) x)⟩
   C := sorry
@@ -57,7 +57,7 @@ def discreteKMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQ
   enorm_add_le_mul := sorry
 
 /-- Lemma 3.1.3. -/
-@[blueprint_]
+@[blueprint]
 lemma discreteKMethod_equiv_kmethod : discreteKMethod A₀ A₁ θ q ≈ kMethod A₀ A₁ θ q := by
   sorry
 

@@ -7,7 +7,7 @@ Authors: Floris van Doorn, Jim Potergies, Michael Rothgang, Lua Viana Reis
 import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Measure.WithDensity
-import Blueprint.BlueprintAttr
+import VersoBlueprint
 
 /-!
 Following
@@ -23,7 +23,7 @@ variable {α : Type*} [AddMonoid α] {β : Type*} [AddMonoid β]
 variable (α) in
 /-- A quasinorm on a monoid $`α` is a function $`α → [0,∞]` and a finite constant
 $`C` that sends $`0 : α` to zero and is $`C`-subadditive. -/
-@[blueprint_]
+@[blueprint]
 structure EQuasinorm where
   /-- The raw {name}`enorm` associated to the quasinorm. -/
   protected enorm : ENorm α
@@ -74,7 +74,7 @@ instance : Preorder (EQuasinorm α) where
 instance : Setoid (EQuasinorm α) := AntisymmRel.setoid _ (· ≤ ·)
 
 /-- The quasinorm raised to a power $`p`, as a quasinorm. -/
-@[blueprint_]
+@[blueprint]
 def pow (A : EQuasinorm α) (p : ℝ) : EQuasinorm α where
   enorm := ⟨fun x ↦ ‖x‖ₑ[A] ^ p⟩
   C := sorry
@@ -87,12 +87,12 @@ variable {A A₀ A₁ A' A₀' A₁' : EQuasinorm α} {t s : ℝ≥0∞} {x y z 
   {B B₀ B₁ B' B₀' B₁' : EQuasinorm β} {C D : ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞ → ℝ≥0∞}
 
 /-- $`J(t,x)` in Section 3.2. For $`t = 1` this is the norm of $`A₀ ⊓ A₁`. -/
-@[blueprint_]
+@[blueprint]
 def jNorm (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
   max ‖x‖ₑ[A₀] (t * ‖x‖ₑ[A₁])
 
 /-- The minimum $`A₀ ⊓ A₁` equipped with the norm $`J(t,-)`. -/
-@[simps, blueprint_]
+@[simps, blueprint]
 def skewedInf (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨jNorm A₀ A₁ t⟩
   C := max A₀.C A₁.C
@@ -110,7 +110,7 @@ def skewedInf (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
           exact max_add_add_le_max_add_max
 
 /-- The minimum $`A₀ ⊓ A₁`, with norm $`J(t,1)`. -/
-@[blueprint_]
+@[blueprint]
 instance : Min (EQuasinorm α) :=
   ⟨fun A₀ A₁ ↦ A₀.skewedInf A₁ 1⟩
 
@@ -121,7 +121,7 @@ lemma inf_equiv_inf (h₀ : A₀ ≈ A₀') (h₁ : A₁ ≈ A₁') : A₀ ⊓ A
   ⟨inf_mono h₀.le h₁.le, inf_mono h₀.ge h₁.ge⟩
 
 /-- $`K(t,x)` in Section 3.1. For $`t = 1` this is the norm of $`A₀ ⊔ A₁`. -/
-@[blueprint_]
+@[blueprint]
 def kNorm (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
   ⨅ (a : α × α) (_h : x = a.fst + a.snd), ‖a.fst‖ₑ[A₀] + t * ‖a.snd‖ₑ[A₁]
 
@@ -135,11 +135,11 @@ lemma exists_decomp_lt_of_lt_kNorm {x : α} {b : ℝ≥0∞} (h : A₀.kNorm A�
     ∃ x₀ x₁, x = x₀ + x₁ ∧ ‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁] < b := by
   simpa [kNorm, iInf_lt_iff] using h
 
-@[simp, blueprint_]
+@[simp, blueprint]
 lemma kNorm_zero (t : ℝ≥0∞) : A₀.kNorm A₁ t 0 = 0 := by
   simpa using kNorm_le_of_decomp (add_zero (0 : α)).symm t
 
-@[simp, blueprint_]
+@[simp, blueprint]
 lemma kNorm_add_le_mul (t : ℝ≥0∞) (x y : α) :
     A₀.kNorm A₁ t (x + y) ≤ max A₀.C A₁.C * (A₀.kNorm A₁ t x + A₀.kNorm A₁ t y) := by
   suffices h : ∀ x₀ x₁, x = x₀ + x₁ → ∀ y₀ y₁, y = y₀ + y₁ →
@@ -157,7 +157,7 @@ lemma kNorm_add_le_mul (t : ℝ≥0∞) (x y : α) :
 end MaxNorm
 
 /-- The supremum $`A₀ ⊔ A₁` equipped with the norm $`K(t,-)`. -/
-@[blueprint_]
+@[blueprint]
 def skewedSup (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨kNorm A₀ A₁ t⟩
   C := A₀.C + A₁.C -- maybe
@@ -204,7 +204,7 @@ lemma kNorm_le_mul (hx : ‖x‖ₑ[A₀ ⊔ A₁] < ∞) :
 
 variable (α) in
 /-- A couple of two {name}`EQuasinorm`s on the same {name}`AddMonoid`. -/
-@[blueprint_]
+@[blueprint]
 structure Couple where
   /-- The first quasinorm. -/
   protected fst : EQuasinorm α

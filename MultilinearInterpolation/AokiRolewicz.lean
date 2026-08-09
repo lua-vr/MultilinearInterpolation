@@ -23,7 +23,7 @@ open scoped NNReal ENNReal
 
 variable {α : Type*} [AddCommMonoid α] (A : EQuasinorm α) (p : ℝ)
 
-@[blueprint_]
+@[blueprint]
 def EQuasinorm.aokiRolewicz (hp : (2 * A.C) ^ p = 2) : ESeminorm α where
   enorm := ⟨ fun a ↦ ⨅ (n : ℕ) (a' : Fin n → α) (h : ∑ i, a' i = a), ∑ j, ‖a' j‖ₑ[A] ^ p ⟩
   enorm_zero := sorry
@@ -31,7 +31,7 @@ def EQuasinorm.aokiRolewicz (hp : (2 * A.C) ^ p = 2) : ESeminorm α where
   C_eq_one := sorry
 
 variable {A p} in
-@[blueprint_]
+@[blueprint]
 theorem aokiRolewicz_pow_equiv_self (hp : (2 * A.C) ^ p = 2) :
     (A.aokiRolewicz p hp).pow p ≈ A :=
   sorry

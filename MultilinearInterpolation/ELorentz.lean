@@ -31,7 +31,7 @@ lemma LorentzAddConst_pos {p q} : LorentzAddConst p q ≠ 0 := sorry
 
 open Classical in
 variable (β) in
-@[blueprint_]
+@[blueprint]
 def eLorentz (p q : ℝ≥0∞) : EQuasinorm (α → β) where
   enorm := ⟨fun f ↦ if AEStronglyMeasurable f μ then eLorentzNorm f p q μ else ∞⟩
   C := LorentzAddConst p q
@@ -52,7 +52,7 @@ section Interpolation
 variable [ESeminormedAddMonoid β] [ContinuousAdd β]
 
 variable (β) in
-@[blueprint_]
+@[blueprint]
 def eLorentzCouple (p₀ p₁ q₀ q₁ : ℝ≥0∞) : Couple (α → β) :=
   ⟨eLorentz μ β p₀ q₀, eLorentz μ β p₁ q₁⟩
 
@@ -62,7 +62,7 @@ $`p_0 \neq p_1`, for all $`0 < \theta < 1` and $`q \in (0,\infty]`, the real int
 $`(A)_{\theta,q}` is the Lorentz space $`L_{p,q}` where
 $`p^{-1} = (1 - \theta) p_0^{-1} + \theta p_1^{-1}`.
 -/
-@[blueprint_]
+@[blueprint]
 theorem eLorentz_equiv_kMethod_of_neq (p₀ q₀ p₁ q₁ q p : ℝ≥0∞) (hp₀₁ : p₀ ≠ p₁) (t : ℝ≥0)
     (hpos : 0 < p₀ ∧ 0 < p₁ ∧ 0 < q₀ ∧ 0 < q₁ ∧ 0 < q) (hp : p⁻¹ = (1 - t) / p₀ + t / p₁) :
     eLorentz μ β p q ≈ (eLorentzCouple μ β p₀ q₀ p₁ q₁).kMethod t q :=

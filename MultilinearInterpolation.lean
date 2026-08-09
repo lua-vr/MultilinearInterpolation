@@ -4,6 +4,7 @@ import MultilinearInterpolation.EQuasinorm.Basic
 import MultilinearInterpolation.EQuasinorm.ESeminorm
 import MultilinearInterpolation.EQuasinorm.FiniteLocus
 import MultilinearInterpolation.EQuasinorm.Multisubadditive
+import MultilinearInterpolation.JMethod
 import MultilinearInterpolation.Janson
 import MultilinearInterpolation.KMethod
 import MultilinearInterpolation.Mathlib.Topology.UniformSpace.OfFun

@@ -5,7 +5,6 @@ Authors: Lua Viana Reis
 -/
 
 import MultilinearInterpolation.EQuasinorm.Basic
-import Blueprint.BlueprintAttr
 
 /-!
 Following
@@ -23,7 +22,7 @@ variable (α) in
 
 This is {name}`ESeminormedAddMonoid` as a structure, and without fixing a topology on 𝓐.
 -/
-@[blueprint_]
+@[blueprint]
 structure ESeminorm extends EQuasinorm α where
   /-- The constant $`C` equals 1. -/
   protected C_eq_one : C = 1
@@ -57,7 +56,7 @@ We choose to extend {name}`EQuasinorm.Couple` with a {lit}`C_eq_one` field inste
 a pair of {name}`ESeminorm`s in order to reuse dot notation. The first and second
 {name}`ESeminorm`s can be accessed via {lit}`.fstₛ` and {lit}`.sndₛ`.
 -/
-@[blueprint_]
+@[blueprint]
 structure Couple extends EQuasinorm.Couple α where
   /-- Both constants equal $`1`. -/
   protected C_eq_one : fst.C = 1 ∧ snd.C = 1
