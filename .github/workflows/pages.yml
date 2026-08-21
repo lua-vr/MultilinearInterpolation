@@ -9,8 +9,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 jobs:
   pages:
@@ -18,3 +16,5 @@ jobs:
     secrets: inherit
     with:
       warm_dependency_cache: true
+      cloudflare_project_name: multilinear-interpolation
+      production_branch: main
