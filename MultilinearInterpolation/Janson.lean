@@ -77,7 +77,7 @@ section Theorem1
 lemma mem_Ω_iff : ∀ θ, θ ∈ Ω T A B cα₀ cα ↔
     let θ₀ := cα₀ + ∑ i, cα i
     ∃ C : ℝ≥0∞, C < ∞ ∧
-    ∀ (a : (i : ι) → α i), ‖T a‖ₑ[B.kMethod θ₀ ∞]  ≤
+    ∀ (a : (i : ι) → α i), ‖T a‖ₑ[B.kMethod θ₀ ∞] ≤
     C * ∏ i, ‖a i‖ₑ[(A i).fst] ^ (1 - θ i : ℝ) * ‖a i‖ₑ[(A i).snd] ^ (θ i : ℝ) := by
   sorry
 

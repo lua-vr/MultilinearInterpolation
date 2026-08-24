@@ -9,6 +9,9 @@ import VersoBlueprint
 
 /-!
 # Moduli and solid quasinorms.
+
+This notion isolates the subadditivity and the Riesz decomposition property of partially ordered
+additive groups who are lattices, as they also apply for {name}`ENNReal`.
 -/
 
 open Verso.Genre Manual Informal InlineLean

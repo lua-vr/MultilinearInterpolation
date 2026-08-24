@@ -9,8 +9,8 @@ import MultilinearInterpolation.EQuasinorm.ESeminorm
 import MultilinearInterpolation.EQuasinorm.Multisubadditive
 
 /-!
-In this file, we show that a c-`EQuasinorm` is equivalent to an actual
-`ESeminorm` raised to a power `p`, where `p` is such that $`(2c)^p = 2`. This is
+In this file, we show that a c-{name}`EQuasinorm` is equivalent to an actual
+{name}`ESeminorm` raised to a power $`p`, where $`p` is such that $`(2c)^p = 2`. This is
 used to extend the results from seminorms to quasi-Banach spaces.
 
 Following *Interpolation Spaces, An Introduction* by Jöran Bergh and Jörgen
@@ -32,6 +32,6 @@ def EQuasinorm.aokiRolewicz (hp : (2 * A.C) ^ p = 2) : ESeminorm α where
 
 variable {A p} in
 @[blueprint]
-theorem aokiRolewicz_pow_equiv_self (hp : (2 * A.C) ^ p = 2) :
-    (A.aokiRolewicz p hp).pow p ≈ A :=
+theorem aokiRolewicz_equiv_pow (hp : (2 * A.C) ^ p = 2) :
+    (A.aokiRolewicz p hp).toEQuasinorm ≈ A.pow p :=
   sorry
