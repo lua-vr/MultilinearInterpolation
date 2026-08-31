@@ -33,7 +33,7 @@ which are functions $`u : ℝ≥0 → Δ(A)` with $`‖a - ∫ u(t)/t dt‖ₑ =
 def jMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm α where
   enorm := sorry
   C := sorry
-  C_lt := sorry
+  C_ge_one := sorry
   enorm_zero := sorry
   enorm_add_le_mul := sorry
 
@@ -50,7 +50,7 @@ def discreteJMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQ
   enorm := ⟨fun a ↦ ⨅ (u : ℤ → α) (hu : Tendsto (fun s : Finset ℤ ↦ ∑ k ∈ s, u k) atTop sorry),
     discretePhiFunctional θ q (fun k ↦ jNorm A₀ A₁ (2 ^ k) (u k))⟩
   C := sorry
-  C_lt := sorry
+  C_ge_one := sorry
   enorm_zero := sorry
   enorm_add_le_mul := sorry
 

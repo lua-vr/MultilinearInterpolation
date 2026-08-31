@@ -7,6 +7,8 @@ Authors: Floris van Doorn, Jim Potergies, Michael Rothgang, Lua Viana Reis
 import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Measure.WithDensity
+import MultilinearInterpolation.Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import MultilinearInterpolation.Tactic.Basify
 import VersoBlueprint
 
 /-!
@@ -16,7 +18,7 @@ Following
 
 noncomputable section
 
-open ENNReal Set
+open NNReal ENNReal Set
 
 variable {α : Type*} [AddMonoid α]
 
@@ -28,11 +30,9 @@ structure EQuasinorm where
   /-- The raw {name}`enorm` associated to the quasinorm. -/
   protected enorm : ENorm α
   /-- The subadditivity constant. -/
-  protected C : ℝ≥0∞
-  /-- The subadditivity constant is finite. -/
-  protected C_lt : C < ∞ := by finiteness
+  protected C : ℝ≥0
   /-- The subadditivity constant is at least one. -/
-  protected C_ge_one : 1 ≤ C := by grind [le_add_right]
+  protected C_ge_one : 1 ≤ C := by bound
   /-- The enorm of zero is zero. -/
   protected enorm_zero : ‖(0 : α)‖ₑ = 0
   /-- The quasinorm is {lit}`C`-subadditive. -/
@@ -41,8 +41,7 @@ structure EQuasinorm where
 namespace EQuasinorm
 
 attribute [simp] EQuasinorm.enorm_zero
-attribute [grind .] EQuasinorm.C_ge_one
-attribute [aesop (rule_sets := [finiteness]) safe] EQuasinorm.C_lt max_lt
+attribute [grind ., bound] EQuasinorm.C_ge_one
 
 set_option quotPrecheck false in
 notation "‖" e "‖ₑ[" A "]" => @enorm _ (A).enorm e
@@ -58,7 +57,6 @@ def delabEQuasinormEnorm : Delab := do
   let x ← withAppArg delab
   `(‖$x‖ₑ[$A])
 
--- todo: make constant explicit
 instance : LE (EQuasinorm α) :=
   ⟨fun A₀ A₁ => ∃ C : ℝ≥0∞, C < ∞ ∧ ∀ x, ‖x‖ₑ[A₁] ≤ C * ‖x‖ₑ[A₀]⟩
 
@@ -76,15 +74,13 @@ instance : Preorder (EQuasinorm α) where
 -- the equivalence relation stating that two norms are equivalent
 instance : Setoid (EQuasinorm α) := AntisymmRel.setoid _ (· ≤ ·)
 
-/-- The quasinorm raised to a power $`p`, as a quasinorm. -/
-@[blueprint]
-def pow (A : EQuasinorm α) (p : ℝ) : EQuasinorm α where
-  enorm := ⟨fun x ↦ ‖x‖ₑ[A] ^ p⟩
-  C := sorry
-  C_lt := sorry
-  C_ge_one := sorry
-  enorm_zero := sorry
-  enorm_add_le_mul x y := sorry
+attribute [bound] NNReal.rpow_le_one_of_one_le_of_nonpos
+attribute [bound] NNReal.one_le_rpow
+
+/- this may be useful for the `basify` tactic when it's available. -/ 
+lemma enorm_sum_ne_top {A : EQuasinorm α} (x y : α) :
+    ‖x‖ₑ[A] ≠ ∞ → ‖y‖ₑ[A] ≠ ∞ → ‖x + y‖ₑ[A] ≠ ∞ :=
+  fun _ _ ↦ ne_top_of_le_ne_top (by finiteness) (A.enorm_add_le_mul x y)
 
 -- Feel free to assume `θ ∈ Icc 0 1`, `1 ≤ q` and `q < ∞ → θ ∈ Ioo 0 1` whenever needed
 variable {A₀ A₁ A₀' A₁' : EQuasinorm α} {t s : ℝ≥0∞} {x y z : α} {θ : ℝ} {q : ℝ≥0∞}
@@ -104,7 +100,7 @@ def skewedInf (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
     calc
       max ‖x + y‖ₑ[A₀] (t * ‖x + y‖ₑ[A₁]) ≤
         max (A₀.C * (‖x‖ₑ[A₀] + ‖y‖ₑ[A₀])) (A₁.C * (t * ‖x‖ₑ[A₁] + t * ‖y‖ₑ[A₁])) := by
-          rw [← mul_add t, mul_left_comm A₁.C t]
+          rw [← mul_add t, mul_left_comm ↑A₁.C t]
           gcongr <;> apply enorm_add_le_mul
       _ ≤ max A₀.C A₁.C * max (‖x‖ₑ[A₀] + ‖y‖ₑ[A₀]) (t * ‖x‖ₑ[A₁] + t * ‖y‖ₑ[A₁]) :=
           max_mul_mul_le_max_mul_max'
@@ -195,6 +191,7 @@ end kNorm
 def skewedSup (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨kNorm A₀ A₁ t⟩
   C := A₀.C + A₁.C -- maybe
+  C_ge_one := sorry
   enorm_zero := by
     simp_rw [← nonpos_iff_eq_zero]
     apply iInf_le_of_le 0

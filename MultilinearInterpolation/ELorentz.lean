@@ -34,10 +34,11 @@ variable (β) in
 @[blueprint]
 def eLorentz (p q : ℝ≥0∞) : EQuasinorm (α → β) where
   enorm := ⟨fun f ↦ if AEStronglyMeasurable f μ then eLorentzNorm f p q μ else ∞⟩
-  C := LorentzAddConst p q
-  C_lt := LorentzAddConst_lt_top
+  C := LorentzAddConst p q |>.toNNReal
+  C_ge_one := sorry
   enorm_zero := by simp [eLorentzNorm_zero, aestronglyMeasurable_zero]
   enorm_add_le_mul f g := by
+    rw [ENNReal.coe_toNNReal LorentzAddConst_lt_top.ne]
     by_cases h : AEStronglyMeasurable f μ ∧ AEStronglyMeasurable g μ
     · grind [eLorentzNorm_add_le' h.1 h.2, h.1.add h.2]
     rw [not_and_or] at h

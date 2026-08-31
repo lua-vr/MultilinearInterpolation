@@ -85,8 +85,8 @@ def IsBoundedFor : Prop :=
 /-- The operator $`T` is bounded if, and only if, it is bounded between the
 same quasinorms raised to a common power. -/
 @[blueprint]
-lemma isBoundedFor_iff_isBoundedFor_pow :
-    T.IsBoundedFor A B C ↔ T.IsBoundedFor (fun i ↦ (A i).pow p) (B.pow p) C :=
+lemma isBoundedFor_iff_isBoundedFor_pow {p : ℝ} (hp : 0 < p) :
+    T.IsBoundedFor A B C ↔ T.IsBoundedFor (fun i ↦ (A i).pow p hp) (B.pow p hp) C :=
   sorry
 
 end MultisubadditiveMap

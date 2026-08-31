@@ -43,7 +43,7 @@ def discretePhiFunctional (θ : ℝ) (q : ℝ≥0∞) (f : ℤ → ℝ≥0∞) :
 def kMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨fun x ↦ phiFunctional θ q (kNorm A₀ A₁ · x)⟩
   C := sorry
-  C_lt := sorry
+  C_ge_one := sorry
   enorm_zero := sorry
   enorm_add_le_mul := sorry
 
@@ -54,7 +54,7 @@ section Discrete
 def discreteKMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨fun x ↦ discretePhiFunctional θ q (fun k ↦ kNorm A₀ A₁ (2 ^ k) x)⟩
   C := sorry
-  C_lt := sorry
+  C_ge_one := sorry
   enorm_zero := sorry
   enorm_add_le_mul := sorry
 
