@@ -31,6 +31,8 @@ structure EQuasinorm where
   protected C : ℝ≥0∞
   /-- The subadditivity constant is finite. -/
   protected C_lt : C < ∞ := by finiteness
+  /-- The subadditivity constant is at least one. -/
+  protected C_ge_one : 1 ≤ C := by grind [le_add_right]
   /-- The enorm of zero is zero. -/
   protected enorm_zero : ‖(0 : α)‖ₑ = 0
   /-- The quasinorm is {lit}`C`-subadditive. -/
@@ -39,6 +41,7 @@ structure EQuasinorm where
 namespace EQuasinorm
 
 attribute [simp] EQuasinorm.enorm_zero
+attribute [grind .] EQuasinorm.C_ge_one
 attribute [aesop (rule_sets := [finiteness]) safe] EQuasinorm.C_lt max_lt
 
 set_option quotPrecheck false in
@@ -79,6 +82,7 @@ def pow (A : EQuasinorm α) (p : ℝ) : EQuasinorm α where
   enorm := ⟨fun x ↦ ‖x‖ₑ[A] ^ p⟩
   C := sorry
   C_lt := sorry
+  C_ge_one := sorry
   enorm_zero := sorry
   enorm_add_le_mul x y := sorry
 
