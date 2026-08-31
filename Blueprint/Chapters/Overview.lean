@@ -47,17 +47,17 @@ to be bounded, then the coefficients uniquely determined.
 
 {citet janson}[] defines a set
 
-{blueprint_node "Ω"}
+{blueprint_decl Ω}
 
 They proceed to show that the set $`\Omega` is convex.
 
-{blueprint_node "convex_Ω"}
+{blueprint_decl convex_Ω}
 
 As remarked in the statement above, this still does not handle particular choices of $`q_i`s, which
 is necessary for strong-type bounds, where we want the $`p` and $`q` of the Lorentz space $`L_{p,q}`
 to be the same. This is finally handled in their Theorem 2 below.
 
-{blueprint_node "isBoundedOn_of_mem_interior_Ω"}
+{blueprint_decl isBoundedOn_of_mem_interior_Ω}
 
 There are three important caveats, and they will be addressed in the sections below. First, we must
 relate the abstract statement above with the concrete Lorentz spaces.
@@ -73,7 +73,7 @@ because the intersections contain simple functions of finite integral, which are
 To get the result about restricted weak type and strong type mentioned in the introduction, we make
 use of the following result.
 
-{blueprint_node "EQuasinorm.eLorentz_equiv_kMethod_of_neq"}
+{blueprint_decl EQuasinorm.eLorentz_equiv_kMethod_of_neq}
 
 This is a recipe for getting all the intermediate Lorentz spaces using interpolation.
 
@@ -113,7 +113,7 @@ The argument in {citet janson}[] uses {bpref "ESeminorm"}[seminorms], which are 
 quasinorms when the constant $`C = 1`. It's a theorem that every $`C`-quasinorm is equivalent to a
 seminorm raised to the power $`p` such that $`(2 C) ^ p = 2`.
 
-{blueprint_node "aokiRolewicz_pow_equiv_self"}
+{blueprint_decl aokiRolewicz_equiv_pow}
 
 
 

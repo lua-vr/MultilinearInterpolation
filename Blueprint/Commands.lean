@@ -160,3 +160,61 @@ meta def blueprint_nodes_in : BlockCommandOf BlueprintNodesInConfig
   | cfg =>
     graftSelectedNodes cfg.toNodeRenderOptions s!"namespace '{cfg.namespace}'"
       fun _label node => node.leanDecls.any fun decl => cfg.namespace.isPrefixOf decl
+
+namespace Blueprint
+
+/-- Options for {lit}`blueprint_decl`: like {lit}`blueprint_node`, but selecting the node by
+declaration name rather than by label. -/
+structure BlueprintDeclConfig extends NodeRenderOptions where
+  decl : Name
+  displayLabel : Option String := none
+  siteBase : Option String := none
+
+meta instance : FromArgs BlueprintDeclConfig DocElabM where
+  fromArgs :=
+    (fun decl displayLabel siteBase opts => { opts with decl, displayLabel, siteBase }) <$>
+      .positional `decl .resolvedName <*>
+      .named `displayLabel .string true <*>
+      .named `siteBase .string true <*>
+      nodeRenderOptionsFromArgs
+
+/--
+The label of the Blueprint node attached to {lit}`decl`.
+
+Labels are always {name}`Lean.Name.mkSimple`-style single components, so the
+match below recovers their string spelling.
+-/
+meta def labelForDecl (decl : Name) : DocElabM String := do
+  match ← Informal.Environment.labelsForLeanDecl decl.eraseMacroScopes with
+  | #[.str .anonymous label] => return label
+  | #[] =>
+    throwError "No Blueprint node is attached to '{decl}'; is the '@[blueprint]' attribute missing?"
+  | labels =>
+    throwError "'{decl}' takes part in several Blueprint nodes: \
+      {labels}; select one with 'blueprint_node'"
+
+end Blueprint
+
+open Blueprint in
+/--
+Render a Blueprint node selected by the Lean declaration it documents:
+{lit}`{blueprint_decl EQuasinorm.aokiRolewicz}`.
+
+The identifier is resolved against the ambient {lit}`open` declarations and the
+current namespace, and it is an error if no such declaration exists or if it has
+no Blueprint node.
+
+Accepts the same {lit}`facet`, {lit}`displayLabel`, {lit}`compact`,
+{lit}`header` and {lit}`siteBase` options as {lit}`blueprint_node`.
+-/
+@[block_command]
+meta def blueprint_decl : BlockCommandOf BlueprintDeclConfig
+  | cfg => do
+    Informal.Graft.blueprintNodeBlock {
+      label := ← labelForDecl cfg.decl
+      facet := cfg.facet
+      displayLabel := cfg.displayLabel
+      compact := cfg.compact
+      showHeader := cfg.showHeader
+      siteBase := cfg.siteBase
+    }

@@ -12,6 +12,6 @@ open InlineLean EQuasinorm
 
 #doc (Manual) "K-Method" =>
 
-{blueprint_node "equasinorm"}
+{blueprint_decl EQuasinorm}
 
 Empty.
