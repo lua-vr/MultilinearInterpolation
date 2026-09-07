@@ -8,7 +8,6 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Measure.WithDensity
 import MultilinearInterpolation.Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import MultilinearInterpolation.Tactic.Basify
 import VersoBlueprint
 
 /-!
