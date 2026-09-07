@@ -17,7 +17,7 @@ open MeasureTheory
 open scoped ENNReal NNReal
 
 variable {α : Type*} [mα : MeasurableSpace α] (μ : Measure α) {β : Type*} [TopologicalSpace β]
-  [ESeminormedAddMonoid β] [ContinuousAdd β] (m : ℕ)
+  [ESeminormedAddCommMonoid β] [ContinuousAdd β] (m : ℕ)
 
 def εCouple (ε : ℝ≥0∞) := eLorentzCouple μ β ε ∞ ε ∞
 

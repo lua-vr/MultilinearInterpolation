@@ -13,7 +13,7 @@ open scoped ENNReal
 
 namespace EQuasinorm
 
-variable {α : Type*} [AddMonoid α] (A : EQuasinorm α)
+variable {α : Type*} [AddCommMonoid α] (A : EQuasinorm α)
 
 /-- the submonoid of finite elements -/
 def finiteLocus (A : EQuasinorm α) : AddSubmonoid α where

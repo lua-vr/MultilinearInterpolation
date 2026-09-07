@@ -7,7 +7,6 @@ Authors: Floris van Doorn, Jim Potergies, Michael Rothgang, Lua Viana Reis
 import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 import Mathlib.MeasureTheory.Measure.WithDensity
-import Mathlib.Tactic.Basify
 import MultilinearInterpolation.Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import VersoBlueprint
 
@@ -31,7 +30,6 @@ structure EQuasinorm where
   protected enorm : ENorm α
   /-- The subadditivity constant. -/
   protected C : ℝ≥0∞
-  /-- The subadditivity constant is finite. -/
   protected C_lt_top : C < ∞ := by finiteness
   /-- The subadditivity constant is at least one. -/
   protected C_ge_one : 1 ≤ C := by bound
@@ -44,13 +42,6 @@ namespace EQuasinorm
 
 attribute [simp] EQuasinorm.enorm_zero
 attribute [grind ., bound] EQuasinorm.C_ge_one
-
-lemma C_ne_top (A : EQuasinorm α) : A.C ≠ ∞ := A.C_lt_top.ne
-
-lemma C_ne_zero (A : EQuasinorm α) : A.C ≠ 0 := (zero_lt_one.trans_le A.C_ge_one).ne'
-
-attribute [aesop (rule_sets := [finiteness]) safe] EQuasinorm.C_lt_top EQuasinorm.C_ne_top
-  max_lt
 
 set_option quotPrecheck false in
 notation "‖" e "‖ₑ[" A "]" => @enorm _ (A).enorm e
@@ -83,22 +74,13 @@ instance : Preorder (EQuasinorm α) where
 -- the equivalence relation stating that two norms are equivalent
 instance : Setoid (EQuasinorm α) := AntisymmRel.setoid _ (· ≤ ·)
 
-attribute [bound] ENNReal.one_le_rpow
+attribute [bound] NNReal.rpow_le_one_of_one_le_of_nonpos
+attribute [bound] NNReal.one_le_rpow
 
 /- this may be useful for the `basify` tactic when it's available. -/ 
 lemma enorm_sum_ne_top {A : EQuasinorm α} (x y : α) :
     ‖x‖ₑ[A] ≠ ∞ → ‖y‖ₑ[A] ≠ ∞ → ‖x + y‖ₑ[A] ≠ ∞ :=
   fun _ _ ↦ ne_top_of_le_ne_top (by finiteness) (A.enorm_add_le_mul x y)
-
---  todo: upstream the attribute removal
-open Lean Elab Command Mathlib.Tactic.Basify in
-/-- Stop `basify` from looking inside `enorm`, so `‖x‖ₑ[A]` is an atom. -/
-elab "basify_forget_enorm" : command =>
-  modifyEnv fun env => opExt.modifyState env fun m =>
-    m.insert ``ENNReal ((m.find? ``ENNReal |>.getD ∅).erase ``ENorm.enorm)
-
-basify_forget_enorm
-attribute [local basify_simp] enorm_sum_ne_top
 
 -- Feel free to assume `θ ∈ Icc 0 1`, `1 ≤ q` and `q < ∞ → θ ∈ Ioo 0 1` whenever needed
 variable {A₀ A₁ A₀' A₁' : EQuasinorm α} {t s : ℝ≥0∞} {x y z : α} {θ : ℝ} {q : ℝ≥0∞}
@@ -152,7 +134,7 @@ def skewedInf (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
     calc
       max ‖x + y‖ₑ[A₀] (t * ‖x + y‖ₑ[A₁]) ≤
         max (A₀.C * (‖x‖ₑ[A₀] + ‖y‖ₑ[A₀])) (A₁.C * (t * ‖x‖ₑ[A₁] + t * ‖y‖ₑ[A₁])) := by
-          rw [← mul_add t, mul_left_comm A₁.C t]
+          rw [← mul_add t, mul_left_comm ↑A₁.C t]
           gcongr <;> apply enorm_add_le_mul
       _ ≤ max A₀.C A₁.C * max (‖x‖ₑ[A₀] + ‖y‖ₑ[A₀]) (t * ‖x‖ₑ[A₁] + t * ‖y‖ₑ[A₁]) :=
           max_mul_mul_le_max_mul_max'
@@ -200,9 +182,11 @@ lemma kNorm_add_le_mul (t : ℝ≥0∞) (x y : α) :
   suffices h : ∀ x₀ x₁, x = x₀ + x₁ → ∀ y₀ y₁, y = y₀ + y₁ →
       A₀.kNorm A₁ t (x + y) ≤
       max A₀.C A₁.C * ((‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁]) + (‖y₀‖ₑ[A₀] + t * ‖y₁‖ₑ[A₁])) by
-    have hC0 : max A₀.C A₁.C ≠ 0 := (zero_lt_one.trans_le (A₀.C_ge_one.trans (le_max_left ..))).ne'
+    have hC0 : (↑(max A₀.C A₁.C) : ℝ≥0∞) ≠ 0 :=
+      ENNReal.coe_ne_zero.mpr
+        ((zero_lt_one.trans_le A₀.C_ge_one).trans_le (le_max_left ..)).ne'
     rw [mul_add]
-    conv_rhs => simp only [kNorm, ENNReal.mul_iInf_of_ne hC0 (by finiteness)]
+    conv_rhs => simp only [kNorm, ENNReal.mul_iInf_of_ne hC0 ENNReal.coe_ne_top]
     apply ENNReal.le_iInf₂_add_iInf₂
     simpa only [Prod.forall, mul_add] using h
   intro x₀ x₁ hx y₀ y₁ hy

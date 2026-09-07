@@ -6,7 +6,6 @@ Authors: Lua Viana Reis
 
 import MultilinearInterpolation.KMethod
 import Mathlib.Analysis.MeanInequalitiesPow
-import Mathlib.Tactic.Basify
 
 /-!
  Defines `eLorentzNorm` as a `QuasiENorm`, then shows it is an interpolation
@@ -21,8 +20,7 @@ namespace EQuasinorm
 open MeasureTheory
 open scoped ENNReal NNReal
 
-variable {α : Type*} [mα : MeasurableSpace α] (μ : Measure α) [SigmaFinite μ] {β : Type*}
-  [TopologicalSpace β]
+variable {α : Type*} [mα : MeasurableSpace α] (μ : Measure α) {β : Type*} [TopologicalSpace β]
 
 section Lorentz
 
@@ -47,41 +45,20 @@ end CarlesonConsts
 @[simp]
 lemma LorentzAddConst_pos {p q} : LorentzAddConst p q ≠ 0 := sorry
 
-lemma LorentzAddConst_lt_top {p q} : LorentzAddConst p q < ∞ := by
-  unfold LorentzAddConst
-  split_ifs
-  · simp
-  · exact ENNReal.mul_lt_top (by finiteness) (ENNReal.LpAddConst_lt_top _)
-
---  todo: fix upstream
-attribute [local basify_op ←] ENNReal.coe_rpow_of_ne_zero
-
-lemma ENNReal.one_le_LpAddConst (q : ℝ≥0∞) : 1 ≤ q.LpAddConst := by
-  unfold ENNReal.LpAddConst
-  split_ifs with h
-  · rw [Set.mem_Ioo] at h
-    basify
-    grind [one_le_inv₀, one_le_two, Real.one_le_rpow]
-  · rfl
-
-lemma one_le_LorentzAddConst {p q} : 1 ≤ LorentzAddConst p q := by
-  unfold LorentzAddConst
-  split_ifs with h
-  · rfl
-  refine one_le_mul ?_ (ENNReal.one_le_LpAddConst q)
-  basify
-  all_goals exact Real.one_le_rpow one_le_two (by positivity)
-
 open Classical in
 variable (β) in
 @[blueprint]
 def eLorentz (p q : ℝ≥0∞) : EQuasinorm (α → β) where
   enorm := ⟨fun f ↦ eLorentzNorm f p q μ⟩
   C := LorentzAddConst p q
-  C_lt_top := LorentzAddConst_lt_top
-  C_ge_one := one_le_LorentzAddConst
+  C_lt_top := by
+    unfold LorentzAddConst
+    split_ifs
+    · simp
+    · exact ENNReal.mul_lt_top (by finiteness) (ENNReal.LpAddConst_lt_top _)
+  C_ge_one := sorry
   enorm_zero := eLorentzNorm_zero ..
-  enorm_add_le_mul _ _ := eLorentzNorm_add_le ..
+  enorm_add_le_mul f g := eLorentzNorm_add_le ..
 
 end Lorentz
 

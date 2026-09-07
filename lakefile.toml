@@ -12,22 +12,21 @@ weak.doc.verso = true
 [[require]]
 name = "verso-blueprint"
 git = "https://github.com/leanprover/verso-blueprint"
-rev = "feat/backport-v432-attribute-first-authoring"
+rev = "v4.34.0"
 
 [[require]]
-name = "carleson"
-git = "https://github.com/fpvandoorn/carleson/"
-rev = "master"
+name = "verso"
+scope = "leanprover"
+rev = "main"
+
+# [[require]]
+# name = "carleson"
+# git = "https://github.com/fpvandoorn/carleson/"
+# rev = "master"
 
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
-rev = "v4.32.0"
-
-[[require]]
-name = "mathlib"
-scope = "leanprover-community"
-rev = "v4.32.0"
 
 [[lean_lib]]
 name = "Blueprint"

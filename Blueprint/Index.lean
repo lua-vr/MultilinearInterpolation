@@ -17,10 +17,6 @@ open Blueprint.Chapters
 
 #doc (Manual) "Multilinear interpolation" =>
 
-The main goal of this blueprint is to make the formalization understandable by contributors and
-interested readers. In particular, it is meant to give an overview of the whole proof while also
-explaining particular choices made during the formalization.
-
 {include 0 Overview}
 {include 0 EQuasinorm}
 {include 0 Multisubadditive}

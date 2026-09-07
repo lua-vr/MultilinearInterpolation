@@ -7,7 +7,6 @@ Authors: Lua Viana Reis
 import MultilinearInterpolation.EQuasinorm.Multisubadditive
 import MultilinearInterpolation.EQuasinorm.ESeminorm
 import MultilinearInterpolation.KMethod
-import Carleson.ToMathlib.RealInterpolation.Misc
 
 /-!
 Following
@@ -44,8 +43,8 @@ lemma jInfNorm_le_kNorm (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1) (q : ℝ≥0�
 
 end JInfNormEquiv
 
-variable {ι : Type*} [Fintype ι] {α : ι → Type*} [∀ i, AddGroup (α i)] {β : Type*}
-  [AddMonoid β] [Preorder β] [Abs β]
+variable {ι : Type*} [Fintype ι] {α : ι → Type*} [∀ i, AddCommGroup (α i)] {β : Type*}
+  [AddCommMonoid β] [Preorder β] [Abs β]
 
 variable (T : MultisubadditiveMap α β) (A : (i : ι) → Couple (α i)) (B : Couple β)
 

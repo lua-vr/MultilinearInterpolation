@@ -37,7 +37,7 @@ $$`T : \prod_{i ∈ ι}(A_i)_{θ_i,p_i} → (B)_{θ_0,p_0}.`
 It is known (see an example in {citet janson}[]) that without further assumptions, we have a
 restriction
 $$`\frac{1}{q_0} ≤ ∑_i \frac{1}{q_i}`
-and the output parameter $`θ_0` must depend linearly on the parameters $`\theta_i`, in the
+and the output parameter $`θ_0` depends linearly on the parameters $`\theta_i`, in the
 sense that
 $$`\theta_0 = α_0 + ∑_i α_i θ_i`
 for some choice of coefficients $`(α_i)_{i ∈ ι}` and $`α_0`. In particular, if we start with
@@ -114,7 +114,5 @@ quasinorms when the constant $`C = 1`. It's a theorem that every $`C`-quasinorm 
 seminorm raised to the power $`p` such that $`(2 C) ^ p = 2`.
 
 {blueprint_decl aokiRolewicz_equiv_pow}
-
-
 
 # Extending from the intersection to the closure

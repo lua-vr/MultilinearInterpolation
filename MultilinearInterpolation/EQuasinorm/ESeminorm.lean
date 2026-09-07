@@ -15,7 +15,7 @@ noncomputable section
 
 open scoped ENNReal NNReal
 
-variable {α : Type*} [AddMonoid α] {β : Type*} [AddMonoid β]
+variable {α : Type*} [AddCommMonoid α]
 
 variable (α) in
 /-- An {lit}`ESeminorm` is an {name}`EQuasinorm` such that $`C = 1`.

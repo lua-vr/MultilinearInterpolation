@@ -21,7 +21,7 @@ noncomputable section
 open EQuasinorm
 open scoped ENNReal NNReal
 
-variable {β : Type*} [AddMonoid β]
+variable {β : Type*} [AddCommMonoid β]
 
 class Abs β where
   toFun : β → β
@@ -44,7 +44,7 @@ instance Pi.instAbs [∀ j, Abs (γ j)] : Abs (∀ j, γ j) := ⟨fun f j ↦ |f
 @[simp]
 lemma Pi.absₑ_apply [∀ j, Abs (γ j)] (f : ∀ j, γ j) (j : J) : |f|ₑ j = |f j|ₑ := rfl
 
-instance Pi.instIsModulus [∀ j, AddMonoid (γ j)] [∀ j, Preorder (γ j)] [∀ j, Abs (γ j)]
+instance Pi.instIsModulus [∀ j, AddCommMonoid (γ j)] [∀ j, Preorder (γ j)] [∀ j, Abs (γ j)]
     [∀ j, Abs.IsModulus (γ j)] : Abs.IsModulus (∀ j, γ j) where
   abs_add_le f g j := Abs.IsModulus.abs_add_le (f j) (g j)
   exists_decomp h := by

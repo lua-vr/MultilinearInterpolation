@@ -6,7 +6,6 @@ Authors: Lua Viana Reis
 
 import MultilinearInterpolation.EQuasinorm.FiniteLocus
 import MultilinearInterpolation.Modulus
-import Carleson.ToMathlib.RealInterpolation.Misc
 import VersoBlueprint
 
 /-!
@@ -20,7 +19,8 @@ noncomputable section
 open EQuasinorm
 open scoped ENNReal NNReal
 
-variable {ι : Type*} [Fintype ι] {α : ι → Type*} [∀ i, AddMonoid (α i)] {β : Type*} [AddMonoid β]
+variable {ι : Type*} [Fintype ι] {α : ι → Type*} [∀ i, AddCommMonoid (α i)] {β : Type*}
+  [AddCommMonoid β]
 
 variable [Abs β] [Preorder β]
 
@@ -86,7 +86,7 @@ def IsBoundedFor : Prop :=
 same quasinorms raised to a common power. -/
 @[blueprint]
 lemma isBoundedFor_iff_isBoundedFor_pow {p : ℝ} (hp : 0 < p) :
-    T.IsBoundedFor A B C ↔ T.IsBoundedFor (fun i ↦ (A i).pow p hp) (B.pow p hp) C :=
+    T.IsBoundedFor A B C ↔ T.IsBoundedFor (fun i ↦ (A i).pow hp) (B.pow hp) C :=
   sorry
 
 end MultisubadditiveMap

@@ -1,6 +1,4 @@
-import Verso
-import VersoManual
-import VersoBlueprint
+import Blueprint.Commands
 
 import MultilinearInterpolation
 

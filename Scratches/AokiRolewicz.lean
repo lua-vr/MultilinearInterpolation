@@ -133,7 +133,7 @@ variable {α : Type*} [AddCommMonoid α] {A : EQuasinorm α} {p : ℝ}
 
 /-- The `C`-triangle inequality, raised to the power `p`, becomes `2`-subadditivity for `max`.
 This is the only place where the defining equation `(2 * A.C) ^ p = 2` is used. -/
-lemma enorm_add_rpow_le_two_mul_max (hp : 0 ≤ p) (h2 : (2 * A.C) ^ p = 2) (x y : α) :
+lemma enorm_add_rpow_le_two_mul_max (hp : 0 ≤ p) (h2 : (2 * A.C : ℝ≥0∞) ^ p = 2) (x y : α) :
     ‖x + y‖ₑ[A] ^ p ≤ 2 * max (‖x‖ₑ[A] ^ p) (‖y‖ₑ[A] ^ p) := by
   have hmono : Monotone fun z : ℝ≥0∞ => z ^ p := fun _ _ h => ENNReal.rpow_le_rpow h hp
   calc ‖x + y‖ₑ[A] ^ p ≤ (2 * A.C * max ‖x‖ₑ[A] ‖y‖ₑ[A]) ^ p := by
@@ -157,7 +157,7 @@ phrased as: any `B` dominating each `2 ^ νⱼ * ‖aⱼ‖ ^ p` dominates `‖�
 Unlike the book we induct on `k` rather than on the number of summands, so the two parts produced
 by the splitting step need not be smaller -- only of half the mass.
 -/
-theorem enorm_sum_rpow_le_of_weights (hp : 0 < p) (h2 : (2 * A.C) ^ p = 2)
+theorem enorm_sum_rpow_le_of_weights (hp : 0 < p) (h2 : (2 * A.C : ℝ≥0∞) ^ p = 2)
     {ι : Type*} [DecidableEq ι] {w : ι → ℕ} (hw : ∀ j, ∃ e : ℕ, w j = 2 ^ e) :
     ∀ (k : ℕ) (s : Finset ι) (a : ι → α) (B : ℝ≥0∞), (∀ j ∈ s, w j ∣ 2 ^ k) →
       ∑ j ∈ s, w j ≤ 2 ^ k → (∀ j ∈ s, (2 : ℝ≥0∞) ^ k * ‖a j‖ₑ[A] ^ p ≤ w j * B) →
@@ -253,7 +253,7 @@ The book's quasi-norms satisfy `‖a‖ = 0 ↔ a = 0`, so every `‖aⱼ‖ ^ p
 well defined.  An `EQuasinorm` need not be definite, so the summands of zero norm are collected
 separately and given weight `1`; the exponents chosen for the others leave room for them, because
 `2 ^ (-νⱼ)` is chosen *strictly* below `‖aⱼ‖^p / M`. -/
-theorem enorm_sum_rpow_le_two_mul_sum (hp : 0 < p) (h2 : (2 * A.C) ^ p = 2)
+theorem enorm_sum_rpow_le_two_mul_sum (hp : 0 < p) (h2 : (2 * A.C : ℝ≥0∞) ^ p = 2)
     {ι : Type*} [DecidableEq ι] (s : Finset ι) (a : ι → α) :
     ‖∑ j ∈ s, a j‖ₑ[A] ^ p ≤ 2 * ∑ j ∈ s, ‖a j‖ₑ[A] ^ p := by
   classical
@@ -441,7 +441,7 @@ lemma starNorm_le_rpow (a : α) : A.starNorm p a ≤ ‖a‖ₑ[A] ^ p := by
   simpa using starNorm_le_of_sum_eq (A := A) (p := p) h
 
 /-- The right half of inequality (4), i.e. the whole content of the induction above. -/
-lemma rpow_le_two_mul_starNorm (hp : 0 < p) (h2 : (2 * A.C) ^ p = 2) (a : α) :
+lemma rpow_le_two_mul_starNorm (hp : 0 < p) (h2 : (2 * A.C : ℝ≥0∞) ^ p = 2) (a : α) :
     ‖a‖ₑ[A] ^ p ≤ 2 * A.starNorm p a := by
   rw [starNorm]
   simp only [ENNReal.mul_iInf_of_ne (two_ne_zero) (ENNReal.ofNat_ne_top)]
@@ -464,14 +464,14 @@ def aokiRolewicz : ESeminorm α where
 variable {A p}
 
 /-- **Inequality (4)** of Lemma 3.10.1: `‖a‖* ≤ ‖a‖ ^ p ≤ 2 ‖a‖*`. -/
-theorem aokiRolewicz_le_rpow_le_two_mul (hp : 0 < p) (h2 : (2 * A.C) ^ p = 2) (a : α) :
+theorem aokiRolewicz_le_rpow_le_two_mul (hp : 0 < p) (h2 : (2 * A.C : ℝ≥0∞) ^ p = 2) (a : α) :
     ‖a‖ₑ[A.aokiRolewicz p] ≤ ‖a‖ₑ[A] ^ p ∧ ‖a‖ₑ[A] ^ p ≤ 2 * ‖a‖ₑ[A.aokiRolewicz p] :=
   ⟨starNorm_le_rpow a, rpow_le_two_mul_starNorm hp h2 a⟩
 
 /-- Lemma 3.10.1 in the shape used in `MultilinearInterpolation.AokiRolewicz`: the Aoki-Rolewicz
 seminorm is equivalent, as a quasinorm, to `A.pow p`. -/
-theorem aokiRolewicz_equiv_pow (hp : 0 < p) (h2 : (2 * A.C) ^ p = 2) :
-    (A.aokiRolewicz p).toEQuasinorm ≈ A.pow p :=
+theorem aokiRolewicz_equiv_pow (hp : 0 < p) (h2 : (2 * A.C : ℝ≥0∞) ^ p = 2) :
+    (A.aokiRolewicz p).toEQuasinorm ≈ A.pow hp :=
   ⟨⟨2, by norm_num, fun x => rpow_le_two_mul_starNorm hp h2 x⟩,
     ⟨1, by norm_num, fun x => by
       show A.starNorm p x ≤ 1 * ‖x‖ₑ[A] ^ p

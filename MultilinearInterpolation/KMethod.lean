@@ -17,7 +17,7 @@ noncomputable section
 open Set MeasureTheory EQuasinorm
 open scoped ENNReal NNReal
 
-variable {α β : Type*} [AddMonoid α] {A₀ A₁ : EQuasinorm α}
+variable {α β : Type*} [AddCommMonoid α] {A₀ A₁ : EQuasinorm α}
   {t s : ℝ≥0∞} {x y z : α} {θ : ℝ} {q : ℝ≥0∞}
 
 namespace EQuasinorm
@@ -43,6 +43,7 @@ def discretePhiFunctional (θ : ℝ) (q : ℝ≥0∞) (f : ℤ → ℝ≥0∞) :
 def kMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨fun x ↦ phiFunctional θ q (kNorm A₀ A₁ · x)⟩
   C := sorry
+  C_lt_top := sorry
   C_ge_one := sorry
   enorm_zero := sorry
   enorm_add_le_mul := sorry
@@ -54,6 +55,7 @@ section Discrete
 def discreteKMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨fun x ↦ discretePhiFunctional θ q (fun k ↦ kNorm A₀ A₁ (2 ^ k) x)⟩
   C := sorry
+  C_lt_top := sorry
   C_ge_one := sorry
   enorm_zero := sorry
   enorm_add_le_mul := sorry
