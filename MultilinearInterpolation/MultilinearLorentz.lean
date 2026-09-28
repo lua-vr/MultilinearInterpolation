@@ -5,7 +5,6 @@ Authors: Lua Viana Reis
 -/
 
 import MultilinearInterpolation.ELorentz
-import VersoBlueprint
 
 set_option verso.blueprint.autoDeps true
 

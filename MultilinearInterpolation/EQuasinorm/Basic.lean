@@ -45,9 +45,12 @@ namespace EQuasinorm
 attribute [simp] EQuasinorm.enorm_zero
 attribute [grind ., bound] EQuasinorm.C_ge_one
 
+@[basify_simp]
 lemma C_ne_top (A : EQuasinorm α) : A.C ≠ ∞ := A.C_lt_top.ne
 
-lemma C_ne_zero (A : EQuasinorm α) : A.C ≠ 0 := (zero_lt_one.trans_le A.C_ge_one).ne'
+lemma C_pos (A : EQuasinorm α) : A.C > 0 := zero_lt_one.trans_le A.C_ge_one
+
+lemma C_ne_zero (A : EQuasinorm α) : A.C ≠ 0 := A.C_pos.ne'
 
 attribute [aesop (rule_sets := [finiteness]) safe] EQuasinorm.C_lt_top EQuasinorm.C_ne_top
   max_lt
@@ -134,7 +137,8 @@ lemma enorm_rpow_mul_enorm_rpow_le_rpow_neg_mul_jNorm
     ‖x‖ₑ[A₀] ^ (1 - θ) * ‖x‖ₑ[A₁] ^ θ ≤ t ^ (-θ) * jNorm A₀ A₁ t x := by
   calc
     _ = t ^ (-θ) * (t ^ θ * (‖x‖ₑ[A₀] ^ (1 - θ) * ‖x‖ₑ[A₁] ^ θ)) := by
-      rw [← mul_assoc, ← ENNReal.rpow_add _ _ ht₀ ht]; simp
+      rw [← mul_assoc, ← ENNReal.rpow_add _ _ ht₀ ht]
+      simp
     _ ≤ t ^ (-θ) * jNorm A₀ A₁ t x := by
       gcongr
       exact enorm_rpow_mul_enorm_rpow_le_jNorm hθ₀ hθ₁
@@ -148,7 +152,7 @@ def skewedInf (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨jNorm A₀ A₁ t⟩
   C := max A₀.C A₁.C
   enorm_zero := by simp_rw [jNorm, EQuasinorm.enorm_zero, mul_zero, max_self]
-  enorm_add_le_mul x y :=
+  enorm_add_le_mul x y := by
     calc
       max ‖x + y‖ₑ[A₀] (t * ‖x + y‖ₑ[A₁]) ≤
         max (A₀.C * (‖x‖ₑ[A₀] + ‖y‖ₑ[A₀])) (A₁.C * (t * ‖x‖ₑ[A₁] + t * ‖y‖ₑ[A₁])) := by
@@ -200,7 +204,7 @@ lemma kNorm_add_le_mul (t : ℝ≥0∞) (x y : α) :
   suffices h : ∀ x₀ x₁, x = x₀ + x₁ → ∀ y₀ y₁, y = y₀ + y₁ →
       A₀.kNorm A₁ t (x + y) ≤
       max A₀.C A₁.C * ((‖x₀‖ₑ[A₀] + t * ‖x₁‖ₑ[A₁]) + (‖y₀‖ₑ[A₀] + t * ‖y₁‖ₑ[A₁])) by
-    have hC0 : max A₀.C A₁.C ≠ 0 := (zero_lt_one.trans_le (A₀.C_ge_one.trans (le_max_left ..))).ne'
+    have hC0 : max A₀.C A₁.C ≠ 0 := (A₀.C_pos.trans_le (le_max_left ..)).ne'
     rw [mul_add]
     conv_rhs => simp only [kNorm, ENNReal.mul_iInf_of_ne hC0 (by finiteness)]
     apply ENNReal.le_iInf₂_add_iInf₂
@@ -223,13 +227,10 @@ lemma kNorm_add_le_mul (t : ℝ≥0∞) (x y : α) :
 lemma kNorm_le_mul (hs0 : s ≠ 0) (hs_top : s ≠ ∞) (ht_top : t ≠ ∞) :
     kNorm A₀ A₁ t x ≤ max 1 (t / s) * kNorm A₀ A₁ s x := by
   have hC0 : max 1 (t / s) ≠ 0 := (zero_lt_one.trans_le (le_max_left ..)).ne'
-  have hCtop : max 1 (t / s) ≠ ∞ :=
-    (max_lt (by norm_num) (ENNReal.div_lt_top ht_top hs0)).ne
-  have ht_eq : t / s * s = t := ENNReal.div_mul_cancel hs0 hs_top
+  have hCtop : max 1 (t / s) ≠ ∞ := by basify
   have ht_le : t ≤ max 1 (t / s) * s := by
-    conv_lhs => rw [← ht_eq]
-    gcongr
-    exact le_max_right ..
+    basify
+    all_goals (rw [← div_le_iff₀ (by positivity)]; exact le_max_right ..)
   simp_rw [kNorm, ENNReal.mul_iInf_of_ne hC0 hCtop]
   refine iInf₂_mono fun a _ ↦ ?_
   rw [mul_add, ← mul_assoc]
@@ -244,7 +245,7 @@ end kNorm
 @[blueprint]
 def skewedSup (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨kNorm A₀ A₁ t⟩
-  C := A₀.C + A₁.C -- maybe
+  C := A₀.C + A₁.C -- maybe!! (Todo)
   C_ge_one := le_add_right A₀.C_ge_one
   enorm_zero := by
     simp_rw [← nonpos_iff_eq_zero]
