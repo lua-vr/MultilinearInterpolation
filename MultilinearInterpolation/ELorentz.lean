@@ -4,9 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis
 -/
 
-import MultilinearInterpolation.KMethod
-import Mathlib.Analysis.MeanInequalitiesPow
-import Mathlib.Tactic.Basify
+module
+
+public import MultilinearInterpolation.KMethod
+public import Mathlib.Analysis.MeanInequalitiesPow
+public import Mathlib.Tactic.Basify
+import VersoBlueprint
+meta import VersoBlueprint
 
 /-!
  Defines `eLorentzNorm` as a `QuasiENorm`, then shows it is an interpolation
@@ -14,7 +18,7 @@ import Mathlib.Tactic.Basify
  Jörgen Löfström, Section 5.3.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 namespace EQuasinorm
 
@@ -56,7 +60,7 @@ lemma LorentzAddConst_lt_top {p q} : LorentzAddConst p q < ∞ := by
 --  todo: fix upstream
 attribute [local basify_op ←] ENNReal.coe_rpow_of_ne_zero
 
-lemma ENNReal.one_le_LpAddConst (q : ℝ≥0∞) : 1 ≤ q.LpAddConst := by
+lemma _root_.ENNReal.one_le_LpAddConst (q : ℝ≥0∞) : 1 ≤ q.LpAddConst := by
   unfold ENNReal.LpAddConst
   split_ifs with h
   · rw [Set.mem_Ioo] at h

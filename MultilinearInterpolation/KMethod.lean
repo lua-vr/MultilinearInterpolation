@@ -4,15 +4,18 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jim Potergies, Michael Rothgang, Lua Viana Reis
 -/
 
-import MultilinearInterpolation.EQuasinorm.Basic
-import MultilinearInterpolation.EQuasinorm.ESeminorm
+module
+
+public import MultilinearInterpolation.EQuasinorm.Basic
+public import MultilinearInterpolation.EQuasinorm.ESeminorm
 import VersoBlueprint
+meta import VersoBlueprint
 
 /-!
 Following *Interpolation Spaces, An Introduction* by Jöran Bergh and Jörgen Löfström, Section 3.1.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open Set MeasureTheory EQuasinorm
 open scoped ENNReal NNReal

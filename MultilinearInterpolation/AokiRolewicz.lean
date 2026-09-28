@@ -4,9 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis
 -/
 
-import MultilinearInterpolation.EQuasinorm.Basic
-import MultilinearInterpolation.EQuasinorm.ESeminorm
-import MultilinearInterpolation.EQuasinorm.Multisubadditive
+module
+
+public import MultilinearInterpolation.EQuasinorm.Basic
+public import MultilinearInterpolation.EQuasinorm.ESeminorm
+public import MultilinearInterpolation.EQuasinorm.Multisubadditive
+import VersoBlueprint
+meta import VersoBlueprint
 
 /-!
 In this file, we show that a c-{name}`EQuasinorm` is equivalent to an actual
@@ -17,7 +21,7 @@ Following *Interpolation Spaces, An Introduction* by Jöran Bergh and Jörgen
  Löfström, lemma 3.10.1.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open scoped NNReal ENNReal
 open EQuasinorm

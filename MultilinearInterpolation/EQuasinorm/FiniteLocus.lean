@@ -4,10 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis
 -/
 
-import MultilinearInterpolation.EQuasinorm.Basic
+module
+
+public import MultilinearInterpolation.EQuasinorm.Basic
 import VersoBlueprint
+meta import VersoBlueprint
 
 /-! The {lit}`finiteLocus` of an {name}`EQuasinorm` is the submonoid of its finite elements. -/
+
+@[expose] public section
 
 open scoped ENNReal
 

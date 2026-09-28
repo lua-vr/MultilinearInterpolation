@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis
 -/
 
-import MultilinearInterpolation.EQuasinorm.ESeminorm
+module
+
+public import MultilinearInterpolation.EQuasinorm.ESeminorm
 import VersoBlueprint
+meta import VersoBlueprint
 
 /-!
 # Moduli and solid quasinorms.
@@ -16,7 +19,7 @@ additive groups who are lattices, as they also apply for {name}`ENNReal`.
 
 open Verso.Genre Manual Informal InlineLean
 
-noncomputable section
+@[expose] public noncomputable section
 
 open EQuasinorm
 open scoped ENNReal NNReal

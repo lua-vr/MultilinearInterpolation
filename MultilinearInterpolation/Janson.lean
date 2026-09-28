@@ -4,16 +4,20 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis
 -/
 
-import MultilinearInterpolation.EQuasinorm.Multisubadditive
-import MultilinearInterpolation.EQuasinorm.ESeminorm
-import MultilinearInterpolation.KMethod
+module
+
+public import MultilinearInterpolation.EQuasinorm.Multisubadditive
+public import MultilinearInterpolation.EQuasinorm.ESeminorm
+public import MultilinearInterpolation.KMethod
+import VersoBlueprint
+meta import VersoBlueprint
 
 /-!
 Following
  *On interpolation of multi-linear operators* by Svante Janson.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open Set EQuasinorm MeasureTheory
 open scoped ENNReal NNReal

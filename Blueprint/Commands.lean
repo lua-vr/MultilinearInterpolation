@@ -50,9 +50,9 @@ private meta def attributeLabelPositions (env : Environment)
     env.header.moduleNames.zipIdx.foldl (init := {}) fun acc (name, idx) =>
       acc.insert name idx
   let mut positions : Lean.NameMap (Nat × Nat) := {}
-  for (moduleName, labels) in state.blueprintAttributeLabelsByModule do
+  for (moduleName, catalog) in state.blueprintAttributeLabelsByModule do
     let modPos := moduleIdx.getD moduleName env.header.moduleNames.size
-    for (label, pos) in labels.zipIdx do
+    for (label, pos) in catalog.labels.zipIdx do
       positions := positions.insert label (modPos, pos)
   return positions
 

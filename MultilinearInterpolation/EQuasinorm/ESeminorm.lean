@@ -4,14 +4,18 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis
 -/
 
-import MultilinearInterpolation.EQuasinorm.Basic
+module
+
+public import MultilinearInterpolation.EQuasinorm.Basic
+import VersoBlueprint
+meta import VersoBlueprint
 
 /-!
 Following
  *Interpolation Spaces, An Introduction* by  Jöran Bergh , Jörgen Löfström.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open scoped ENNReal NNReal
 

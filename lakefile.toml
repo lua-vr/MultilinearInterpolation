@@ -12,7 +12,7 @@ weak.doc.verso = true
 [[require]]
 name = "verso-blueprint"
 git = "https://github.com/leanprover/verso-blueprint"
-rev = "v4.34.0"
+rev = "refactor/module-system-v434"
 
 [[require]]
 name = "verso"

@@ -4,9 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis
 -/
 
-import MultilinearInterpolation.EQuasinorm.FiniteLocus
-import MultilinearInterpolation.Modulus
+module
+
+public import MultilinearInterpolation.EQuasinorm.FiniteLocus
+public import MultilinearInterpolation.Modulus
 import VersoBlueprint
+meta import VersoBlueprint
 
 /-!
 # Definition of {lit}`MultiSubadditiveMap`s.
@@ -14,7 +17,7 @@ import VersoBlueprint
 
 open Verso.Genre Manual Informal InlineLean
 
-noncomputable section
+@[expose] public noncomputable section
 
 open EQuasinorm
 open scoped ENNReal NNReal

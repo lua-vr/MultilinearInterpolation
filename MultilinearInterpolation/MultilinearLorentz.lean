@@ -4,19 +4,21 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis
 -/
 
-import MultilinearInterpolation.ELorentz
+module
 
-set_option verso.blueprint.autoDeps true
+public import MultilinearInterpolation.ELorentz
+import VersoBlueprint
+meta import VersoBlueprint
 
-noncomputable section
+@[expose] public noncomputable section
 
 namespace EQuasinorm
 
 open MeasureTheory
 open scoped ENNReal NNReal
 
-variable {α : Type*} [mα : MeasurableSpace α] (μ : Measure α) {β : Type*} [TopologicalSpace β]
-  [ESeminormedAddCommMonoid β] [ContinuousAdd β] (m : ℕ)
+variable {α : Type*} [mα : MeasurableSpace α] (μ : Measure α) [SigmaFinite μ] {β : Type*}
+  [TopologicalSpace β] [ESeminormedAddCommMonoid β] [ContinuousAdd β] (m : ℕ)
 
 def εCouple (ε : ℝ≥0∞) := eLorentzCouple μ β ε ∞ ε ∞
 

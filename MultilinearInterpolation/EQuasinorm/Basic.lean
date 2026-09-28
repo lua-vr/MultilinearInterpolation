@@ -4,19 +4,22 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jim Potergies, Michael Rothgang, Lua Viana Reis
 -/
 
-import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-import Mathlib.MeasureTheory.Measure.WithDensity
-import Mathlib.Tactic.Basify
-import MultilinearInterpolation.Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+module
+
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+public import Mathlib.MeasureTheory.Measure.WithDensity
+public import Mathlib.Tactic.Basify
+public import MultilinearInterpolation.Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import VersoBlueprint
+meta import VersoBlueprint
 
 /-!
 Following
  *Interpolation Spaces, An Introduction* by  Jöran Bergh , Jörgen Löfström.
 -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open NNReal ENNReal Set
 
@@ -61,7 +64,7 @@ notation "‖" e "‖ₑ[" A "]" => @enorm _ (A).enorm e
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborate {lit}`@enorm _ A.enorm e` back to the notation {lit}`‖e‖ₑ[A]`. -/
 @[app_delab enorm]
-def delabEQuasinormEnorm : Delab := do
+meta def delabEQuasinormEnorm : Delab := do
   let e ← getExpr
   guard <| e.isAppOfArity ``enorm 3
   guard <| e.appFn!.appArg!.isAppOfArity ``EQuasinorm.enorm 3

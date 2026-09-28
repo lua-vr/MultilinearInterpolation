@@ -4,9 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lua Viana Reis
 -/
 
-import MultilinearInterpolation.EQuasinorm.Basic
-import MultilinearInterpolation.KMethod
+module
+
+public import MultilinearInterpolation.EQuasinorm.Basic
+public import MultilinearInterpolation.KMethod
 import VersoBlueprint
+meta import VersoBlueprint
 
 /-!
 Following *Interpolation Spaces, An Introduction* by Jöran Bergh and Jörgen Löfström, Section 3.2.
@@ -15,7 +18,7 @@ If we choose to develop the J-method, this section requires some thought: how to
 "representation" without completeness, stating that the "integral" or the "sum" converge with
 respect to the quasinorm? (it's possible, but how feasible?) -/
 
-noncomputable section
+@[expose] public noncomputable section
 
 open Set MeasureTheory EQuasinorm Filter
 open scoped ENNReal NNReal
