@@ -8,7 +8,6 @@ module
 
 public import MultilinearInterpolation.ELorentz
 import VersoBlueprint
-meta import VersoBlueprint
 
 @[expose] public noncomputable section
 

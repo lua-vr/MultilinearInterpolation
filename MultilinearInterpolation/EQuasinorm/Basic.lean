@@ -11,8 +11,7 @@ public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 public import Mathlib.MeasureTheory.Measure.WithDensity
 public import Mathlib.Tactic.Basify
 public import MultilinearInterpolation.Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import VersoBlueprint
-meta import VersoBlueprint
+public import VersoBlueprint
 
 /-!
 Following

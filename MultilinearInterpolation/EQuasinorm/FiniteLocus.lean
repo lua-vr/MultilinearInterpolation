@@ -7,8 +7,6 @@ Authors: Lua Viana Reis
 module
 
 public import MultilinearInterpolation.EQuasinorm.Basic
-import VersoBlueprint
-meta import VersoBlueprint
 
 /-! The {lit}`finiteLocus` of an {name}`EQuasinorm` is the submonoid of its finite elements. -/
 

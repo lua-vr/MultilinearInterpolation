@@ -8,8 +8,6 @@ module
 
 public import MultilinearInterpolation.EQuasinorm.FiniteLocus
 public import MultilinearInterpolation.Modulus
-import VersoBlueprint
-meta import VersoBlueprint
 
 /-!
 # Definition of {lit}`MultiSubadditiveMap`s.

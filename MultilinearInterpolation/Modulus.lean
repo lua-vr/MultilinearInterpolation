@@ -7,8 +7,6 @@ Authors: Lua Viana Reis
 module
 
 public import MultilinearInterpolation.EQuasinorm.ESeminorm
-import VersoBlueprint
-meta import VersoBlueprint
 
 /-!
 # Moduli and solid quasinorms.

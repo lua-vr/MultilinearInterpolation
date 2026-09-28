@@ -9,8 +9,6 @@ module
 public import MultilinearInterpolation.EQuasinorm.Multisubadditive
 public import MultilinearInterpolation.EQuasinorm.ESeminorm
 public import MultilinearInterpolation.KMethod
-import VersoBlueprint
-meta import VersoBlueprint
 
 /-!
 Following
