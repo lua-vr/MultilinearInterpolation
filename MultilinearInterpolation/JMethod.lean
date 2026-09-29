@@ -23,23 +23,10 @@ respect to the quasinorm? (it's possible, but how feasible?) -/
 open Set MeasureTheory EQuasinorm Filter
 open scoped ENNReal NNReal
 
-variable {α β : Type*} [AddCommGroup α]
+variable {α β : Type*} [AddCommMonoid α]
   {A₀ A₁ : EQuasinorm α} {t s : ℝ≥0∞} {x y z : α} {θ : ℝ} {q : ℝ≥0∞}
 
 namespace EQuasinorm
-
-namespace JMethod
-
-/-- The space $`J_{θ,q}(\bar{A})` in Section 3.2. Since {name}`jNorm` is a norm
-on the intersection, it is defined as an infimum over all representations of $`a`,
-which are functions $`u : ℝ≥0 → Δ(A)` with $`‖a - ∫ u(t)/t dt‖ₑ = 0`. -/
-def jMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm α where
-  enorm := sorry
-  C := sorry
-  C_lt_top := sorry
-  C_ge_one := sorry
-  enorm_zero := sorry
-  enorm_add_le_mul := sorry
 
 section Discrete
 
@@ -65,13 +52,11 @@ lemma discreteJMethod_equiv_jmethod : discreteJMethod A₀ A₁ θ q ≈ jMethod
 
 end Discrete
 
-end JMethod
-
 namespace Couple
 
 variable (A : Couple α)
 
-abbrev jMethod := JMethod.jMethod A.fst A.snd
+/- abbrev jMethod := EQuasinorm.jMethod A.fst A.snd -/
 
 end Couple
 

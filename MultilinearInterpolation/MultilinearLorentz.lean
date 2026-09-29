@@ -7,7 +7,6 @@ Authors: Lua Viana Reis
 module
 
 public import MultilinearInterpolation.ELorentz
-import VersoBlueprint
 
 @[expose] public noncomputable section
 
