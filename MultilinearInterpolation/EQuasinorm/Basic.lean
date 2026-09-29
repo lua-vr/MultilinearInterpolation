@@ -274,6 +274,7 @@ lemma sup_equiv_sup (h₀ : A₀ ≈ A₀') (h₁ : A₁ ≈ A₁') : A₀ ⊔ A
 
 -- Part of Lemma 3.1.1
 -- assume t ≠ ∞ if needed
+@[blueprint]
 lemma monotone_kNorm (hx : ‖x‖ₑ[A₀ ⊔ A₁] < ∞) : Monotone (kNorm A₀ A₁ · x) := by
   sorry
 

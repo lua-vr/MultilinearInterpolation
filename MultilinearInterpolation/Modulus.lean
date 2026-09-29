@@ -10,9 +10,6 @@ public import MultilinearInterpolation.EQuasinorm.ESeminorm
 
 /-!
 # Moduli and solid quasinorms.
-
-This notion isolates the subadditivity and the Riesz decomposition property of partially ordered
-additive groups who are lattices, as they also apply for {name}`ENNReal`.
 -/
 
 open Verso.Genre Manual Informal InlineLean
@@ -29,11 +26,29 @@ class Abs β where
 
 notation "|" e "|ₑ" => Abs.toFun e
 
+
+
+-- [[denote:20260928T205504::*The construction]]
 variable (β) in
+/--
+todo: this is a notion that we "made up". we should think if it's in the most reasonable form,
+but for now it's assuming what we need.
+
+it isolates some properties of partially ordered additive groups who are lattices that still work in
+monoids.
+
+The importance of this is that we want some properties to hold for all solid norms.
+
+todo: what about definition 3.5.1 in BL ("is of class")? a different possible approach would be to
+quantify over all spaces that are of the class of the couple.
+-/
+@[blueprint]
 class Abs.IsModulus [Preorder β] [Abs β] : Prop where
+  /-- subadditivity -/
   abs_add_le (x y : β) : |x + y|ₑ ≤ |x|ₑ + |y|ₑ
-  exists_decomp {x y z : β} (h : |x|ₑ ≤ |y|ₑ + |z|ₑ) :
-    ∃ x₀ x₁, x = x₀ + x₁ ∧ |x₀|ₑ ≤ |y|ₑ ∧ |x₁|ₑ ≤ |z|ₑ
+  /-- Riez property -/
+  exists_decomp {x y₀ y₁ : β} (h : |x|ₑ ≤ |y₀|ₑ + |y₁|ₑ) :
+    ∃ x₀ x₁, x = x₀ + x₁ ∧ |x₀|ₑ ≤ |y₀|ₑ ∧ |x₁|ₑ ≤ |y₁|ₑ ∧ |x₀|ₑ ≤ |x|ₑ ∧ |x₁|ₑ ≤ |x|ₑ
 
 section Instances
 
