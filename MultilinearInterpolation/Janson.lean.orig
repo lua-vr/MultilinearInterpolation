@@ -27,7 +27,6 @@ variable {α : Type*} [AddCommMonoid α] (A : Couple α)
 
 /-- Let $`x \in \alpha`, $`\delta > 0` and $`\nu \in \mathbb{Z}`. There is a decomposition
 $`x = y + z` with $$`\|y\|_0 + 2^\nu \|z\|_1 \le K_\nu(x) + \delta`. -/
-@[blueprint]
 lemma exists_decomp_le_kNorm_add {δ : ℝ≥0∞} (hδ : δ ≠ 0) (x : α) (ν : ℤ) :
     ∃ y z : α, y + z = x ∧
       ‖y‖ₑ[A.fst] + 2 ^ ν * ‖z‖ₑ[A.snd] ≤ A.kNorm (2 ^ ν) x + δ := by
@@ -39,7 +38,6 @@ lemma exists_decomp_le_kNorm_add {δ : ℝ≥0∞} (hδ : δ ≠ 0) (x : α) (ν
 /-- Let $`x \in \alpha` and $`\delta > 0`. There are sequences $`(y_\nu)`, $`(z_\nu)` with
 $`x = y_\nu + z_\nu` and $$`\|y_\nu\|_0 + 2^\nu \|z_\nu\|_1 \le K_\nu(x) + \delta` for all
 $`\nu \in \mathbb{Z}`. -/
-@[blueprint]
 lemma exists_seq_decomp_le_kNorm_add {δ : ℝ≥0∞} (hδ : δ ≠ 0) (x : α) :
     ∃ y z : ℤ → α, ∀ ν : ℤ, y ν + z ν = x ∧
       ‖y ν‖ₑ[A.fst] + 2 ^ ν * ‖z ν‖ₑ[A.snd] ≤ A.kNorm (2 ^ ν) x + δ := by
@@ -53,27 +51,25 @@ $$`\inf\Bigl\{\,\bigl\|\{r^{-\theta n}J(r^{n},a_{n},\bar{A}_{i})\}_{-N}^{N}\bigr
 def jInfNorm (θ : ℝ) (q : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
   ⨅ (N : ℕ) (a : Fin (2 * N) → α) (_ : ∑ n, a n = x),
     eLpNorm (fun k : Fin (2 * N) ↦
-      let n : ℝ := (k : ℝ) - N
+      let n : ℝ := k - N
       2 ^ (-θ * n) * A.jNorm (2 ^ n) (a k)) q Measure.count
 
 variable [Preorder α] [Abs α] [Abs.IsModulus α] 
 
 /--
 Assume that $`A_0` and $`A_1` are solid. Let $`x \in \alpha`, $`N \ge 1`, and let
-$`(y_\nu)_{\nu \in \mathbb{Z}}`, $`(z_\nu)_{\nu \in \mathbb{Z}}` satisfy $`x = y_\nu + z_\nu`
-for all $`\nu`. Then there are $`u_{-N}, \dots, u_{N-1}` with $`\sum_\nu u_\nu = x` and:
+$`(y_\nu)_{\nu \in \mathbb{Z}}`, $`(z_\nu)_{\nu \in \mathbb{Z}}` satisfy $`x = y_\nu + z_\nu` for all
+$`\nu`. Then there are $`u_{-N}, \dots, u_{N-1}` with $`\sum_\nu u_\nu = x` and:
 
 * for $`-N < \nu < N-1`:
   $$`\|u_\nu\|_0 \le \|y_\nu\|_0, \qquad \|u_\nu\|_1 \le \|z_{\nu-1}\|_1;`
 * at the ends:
-  $$`\|u_{-N}\|_0 \le \|y_{-N}\|_0,\quad \|u_{-N}\|_1 \le \|x\|_1,`
-  $$`\|u_{N-1}\|_0 \le \|x\|_0,\quad \|u_{N-1}\|_1 \le \|z_{N-2}\|_1 .`
+  $$`\|u_{-N}\|_0 \le \|y_{-N}\|_0,\quad \|u_{-N}\|_1 \le \|x\|_1,\qquad \|u_{N-1}\|_0 \le \|x\|_0,\quad \|u_{N-1}\|_1 \le \|z_{N-2}\|_1 .`
 -/
-@[blueprint]
 lemma exists_fin_decomp_of_isSolid [A.fst.IsSolid] [A.snd.IsSolid] {x : α} {y z : ℤ → α}
     (hyz : ∀ ν, y ν + z ν = x) {N : ℕ} (hN : 0 < N) :
     ∃ u : Fin (2 * N) → α, ∑ k, u k = x ∧ ∀ k : Fin (2 * N),
-      let ν : ℤ := (k : ℤ) - N
+      let ν : ℤ := (k : ℕ) - N
       ‖u k‖ₑ[A.fst] ≤ (if ν = N - 1 then ‖x‖ₑ[A.fst] else ‖y ν‖ₑ[A.fst]) ∧
       ‖u k‖ₑ[A.snd] ≤ (if ν = -N then ‖x‖ₑ[A.snd] else ‖z (ν - 1)‖ₑ[A.snd]) := by
   sorry

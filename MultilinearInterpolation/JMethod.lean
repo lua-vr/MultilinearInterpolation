@@ -46,9 +46,9 @@ def discreteJMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQ
   enorm_zero := sorry
   enorm_add_le_mul := sorry
 
-/-- Lemma 3.2.3. -/
-lemma discreteJMethod_equiv_jmethod : discreteJMethod A₀ A₁ θ q ≈ jMethod A₀ A₁ θ q := by
-  sorry
+/- /\-- Lemma 3.2.3. -\/
+ - lemma discreteJMethod_equiv_jmethod : discreteJMethod A₀ A₁ θ q ≈ jMethod A₀ A₁ θ q := by
+ -   sorry -/
 
 end Discrete
 
