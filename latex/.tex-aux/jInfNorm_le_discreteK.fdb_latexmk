@@ -1,7 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1790783836.30217 "/home/lua/lean/multilinear-interpolation-claude/latex/jInfNorm_le_discreteK.tex" "jInfNorm_le_discreteK.pdf" "jInfNorm_le_discreteK" 1790783836.58559 0
-  ".tex-aux/jInfNorm_le_discreteK.aux" 1790783836.5385 1344 61ebc5d44ebd0e2ef7a01d0d51153001 "pdflatex"
-  "/home/lua/lean/multilinear-interpolation-claude/latex/jInfNorm_le_discreteK.tex" 1790783622.4112 15408 812ba5b2d0448d636547896f38e2acf8 ""
+["pdflatex"] 1790805623.72619 "jInfNorm_le_discreteK.tex" "jInfNorm_le_discreteK.pdf" "jInfNorm_le_discreteK" 1790805624.28105 0
+  ".tex-aux/jInfNorm_le_discreteK.aux" 1790805624.18907 1355 bc35158e9362268bfd621d1ca35dcc4c "pdflatex"
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1095.tfm" 1136768653 1536 02c06700a42be0f5a28664c7273f82e7 ""
@@ -69,7 +68,7 @@
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1777593600 43785 66587115382950aca692b5f6e3c2fb74 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1780411107 4754230 fd73faac2c19779d61b8c317c9e61ffa ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1782597386 3527882 d18e4d9da82c565b58517e0fb0c754c5 ""
-  "jInfNorm_le_discreteK.tex" 1790783622.4112 15408 812ba5b2d0448d636547896f38e2acf8 ""
+  "jInfNorm_le_discreteK.tex" 1790805623.58151 16686 354875b083e4905dd039976de4835eb5 ""
   (generated)
   ".tex-aux/jInfNorm_le_discreteK.aux"
   ".tex-aux/jInfNorm_le_discreteK.log"

@@ -1,8 +1,8 @@
-PWD /home/lua/lean/multilinear-interpolation-claude/latex
+PWD /home/lua/lean/multilinear-interpolation_ws1/latex
 INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
 INPUT /usr/share/texlive/texmf-dist/web2c/texmf.cnf
 INPUT /var/lib/texmf/web2c/pdftex/pdflatex.fmt
-INPUT /home/lua/lean/multilinear-interpolation-claude/latex/jInfNorm_le_discreteK.tex
+INPUT jInfNorm_le_discreteK.tex
 OUTPUT .tex-aux/jInfNorm_le_discreteK.log
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/article.cls
 INPUT /usr/share/texlive/texmf-dist/tex/latex/base/article.cls

@@ -64,15 +64,12 @@ For a family \(f = (f_\nu)_{\nu \in S}\) in \([0,\infty]\) indexed by a countabl
   \qquad (\texttt{discreteKMethod}),
 \]
 \[
-  \cJ(x) = \inf \Bigl\{ \bigl\lVert (2^{-\nu\theta} J_\nu(u_\nu))_{\nu \in \Z} \bigr\rVert_{\ell^q}
-  : u \colon \Z \to \alpha \text{ finitely supported},\ \textstyle\sum_{\nu \in \Z} u_\nu = x \Bigr\}
-  \qquad (\texttt{jInfNorm}).
+  \cJ(x) = \inf \Bigl\{ \bigl\lVert (2^{-\nu\theta} J_\nu(u_\nu))_{\nu \in \W} \bigr\rVert_{\ell^q}
+  : N \in \mathbb N,\ u \colon \W \to \alpha,\ \textstyle\sum_{\nu \in \W} u_\nu = x \Bigr\}
+  \qquad (\texttt{jInfNorm}),
 \]
-Since \(J_\nu(0) = 0\), a family \(u \colon \W \to \alpha\) on the window
-\(\W = \{-N, \dots, N-1\}\) with \(\sum_{\nu \in \W} u_\nu = x\), extended by zero to \(\Z\), is
-admissible, with cost \(\lVert (2^{-\nu\theta} J_\nu(u_\nu))_{\nu \in \W} \rVert_{\ell^q}\).
-Conversely every admissible \(u\) is supported in some window. Hence \(\cJ\) is equivalently the
-infimum of these costs over \(N \in \mathbb N\) and \(u \colon \W \to \alpha\).
+where \(\W = \{-N, \dots, N-1\}\). In Lean the window is indexed by \(k \in
+\texttt{Fin}\,(2N)\) with \(\nu = k - N\).
 
 \begin{theorem}\label{thm:main}
   For every \(x \in \Delta\),
@@ -142,64 +139,14 @@ An additive error is used because the infimum need not be attained, and a multip
 
 \section{Splitting \(x\) into \(2N\) pieces}
 
-This is the only place where (R) is used. The first piece is split off \(r\), and the rest
-of \(r\) is split by induction, so no subtraction is needed.
-
-\begin{proposition}\label{prop:split-general}
-  Let \(x \in \alpha\), \(a \in \Z\), \(m \in \mathbb N\), put \(I = \{a, \dots, a+m\}\), and
-  for \(\mu = a+1, \dots, a+m\) let \(x = y_\mu + z_\mu\) be arbitrary decompositions. Let
-  \(r \in \alpha\) with \(\abs{r} \le \abs{x}\). Then there is \(u \colon \Z \to \alpha\) with
-  \(u_\nu = 0\) for \(\nu \notin I\), \(\sum_{\nu \in \Z} u_\nu = r\) and, for every
-  \(\nu \in I\),
-  \begin{enumerate}
-    \item[(a)] \(\abs{u_\nu} \le \abs{y_{\nu+1}}\) if \(\nu < a+m\);
-    \item[(b)] \(\abs{u_\nu} \le \abs{z_\nu}\) if \(\nu > a\);
-    \item[(c)] \(\abs{u_\nu} \le \abs{r}\).
-  \end{enumerate}
-\end{proposition}
-
-\begin{proof}
-  By induction on \(m\), for all \(a\) and \(r\) simultaneously.
-
-  \emph{The case \(m = 0\).} Let \(u_a = r\) and \(u_\nu = 0\) for \(\nu \ne a\). Then
-  (a) and (b) are vacuous, and (c) holds by reflexivity.
-
-  \emph{The step from \(m\) to \(m+1\).} Since \(x = y_{a+1} + z_{a+1}\), inequality
-  \eqref{eq:abs-add} and transitivity give
-  \[
-    \abs{r} \le \abs{x} \le \abs{y_{a+1}} + \abs{z_{a+1}} .
-  \]
-  Applying (R) to \(r\) gives \(r = v + r'\) with
-  \begin{equation}\label{eq:step}
-    \abs{v} \le \abs{y_{a+1}}, \qquad \abs{r'} \le \abs{z_{a+1}}, \qquad
-    \abs{v} \le \abs{r}, \qquad \abs{r'} \le \abs{r}.
-  \end{equation}
-  By the last inequality, \(\abs{r'} \le \abs{x}\), so the induction hypothesis applies to
-  the start \(a+1\), the length \(m\) and the remainder \(r'\). It gives
-  \(u' \colon \Z \to \alpha\) vanishing outside \(I' = \{a+1, \dots, a+1+m\}\) with
-  \(\sum_{\nu \in \Z} u'_\nu = r'\) and (a)--(c) relative to \(I'\) and \(r'\). Define
-  \(u_a = v\) and \(u_\nu = u'_\nu\) for \(\nu \ne a\). Then \(u\) vanishes outside
-  \(I = \{a\} \cup I'\), and since \(u'_a = 0\), \(\sum_{\nu \in \Z} u_\nu = v + \sum_{\nu \in \Z} u'_\nu = v + r' = r\).
-
-  At \(\nu = a\), (a) and (c) are the first and third inequality of \eqref{eq:step}, and (b)
-  is vacuous. Let \(\nu \in I'\), so \(u_\nu = u'_\nu\). Property (a) is that of \(u'\), since
-  the right end of \(I'\) is that of \(I\). Property (c) follows from
-  \(\abs{u'_\nu} \le \abs{r'} \le \abs{r}\). For (b), if \(\nu > a+1\) it is that of \(u'\).
-  At \(\nu = a+1\) the induction hypothesis gives no condition (b), because \(a+1\) is the left
-  end of \(I'\); instead, (c) for \(u'\) and the second inequality of \eqref{eq:step} give
-  \(\abs{u'_{a+1}} \le \abs{r'} \le \abs{z_{a+1}}\).
-\end{proof}
-
-Both new conditions of (R) are needed. The condition \(\abs{x_1} \le \abs{x}\) gives
-\(\abs{r'} \le \abs{x}\), without which the induction hypothesis could not be applied; the
-condition \(\abs{x_0} \le \abs{x}\), through (c), gives (b) at the left end of \(I'\). For
-the same reason (c) is stated relative to \(r\) and not to \(x\).
+This is the only place where (R) is used. The pieces are split off one at a time from the
+part of \(x\) not yet assigned, so no subtraction is needed.
 
 \begin{proposition}\label{prop:split}
   Let \(N \ge 1\), \(x \in \alpha\), and for \(\mu = -N+1, \dots, N-1\) let
-  \(x = y_\mu + z_\mu\) be arbitrary decompositions. Then there is
-  \(u \colon \Z \to \alpha\) vanishing outside \(\W\) with \(\sum_{\nu \in \Z} u_\nu = x\) and,
-  for every \(\nu \in \W\),
+  \(x = y_\mu + z_\mu\) be arbitrary decompositions. Then there are
+  \(u_\nu \in \alpha\), \(\nu \in \W\), with \(\sum_{\nu \in \W} u_\nu = x\) and, for every
+  \(\nu \in \W\),
   \begin{enumerate}
     \item[(a)] \(\abs{u_\nu} \le \abs{y_{\nu+1}}\) if \(\nu \le N-2\);
     \item[(b)] \(\abs{u_\nu} \le \abs{z_\nu}\) if \(\nu \ge -N+1\);
@@ -208,9 +155,42 @@ the same reason (c) is stated relative to \(r\) and not to \(x\).
 \end{proposition}
 
 \begin{proof}
-  Apply Proposition~\ref{prop:split-general} with \(a = -N\), \(m = 2N-1\) and \(r = x\);
-  then \(I = \W\).
+  We construct remainders \(r_{-N}, \dots, r_{N-1}\) and pieces \(u_{-N}, \dots, u_{N-2}\)
+  recursively, maintaining for each \(\nu\) the invariant
+  \begin{equation}\label{eq:inv}
+    x = \sum_{-N \le \kappa < \nu} u_\kappa + r_\nu, \qquad \abs{r_\nu} \le \abs{x}.
+  \end{equation}
+  Start with \(r_{-N} = x\); then \eqref{eq:inv} holds by reflexivity, the sum being empty.
+
+  \emph{Recursive step.} Let \(-N \le \nu \le N-2\) and suppose \(r_\nu\) satisfies
+  \eqref{eq:inv}. Since \(x = y_{\nu+1} + z_{\nu+1}\), inequality \eqref{eq:abs-add} and
+  transitivity give
+  \[
+    \abs{r_\nu} \le \abs{x} \le \abs{y_{\nu+1}} + \abs{z_{\nu+1}} .
+  \]
+  Apply (R) to \(r_\nu\). It gives \(r_\nu = u_\nu + r_{\nu+1}\) with
+  \begin{equation}\label{eq:step}
+    \abs{u_\nu} \le \abs{y_{\nu+1}}, \qquad \abs{r_{\nu+1}} \le \abs{z_{\nu+1}}, \qquad
+    \abs{u_\nu} \le \abs{r_\nu}, \qquad \abs{r_{\nu+1}} \le \abs{r_\nu}.
+  \end{equation}
+  Substituting \(r_\nu = u_\nu + r_{\nu+1}\) into \eqref{eq:inv} and using associativity gives
+  the identity in \eqref{eq:inv} for \(\nu+1\). The last inequality in \eqref{eq:step} and
+  \(\abs{r_\nu} \le \abs{x}\) give \(\abs{r_{\nu+1}} \le \abs{x}\).
+
+  \emph{Last piece.} Put \(u_{N-1} = r_{N-1}\). The invariant \eqref{eq:inv} for
+  \(\nu = N-1\) reads \(x = \sum_{\nu \in \W} u_\nu\).
+
+  \emph{The bounds.} Property (a) is the first inequality of \eqref{eq:step}. For (b) and (c)
+  note that \(\abs{u_\nu} \le \abs{r_\nu}\) for all \(\nu \in \W\): for \(\nu \le N-2\) by
+  \eqref{eq:step}, and for \(\nu = N-1\) by definition. Now \(\abs{r_\nu} \le \abs{x}\) by
+  \eqref{eq:inv}, which gives (c); and for \(\nu \ge -N+1\), \(\abs{r_\nu} \le \abs{z_\nu}\) by
+  the second inequality of \eqref{eq:step} at step \(\nu - 1\), which gives (b).
 \end{proof}
+
+Both new conditions of (R) are needed. The condition \(\abs{x_1} \le \abs{x}\) keeps the
+remainders below \(\abs{x}\), without which (R) could not be applied at the next step; the
+condition \(\abs{x_0} \le \abs{x}\) passes the domination of the remainder by \(z_\nu\) to the
+new piece.
 
 \section{The pointwise estimate}
 
@@ -220,7 +200,7 @@ the same reason (c) is stated relative to \(r\) and not to \(x\).
   \begin{equation}\label{eq:near-opt}
     \norm{y_\mu}{0} + 2^\mu \norm{z_\mu}{1} \le K_\mu(x) + \delta,
   \end{equation}
-  and let \(u \colon \Z \to \alpha\) be given by Proposition~\ref{prop:split}. Put
+  and let \((u_\nu)_{\nu \in \W}\) be given by Proposition~\ref{prop:split}. Put
   \(E_{-N} = 2^{-N}\norm{x}{1}\), \(E_{N-1} = \norm{x}{0}\) and \(E_\nu = 0\) for the other
   \(\nu \in \W\). Then for every \(\nu \in \W\),
   \[
@@ -268,8 +248,8 @@ The end terms are
   \qquad
   e_{N-1} = 2^{-(N-1)\theta}\norm{x}{0}.
 \]
-Since \(u\) vanishes outside \(\W\) and \(\sum_{\nu \in \Z} u_\nu = x\), the family \(u\) is
-admissible in the definition of \(\cJ\), and \(b_\nu = 0\) for \(\nu \notin \W\), so \(\cJ(x) \le \norm{b}{\ell^q}\).
+Since \(\sum_\nu u_\nu = x\), the family \(u\) is admissible in the definition of \(\cJ\), so
+\(\cJ(x) \le \norm{b}{\ell^q}\).
 
 \emph{Case \(q < \infty\).} By \eqref{eq:weighted}, Lemma~\ref{lem:lq-max}, and the fact that
 \(e\) vanishes except at \(-N\) and \(N-1\),
@@ -326,7 +306,7 @@ do not depend on \(\delta\). No assumption \(\norm{x}{K} < \infty\) is needed.
   \leavevmode
   \begin{itemize}
     \item (R), \eqref{eq:abs-add} and transitivity of \(\le\): only in
-      Proposition~\ref{prop:split-general}.
+      Proposition~\ref{prop:split}.
     \item Solidity of \(A_0, A_1\): only in Lemma~\ref{lem:pointwise}.
     \item \(x \in \Delta\) and \(0 < \theta < 1\): only in \(e_{-N}, e_{N-1} \to 0\). Each end
       uses one half of each condition: \(e_{-N}\) uses \(\theta < 1\) and

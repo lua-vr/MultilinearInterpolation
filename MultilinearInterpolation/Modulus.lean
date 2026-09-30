@@ -44,6 +44,8 @@ quantify over all spaces that are of the class of the couple.
 -/
 @[blueprint]
 class Abs.IsModulus [Preorder β] [Abs β] : Prop where
+  /-- zero is small -/
+  abs_zero_le (x : β) : |(0 : β)|ₑ ≤ |x|ₑ
   /-- subadditivity -/
   abs_add_le (x y : β) : |x + y|ₑ ≤ |x|ₑ + |y|ₑ
   /-- Riez property -/
@@ -62,6 +64,7 @@ lemma Pi.absₑ_apply [∀ j, Abs (γ j)] (f : ∀ j, γ j) (j : J) : |f|ₑ j =
 
 instance Pi.instIsModulus [∀ j, AddCommMonoid (γ j)] [∀ j, Preorder (γ j)] [∀ j, Abs (γ j)]
     [∀ j, Abs.IsModulus (γ j)] : Abs.IsModulus (∀ j, γ j) where
+  abs_zero_le x j := Abs.IsModulus.abs_zero_le (x j)
   abs_add_le f g j := Abs.IsModulus.abs_add_le (f j) (g j)
   exists_decomp h := by
     choose u v huv hu hv hu' hv' using fun j ↦ Abs.IsModulus.exists_decomp (h j)
@@ -73,6 +76,7 @@ instance Real.instAbs : Abs ℝ := ⟨fun x ↦ |x|⟩
 @[simp, grind =] lemma Real.absₑ_eq (x : ℝ) : |x|ₑ = |x| := rfl
 
 instance Real.instIsModulus : Abs.IsModulus ℝ where
+  abs_zero_le x := by simp
   abs_add_le := abs_add_le
   exists_decomp {a b c} h := by
     refine ⟨max (min a |b|) (-|b|), a - max (min a |b|) (-|b|), by ring, ?_, ?_⟩ <;> grind
@@ -83,6 +87,7 @@ instance ENNReal.instAbs : Abs ℝ≥0∞ := ⟨id⟩
 @[simp] lemma ENNReal.absₑ_eq (x : ℝ≥0∞) : |x|ₑ = x := rfl
 
 instance ENNReal.instIsModulus : Abs.IsModulus ℝ≥0∞ where
+  abs_zero_le _ := zero_le
   abs_add_le _ _ := le_rfl
   exists_decomp {a b c} h := by
     simp only [ENNReal.absₑ_eq] at h

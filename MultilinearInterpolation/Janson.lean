@@ -47,35 +47,34 @@ lemma exists_seq_decomp_le_kNorm_add {δ : ℝ≥0∞} (hδ : δ ≠ 0) (x : α)
   exact ⟨y, z, h⟩
 
 /-- The norm
-$$`\inf\Bigl\{\,\bigl\|\{r^{-\theta n}J(r^{n},a_{n},\bar{A}_{i})\}_{-N}^{N}\bigr\|_{\ell^{q}}
- : N<\infty \ \text{ and } \ \sum_{-N}^{N}a_{n}=a\,\Bigr\}.` -/
+$$`\inf\Bigl\{\,\bigl\|\{2^{-\theta n}J(2^{n},a_{n})\}_{n \in \mathbb{Z}}\bigr\|_{\ell^{q}}
+ : a \colon \mathbb{Z} \to \alpha \text{ finitely supported},\ \sum_{n}a_{n}=x\,\Bigr\}.` -/
 @[blueprint]
 def jInfNorm (θ : ℝ) (q : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
-  ⨅ (N : ℕ) (a : Fin (2 * N) → α) (_ : ∑ n, a n = x),
-    eLpNorm (fun k : Fin (2 * N) ↦
-      let n : ℝ := (k : ℝ) - N
-      2 ^ (-θ * n) * A.jNorm (2 ^ n) (a k)) q Measure.count
+  -- todo: what if we remove (_ : support.Finite)?
+  ⨅ (a : ℤ → α) (_ : a.support.Finite) (_ : ∑ᶠ n, a n = x),
+    discretePhiFunctional θ q (fun n ↦ A.jNorm (2 ^ n) (a n))
 
 variable [Preorder α] [Abs α] [Abs.IsModulus α] 
 
 /--
-Assume that $`A_0` and $`A_1` are solid. Let $`x \in \alpha`, $`N \ge 1`, and let
-$`(y_\nu)_{\nu \in \mathbb{Z}}`, $`(z_\nu)_{\nu \in \mathbb{Z}}` satisfy $`x = y_\nu + z_\nu`
-for all $`\nu`. Then there are $`u_{-N}, \dots, u_{N-1}` with $`\sum_\nu u_\nu = x` and:
+Let $`x = y_\mu + z_\mu` for all $`\mu \in \mathbb{Z}`, let $`a \in \mathbb{Z}`, $`m \in \mathbb{N}`
+and $`r \in \alpha` with $`|r| \le |x|`, and put $`I = \{a, \dots, a+m\}`. Then there is
+$`u \colon \mathbb{Z} \to \alpha` vanishing outside $`I` with
+$`\sum_{\nu \in \mathbb{Z}} u_\nu = r` and,
+for $`\nu \in I`:
 
-* for $`-N < \nu < N-1`:
-  $$`\|u_\nu\|_0 \le \|y_\nu\|_0, \qquad \|u_\nu\|_1 \le \|z_{\nu-1}\|_1;`
-* at the ends:
-  $$`\|u_{-N}\|_0 \le \|y_{-N}\|_0,\quad \|u_{-N}\|_1 \le \|x\|_1,`
-  $$`\|u_{N-1}\|_0 \le \|x\|_0,\quad \|u_{N-1}\|_1 \le \|z_{N-2}\|_1 .`
+* $`|u_\nu| \le |y_{\nu+1}|` if $`\nu < a + m`;
+* $`|u_\nu| \le |z_\nu|` if $`a < \nu`;
+* $`|u_\nu| \le |r|`.
 -/
 @[blueprint]
-lemma exists_fin_decomp_of_isSolid [A.fst.IsSolid] [A.snd.IsSolid] {x : α} {y z : ℤ → α}
-    (hyz : ∀ ν, y ν + z ν = x) {N : ℕ} (hN : 0 < N) :
-    ∃ u : Fin (2 * N) → α, ∑ k, u k = x ∧ ∀ k : Fin (2 * N),
-      let ν : ℤ := (k : ℤ) - N
-      ‖u k‖ₑ[A.fst] ≤ (if ν = N - 1 then ‖x‖ₑ[A.fst] else ‖y ν‖ₑ[A.fst]) ∧
-      ‖u k‖ₑ[A.snd] ≤ (if ν = -N then ‖x‖ₑ[A.snd] else ‖z (ν - 1)‖ₑ[A.snd]) := by
+lemma exists_decomp_Icc {x : α} {y z : ℤ → α} (hyz : ∀ μ, y μ + z μ = x)
+    (a : ℤ) (m : ℕ) {r : α} (hr : |r|ₑ ≤ |x|ₑ) :
+    ∃ u : ℤ → α, u.support ⊆ Finset.Icc a (a + m) ∧
+      ∑ᶠ ν, u ν = r ∧
+      ∀ ν, |u ν|ₑ ≤ |r|ₑ ∧
+        (ν < a + m → |u ν|ₑ ≤ |y (ν + 1)|ₑ) ∧ (a < ν → |u ν|ₑ ≤ |z ν|ₑ) := by
   sorry
 
 /-- Lemma 1. -/
