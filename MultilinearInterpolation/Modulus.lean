@@ -64,8 +64,8 @@ instance Pi.instIsModulus [∀ j, AddCommMonoid (γ j)] [∀ j, Preorder (γ j)]
     [∀ j, Abs.IsModulus (γ j)] : Abs.IsModulus (∀ j, γ j) where
   abs_add_le f g j := Abs.IsModulus.abs_add_le (f j) (g j)
   exists_decomp h := by
-    choose u v huv hu hv using fun j ↦ Abs.IsModulus.exists_decomp (h j)
-    exact ⟨u, v, funext huv, hu, hv⟩
+    choose u v huv hu hv hu' hv' using fun j ↦ Abs.IsModulus.exists_decomp (h j)
+    exact ⟨u, v, funext huv, hu, hv, hu', hv'⟩
 
 /-- The usual absolute value of a real number. -/
 instance Real.instAbs : Abs ℝ := ⟨fun x ↦ |x|⟩
@@ -75,7 +75,7 @@ instance Real.instAbs : Abs ℝ := ⟨fun x ↦ |x|⟩
 instance Real.instIsModulus : Abs.IsModulus ℝ where
   abs_add_le := abs_add_le
   exists_decomp {a b c} h := by
-    use max (min a |b|) (-|b|), a - max (min a |b|) (-|b|), by ring, by grind, by grind
+    refine ⟨max (min a |b|) (-|b|), a - max (min a |b|) (-|b|), by ring, ?_, ?_⟩ <;> grind
 
 /-- An element of $`[0,∞]` is its own modulus. -/
 instance ENNReal.instAbs : Abs ℝ≥0∞ := ⟨id⟩
@@ -87,7 +87,7 @@ instance ENNReal.instIsModulus : Abs.IsModulus ℝ≥0∞ where
   exists_decomp {a b c} h := by
     simp only [ENNReal.absₑ_eq] at h
     refine ⟨min a b, a - min a b, (add_tsub_cancel_of_le (min_le_left ..)).symm,
-      min_le_right .., ?_⟩
+      min_le_right .., ?_, min_le_left .., tsub_le_self⟩
     simp only [ENNReal.absₑ_eq]
     rcases le_total a b with h₁ | h₁
     · simp [min_eq_left h₁]
@@ -116,7 +116,7 @@ subadditivity constant. -/
 @[blueprint]
 lemma IsSolid.enorm_le_mul_of_abs_le [Abs.IsModulus β] [B.IsSolid] (h : |a|ₑ ≤ |b|ₑ + |c|ₑ) :
     ‖a‖ₑ[B] ≤ B.C * (‖b‖ₑ[B] + ‖c‖ₑ[B]) := by
-  obtain ⟨u, v, huv, hu, hv⟩ := Abs.IsModulus.exists_decomp h
+  obtain ⟨u, v, huv, hu, hv, -⟩ := Abs.IsModulus.exists_decomp h
   calc ‖a‖ₑ[B] = ‖u + v‖ₑ[B] := by rw [huv]
     _ ≤ B.C * (‖u‖ₑ[B] + ‖v‖ₑ[B]) := B.enorm_add_le_mul u v
     _ ≤ _ := by gcongr <;> exact IsSolid.solid ‹_›
@@ -136,7 +136,7 @@ lemma kNorm_le_kNorm_of_abs_le [Abs.IsModulus β] [A₀.IsSolid] [A₁.IsSolid]
     (h : |x|ₑ ≤ |y|ₑ) (t : ℝ≥0∞) : A₀.kNorm A₁ t x ≤ A₀.kNorm A₁ t y := by
   refine le_iInf₂ fun a ha ↦ ?_
   have hy : |y|ₑ ≤ |a.1|ₑ + |a.2|ₑ := ha ▸ Abs.IsModulus.abs_add_le a.1 a.2
-  obtain ⟨x₀, x₁, hx, h₀, h₁⟩ := Abs.IsModulus.exists_decomp (h.trans hy)
+  obtain ⟨x₀, x₁, hx, h₀, h₁, -⟩ := Abs.IsModulus.exists_decomp (h.trans hy)
   refine (kNorm_le_of_decomp hx t).trans (add_le_add (IsSolid.solid h₀) ?_)
   gcongr
   exact IsSolid.solid h₁
