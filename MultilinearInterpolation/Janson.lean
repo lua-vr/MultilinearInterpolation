@@ -75,7 +75,116 @@ lemma exists_decomp_Icc {x : α} {y z : ℤ → α} (hyz : ∀ μ, y μ + z μ =
       ∑ᶠ ν, u ν = r ∧
       ∀ ν, |u ν|ₑ ≤ |r|ₑ ∧
         (ν < a + m → |u ν|ₑ ≤ |y (ν + 1)|ₑ) ∧ (a < ν → |u ν|ₑ ≤ |z ν|ₑ) := by
-  sorry
+  -- review: llm proof
+  have h0 := Abs.IsModulus.abs_zero_le (β := α)
+  induction m generalizing a r with
+  | zero =>
+    refine ⟨fun ν ↦ if ν = a then r else 0, ?_, ?_, ?_⟩
+    · intro ν hν
+      by_cases h : ν = a <;> simp_all
+    · rw [finsum_eq_single _ a (fun ν h ↦ by simp [h])]; simp
+    · intro ν
+      by_cases h : ν = a
+      · subst h; simp
+      · simp only [h, ite_false]
+        exact ⟨h0 _, fun _ ↦ h0 _, fun _ ↦ h0 _⟩
+  | succ m ih =>
+    have hr' : |r|ₑ ≤ |y (a + 1)|ₑ + |z (a + 1)|ₑ :=
+      hr.trans (by rw [← hyz (a + 1)]; exact Abs.IsModulus.abs_add_le _ _)
+    obtain ⟨v, r', rfl, hvy, hrz, hvr, hrr⟩ := Abs.IsModulus.exists_decomp hr'
+    obtain ⟨u', hsupp, hsum, hu'⟩ := ih (a + 1) (hrr.trans hr)
+    have hu'a : u' a = 0 := by
+      by_contra h
+      have := hsupp h
+      simp at this
+    have hu : (fun ν ↦ if ν = a then v else u' ν) =
+        fun ν ↦ (Pi.single a v : ℤ → α) ν + u' ν := by
+      funext ν; by_cases h : ν = a <;> simp [h, hu'a]
+    refine ⟨fun ν ↦ if ν = a then v else u' ν, ?_, ?_, ?_⟩
+    · intro ν hν
+      by_cases h : ν = a
+      · subst h; simp; omega
+      · have := hsupp (by simpa [h] using hν)
+        simp at this ⊢; omega
+    · rw [hu, finsum_add_distrib, hsum]
+      · rw [finsum_eq_single _ a (fun ν h ↦ by simp [h])]; simp
+      · exact (Set.finite_singleton a).subset (Pi.support_single_subset)
+      · exact (Finset.finite_toSet _).subset hsupp
+    · intro ν
+      by_cases h : ν = a
+      · subst h
+        simp only [ite_true]
+        exact ⟨hvr, fun _ ↦ hvy, fun h ↦ absurd h (lt_irrefl _)⟩
+      · simp only [h, ite_false]
+        obtain ⟨h1, h2, h3⟩ := hu' ν
+        refine ⟨h1.trans hrr, fun hν ↦ h2 (by push_cast at hν; omega), fun hν ↦ ?_⟩
+        rcases eq_or_lt_of_le (show a + 1 ≤ ν by omega) with rfl | hν'
+        · exact h1.trans hrz
+        · exact h3 hν'
+
+/--
+Let $`N \ge 1` and $`x = y_\mu + z_\mu` for all $`\mu \in \mathbb{Z}`. Then there is
+$`u \colon \mathbb{Z} \to \alpha` vanishing outside $`W_N = \{-N, \dots, N-1\}` with
+$`\sum_{\nu \in \mathbb{Z}} u_\nu = x` and:
+
+* $`|u_\nu| \le |y_{\nu+1}|` if $`\nu < N - 1`;
+* $`|u_\nu| \le |z_\nu|` if $`-N < \nu`;
+* $`|u_\nu| \le |x|`.
+-/
+@[blueprint]
+lemma exists_decomp_Ico_symm {x : α} {y z : ℤ → α} (hyz : ∀ μ, y μ + z μ = x)
+    {N : ℕ} (hN : 1 ≤ N) :
+    ∃ u : ℤ → α, u.support ⊆ Finset.Ico (-N : ℤ) N ∧
+      ∑ᶠ ν, u ν = x ∧
+      ∀ ν, |u ν|ₑ ≤ |x|ₑ ∧
+        (ν < N - 1 → |u ν|ₑ ≤ |y (ν + 1)|ₑ) ∧ (-N < ν → |u ν|ₑ ≤ |z ν|ₑ) := by
+  -- review: llm proof
+  obtain ⟨u, hs, hsum, hu⟩ := exists_decomp_Icc hyz (-N) (2 * N - 1) le_rfl
+  refine ⟨u, fun ν hν ↦ ?_, hsum, fun ν ↦ ?_⟩
+  · have := hs hν
+    simp only [Finset.coe_Icc, Set.mem_Icc, Finset.coe_Ico, Set.mem_Ico] at this ⊢
+    omega
+  · obtain ⟨h1, h2, h3⟩ := hu ν
+    exact ⟨h1, fun h ↦ h2 (by omega), h3⟩
+
+omit [Abs.IsModulus α] in
+/--
+Let $`\|y_\mu\|_0 + 2^\mu \|z_\mu\|_1 \le K_\mu(x) + \delta` for all $`\mu \in \mathbb{Z}`,
+and let $`u` satisfy the conclusion of {name}`exists_decomp_Ico_symm`. Put
+$`E_{-N} = 2^{-N}\|x\|_1`, $`E_{N-1} = \|x\|_0` and $`E_\nu = 0` otherwise. Then
+$$`J_\nu(u_\nu) \le \max\bigl(K_{\nu+1}(x) + \delta,\ E_\nu\bigr)` for $`\nu \in W_N`.
+-/
+@[blueprint]
+lemma jNorm_le_max_kNorm [A.fst.IsSolid] [A.snd.IsSolid] {x : α} {y z u : ℤ → α}
+    {δ : ℝ≥0∞} {N : ℕ}
+    (hyz : ∀ μ : ℤ, ‖y μ‖ₑ[A.fst] + 2 ^ μ * ‖z μ‖ₑ[A.snd] ≤ A.kNorm (2 ^ μ) x + δ)
+    (hu : ∀ ν, |u ν|ₑ ≤ |x|ₑ ∧
+      (ν < N - 1 → |u ν|ₑ ≤ |y (ν + 1)|ₑ) ∧ (-N < ν → |u ν|ₑ ≤ |z ν|ₑ))
+    {ν : ℤ} (hν : ν ∈ Ico (-N : ℤ) N) :
+    A.jNorm (2 ^ ν) (u ν) ≤ max (A.kNorm (2 ^ (ν + 1)) x + δ)
+      (if ν = -N then 2 ^ ν * ‖x‖ₑ[A.snd] else if ν = N - 1 then ‖x‖ₑ[A.fst] else 0) := by
+  -- review: llm proof
+  obtain ⟨hux, huy, huz⟩ := hu ν
+  obtain ⟨hν₀, hν₁⟩ := hν
+  refine max_le ?_ ?_
+  · rcases lt_or_eq_of_le (show ν ≤ N - 1 by omega) with h | rfl
+    · refine le_max_of_le_left ?_
+      grw [IsSolid.solid (huy h), ← hyz (ν + 1)]
+      exact le_self_add
+    · refine le_max_of_le_right ?_
+      simp only [show (N : ℤ) - 1 ≠ -N by omega, ite_false, ite_true]
+      exact IsSolid.solid hux
+  · rcases lt_or_eq_of_le hν₀ with h | rfl
+    · refine le_max_of_le_left ?_
+      have hK : A.kNorm (2 ^ ν) x ≤ A.kNorm (2 ^ (ν + 1)) x :=
+        iInf₂_mono fun _ _ ↦ by
+          gcongr
+          exacts [one_le_two, by omega]
+      grw [IsSolid.solid (huz h), ← hK, ← hyz ν]
+      exact le_add_self
+    · refine le_max_of_le_right ?_
+      simp only [ite_true]
+      grw [IsSolid.solid hux]
 
 /-- Lemma 1. -/
 @[blueprint]
@@ -96,11 +205,11 @@ variable (cα₀ : ℝ) (cα : ι → ℝ) (hα : ∀ k, cα k ≠ 0)
 
 /- todo: we may need to assume 0 ≤ θ i ≤ 1 in the set. -/
 /-- The set of $`ι`-tuples
-$$`\Omega = \Bigl\{ (θ_i)_{i ∈ ι} \in [0,1]^ι :
+$$`\begin{aligned}\Omega = \Bigl\{ (θ_i)_{i ∈ ι} \in [0,1]^ι :
   0 \le θ₀ \le 1
   \ \text{ and }\ T \colon \prod_{i} (A_i)_{\theta_i,q_i} \to (B)_{\theta_0,q} \text{ is bounded},\\
   \ \text{with } \theta_0 = \alpha_0 + \sum_{i} \alpha_i \theta_i,
-  \ \text{for some } q_i, q \in (0,\infty] \Bigr\}.`
+  \ \text{for some } q_i, q \in (0,\infty] \Bigr\}.\end{aligned}`
 The value of the parameters $`q,q_i` are under an existential, and are not specified
 for the points of this set.
 -/

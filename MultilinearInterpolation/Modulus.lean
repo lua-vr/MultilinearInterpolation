@@ -26,9 +26,6 @@ class Abs β where
 
 notation "|" e "|ₑ" => Abs.toFun e
 
-
-
--- [[denote:20260928T205504::*The construction]]
 variable (β) in
 /--
 todo: this is a notion that we "made up". we should think if it's in the most reasonable form,
