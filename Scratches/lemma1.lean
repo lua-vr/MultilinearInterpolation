@@ -72,7 +72,7 @@ $$`w_{ν-1} = u_ν + w_ν,\quad |w_ν| ≤ |x|,\quad |w_ν| ≤ |z_ν|,\quad |u_
 |u_ν| ≤ |w_{ν-1}|.`
 Suppose $`|w_{ν-1}| ≤ |x|`; for $`ν = -N` this is reflexivity. Since $`x = y_ν + z_ν`,
 subadditivity of the modulus gives $`|w_{ν-1}| ≤ |x| ≤ |y_ν| + |z_ν|`. The Riesz property
-{name}`Abs.IsModulus.exists_decomp` applied to $`w_{ν-1}` gives $`w_{ν-1} = u_ν + w_ν` with
+{name}`VectorNormed.exists_decomp` applied to $`w_{ν-1}` gives $`w_{ν-1} = u_ν + w_ν` with
 $`|u_ν| ≤ |y_ν|`, $`|w_ν| ≤ |z_ν|`, $`|u_ν| ≤ |w_{ν-1}|` and $`|w_ν| ≤ |w_{ν-1}|`; the last one
 and transitivity give $`|w_ν| ≤ |x|`.
 
@@ -86,7 +86,8 @@ Each norm bound follows from a modulus inequality by solidity:
 * $`|w_{N-2}| ≤ |x|` gives $`‖u_{N-1}‖_0 ≤ ‖x‖_0`, and $`|w_{N-2}| ≤ |z_{N-2}|` gives
   $`‖u_{N-1}‖_1 ≤ ‖z_{N-2}‖_1`.
 -/
-lemma exists_fin_decomp_of_isSolid [Preorder α] [Abs α] [Abs.IsModulus α]
+lemma exists_fin_decomp_of_isSolid {M : Type*} [AddCommMonoid M] [Preorder M] [VNorm α M]
+    [VectorNormed α M]
     [A.fst.IsSolid] [A.snd.IsSolid] (x : α) (a₀ : ℤ → α) {N : ℕ} (hN : 0 < N) :
     ∃ u : Fin (2 * N) → α, ∑ k, u k = x ∧ ∀ k : Fin (2 * N),
       let ν : ℤ := (k : ℕ) - N

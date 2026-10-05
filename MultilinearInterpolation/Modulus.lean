@@ -9,7 +9,11 @@ module
 public import MultilinearInterpolation.EQuasinorm.ESeminorm
 
 /-!
-# Moduli and solid quasinorms.
+# Vector norms and solid quasinorms.
+
+A vector norm $`|\cdot| \colon β → M` takes values in an ordered monoid $`M`, e.g.
+$`‖\cdot‖ₑ ∘ b ∈ γ → ℝ≥0∞` for $`b ∈ γ → ε`. A quasinorm on $`β` is solid if it is monotone
+along $`|\cdot|`.
 -/
 
 open Verso.Genre Manual Informal InlineLean
@@ -19,106 +23,110 @@ open Verso.Genre Manual Informal InlineLean
 open EQuasinorm
 open scoped ENNReal NNReal
 
-variable {β : Type*} [AddCommMonoid β]
+variable {β M : Type*} [AddCommMonoid β]
 
-class Abs β where
-  toFun : β → β
+/-- A vector-valued norm $`β → M`. -/
+class VNorm (β : Type*) (M : outParam Type*) where
+  vnorm : β → M
 
-notation "|" e "|ₑ" => Abs.toFun e
+notation "|" e "|ₑ" => VNorm.vnorm e
 
-variable (β) in
+variable (β M) in
 /--
-todo: this is a notion that we "made up". we should think if it's in the most reasonable form,
-but for now it's assuming what we need.
-
-it isolates some properties of partially ordered additive groups who are lattices that still work in
-monoids.
-
-The importance of this is that we want some properties to hold for all solid norms.
+A decomposable vector norm, following the lattice-normed spaces of Kantorovich (see Kusraev,
+*Dominated Operators*, Ch. 2), with decomposability weakened to bounds by values of $`|\cdot|`.
 
 todo: what about definition 3.5.1 in BL ("is of class")? a different possible approach would be to
 quantify over all spaces that are of the class of the couple.
 -/
 @[blueprint]
-class Abs.IsModulus [Preorder β] [Abs β] : Prop where
+class VectorNormed [AddCommMonoid M] [Preorder M] [VNorm β M] : Prop where
   /-- zero is small -/
-  abs_zero_le (x : β) : |(0 : β)|ₑ ≤ |x|ₑ
+  vnorm_zero_le (x : β) : |(0 : β)|ₑ ≤ |x|ₑ
   /-- subadditivity -/
-  abs_add_le (x y : β) : |x + y|ₑ ≤ |x|ₑ + |y|ₑ
-  /-- Riez property -/
+  vnorm_add_le (x y : β) : |x + y|ₑ ≤ |x|ₑ + |y|ₑ
+  /-- decomposability -/
   exists_decomp {x y₀ y₁ : β} (h : |x|ₑ ≤ |y₀|ₑ + |y₁|ₑ) :
     ∃ x₀ x₁, x = x₀ + x₁ ∧ |x₀|ₑ ≤ |y₀|ₑ ∧ |x₁|ₑ ≤ |y₁|ₑ ∧ |x₀|ₑ ≤ |x|ₑ ∧ |x₁|ₑ ≤ |x|ₑ
 
 section Instances
 
-variable {J : Type*} {γ : J → Type*}
+variable {J : Type*} {γ : J → Type*} {N : J → Type*}
 
-/-- A product carries the pointwise modulus. -/
-instance Pi.instAbs [∀ j, Abs (γ j)] : Abs (∀ j, γ j) := ⟨fun f j ↦ |f j|ₑ⟩
+/-- A product carries the pointwise vector norm. -/
+instance Pi.instVNorm [∀ j, VNorm (γ j) (N j)] : VNorm (∀ j, γ j) (∀ j, N j) :=
+  ⟨fun f j ↦ |f j|ₑ⟩
 
 @[simp]
-lemma Pi.absₑ_apply [∀ j, Abs (γ j)] (f : ∀ j, γ j) (j : J) : |f|ₑ j = |f j|ₑ := rfl
+lemma Pi.vnorm_apply [∀ j, VNorm (γ j) (N j)] (f : ∀ j, γ j) (j : J) : |f|ₑ j = |f j|ₑ := rfl
 
-instance Pi.instIsModulus [∀ j, AddCommMonoid (γ j)] [∀ j, Preorder (γ j)] [∀ j, Abs (γ j)]
-    [∀ j, Abs.IsModulus (γ j)] : Abs.IsModulus (∀ j, γ j) where
-  abs_zero_le x j := Abs.IsModulus.abs_zero_le (x j)
-  abs_add_le f g j := Abs.IsModulus.abs_add_le (f j) (g j)
+instance Pi.instVectorNormed [∀ j, AddCommMonoid (γ j)] [∀ j, AddCommMonoid (N j)]
+    [∀ j, Preorder (N j)] [∀ j, VNorm (γ j) (N j)] [∀ j, VectorNormed (γ j) (N j)] :
+    VectorNormed (∀ j, γ j) (∀ j, N j) where
+  vnorm_zero_le x j := VectorNormed.vnorm_zero_le (x j)
+  vnorm_add_le f g j := VectorNormed.vnorm_add_le (f j) (g j)
   exists_decomp h := by
-    choose u v huv hu hv hu' hv' using fun j ↦ Abs.IsModulus.exists_decomp (h j)
+    choose u v huv hu hv hu' hv' using fun j ↦ VectorNormed.exists_decomp (h j)
     exact ⟨u, v, funext huv, hu, hv, hu', hv'⟩
 
-/-- The usual absolute value of a real number. -/
-instance Real.instAbs : Abs ℝ := ⟨fun x ↦ |x|⟩
+/-- A real number is measured by its extended norm. -/
+instance Real.instVNorm : VNorm ℝ ℝ≥0∞ := ⟨fun x ↦ ‖x‖ₑ⟩
 
-@[simp, grind =] lemma Real.absₑ_eq (x : ℝ) : |x|ₑ = |x| := rfl
+@[simp] lemma Real.vnorm_eq (x : ℝ) : |x|ₑ = ‖x‖ₑ := rfl
 
-instance Real.instIsModulus : Abs.IsModulus ℝ where
-  abs_zero_le x := by simp
-  abs_add_le := abs_add_le
+instance Real.instVectorNormed : VectorNormed ℝ ℝ≥0∞ where
+  vnorm_zero_le x := by simp
+  vnorm_add_le := enorm_add_le
   exists_decomp {a b c} h := by
-    refine ⟨max (min a |b|) (-|b|), a - max (min a |b|) (-|b|), by ring, ?_, ?_⟩ <;> grind
+    simp only [Real.vnorm_eq, Real.enorm_eq_ofReal_abs] at h ⊢
+    rw [← ENNReal.ofReal_add (abs_nonneg _) (abs_nonneg _),
+      ENNReal.ofReal_le_ofReal_iff (by positivity)] at h
+    refine ⟨max (min a |b|) (-|b|), a - max (min a |b|) (-|b|), by ring, ?_⟩
+    simp only [ENNReal.ofReal_le_ofReal_iff (abs_nonneg _)]
+    grind
 
-/-- An element of $`[0,∞]` is its own modulus. -/
-instance ENNReal.instAbs : Abs ℝ≥0∞ := ⟨id⟩
+/-- An element of $`[0,∞]` is its own vector norm. -/
+instance ENNReal.instVNorm : VNorm ℝ≥0∞ ℝ≥0∞ := ⟨id⟩
 
-@[simp] lemma ENNReal.absₑ_eq (x : ℝ≥0∞) : |x|ₑ = x := rfl
+@[simp] lemma ENNReal.vnorm_eq (x : ℝ≥0∞) : |x|ₑ = x := rfl
 
-instance ENNReal.instIsModulus : Abs.IsModulus ℝ≥0∞ where
-  abs_zero_le _ := zero_le
-  abs_add_le _ _ := le_rfl
+instance ENNReal.instVectorNormed : VectorNormed ℝ≥0∞ ℝ≥0∞ where
+  vnorm_zero_le _ := zero_le
+  vnorm_add_le _ _ := le_rfl
   exists_decomp {a b c} h := by
-    simp only [ENNReal.absₑ_eq] at h
+    simp only [ENNReal.vnorm_eq] at h
     refine ⟨min a b, a - min a b, (add_tsub_cancel_of_le (min_le_left ..)).symm,
       min_le_right .., ?_, min_le_left .., tsub_le_self⟩
-    simp only [ENNReal.absₑ_eq]
+    simp only [ENNReal.vnorm_eq]
     rcases le_total a b with h₁ | h₁
     · simp [min_eq_left h₁]
     · rw [min_eq_right h₁, tsub_le_iff_right]
       exact h.trans_eq (add_comm ..)
 
-/-- Real-valued functions, with the pointwise absolute value. -/
-example {X : Type*} : Abs.IsModulus (X → ℝ) := inferInstance
+/-- Real-valued functions, with the pointwise extended norm. -/
+example {X : Type*} : VectorNormed (X → ℝ) (X → ℝ≥0∞) := inferInstance
 
 /-- $`[0,∞]`-valued functions, with the pointwise identity. -/
-example {X : Type*} : Abs.IsModulus (X → ℝ≥0∞) := inferInstance
+example {X : Type*} : VectorNormed (X → ℝ≥0∞) (X → ℝ≥0∞) := inferInstance
 
 end Instances
 
-variable [Abs β] [Preorder β]
+variable [AddCommMonoid M] [Preorder M] [VNorm β M]
 
 namespace EQuasinorm
 
+/-- A quasinorm is solid if it is monotone along the vector norm. -/
 class IsSolid (B : EQuasinorm β) : Prop where
   solid {x y : β} : |x|ₑ ≤ |y|ₑ → ‖x‖ₑ[B] ≤ ‖y‖ₑ[B]
 
 variable {A₀ A₁ B : EQuasinorm β} {t : ℝ≥0∞} {x y a b c : β}
 
-/-- A modulus inequality $`|a| ≤ |b| + |c|` transfers to any solid quasinorm, up to its
+/-- A vector norm inequality $`|a| ≤ |b| + |c|` transfers to any solid quasinorm, up to its
 subadditivity constant. -/
 @[blueprint]
-lemma IsSolid.enorm_le_mul_of_abs_le [Abs.IsModulus β] [B.IsSolid] (h : |a|ₑ ≤ |b|ₑ + |c|ₑ) :
-    ‖a‖ₑ[B] ≤ B.C * (‖b‖ₑ[B] + ‖c‖ₑ[B]) := by
-  obtain ⟨u, v, huv, hu, hv, -⟩ := Abs.IsModulus.exists_decomp h
+lemma IsSolid.enorm_le_mul_of_vnorm_le [VectorNormed β M] [B.IsSolid]
+    (h : |a|ₑ ≤ |b|ₑ + |c|ₑ) : ‖a‖ₑ[B] ≤ B.C * (‖b‖ₑ[B] + ‖c‖ₑ[B]) := by
+  obtain ⟨u, v, huv, hu, hv, -⟩ := VectorNormed.exists_decomp h
   calc ‖a‖ₑ[B] = ‖u + v‖ₑ[B] := by rw [huv]
     _ ≤ B.C * (‖u‖ₑ[B] + ‖v‖ₑ[B]) := B.enorm_add_le_mul u v
     _ ≤ _ := by gcongr <;> exact IsSolid.solid ‹_›
@@ -134,21 +142,21 @@ instance IsSolid.inf [A₀.IsSolid] [A₁.IsSolid] : (A₀ ⊓ A₁).IsSolid := 
 
 /-- The supremum of a couple of solid quasinorms, with the norm $`J(K,-)`, is solid. -/
 @[blueprint]
-lemma kNorm_le_kNorm_of_abs_le [Abs.IsModulus β] [A₀.IsSolid] [A₁.IsSolid]
+lemma kNorm_le_kNorm_of_vnorm_le [VectorNormed β M] [A₀.IsSolid] [A₁.IsSolid]
     (h : |x|ₑ ≤ |y|ₑ) (t : ℝ≥0∞) : A₀.kNorm A₁ t x ≤ A₀.kNorm A₁ t y := by
   refine le_iInf₂ fun a ha ↦ ?_
-  have hy : |y|ₑ ≤ |a.1|ₑ + |a.2|ₑ := ha ▸ Abs.IsModulus.abs_add_le a.1 a.2
-  obtain ⟨x₀, x₁, hx, h₀, h₁, -⟩ := Abs.IsModulus.exists_decomp (h.trans hy)
+  have hy : |y|ₑ ≤ |a.1|ₑ + |a.2|ₑ := ha ▸ VectorNormed.vnorm_add_le a.1 a.2
+  obtain ⟨x₀, x₁, hx, h₀, h₁, -⟩ := VectorNormed.exists_decomp (h.trans hy)
   refine (kNorm_le_of_decomp hx t).trans (add_le_add (IsSolid.solid h₀) ?_)
   gcongr
   exact IsSolid.solid h₁
 
 /-- The sum of a couple of solid quasinorms, with the norm $`K(t,-)`, is solid. -/
-instance IsSolid.skewedSup [Abs.IsModulus β] [A₀.IsSolid] [A₁.IsSolid] :
+instance IsSolid.skewedSup [VectorNormed β M] [A₀.IsSolid] [A₁.IsSolid] :
     (A₀.skewedSup A₁ t).IsSolid where
-  solid h := kNorm_le_kNorm_of_abs_le h t
+  solid h := kNorm_le_kNorm_of_vnorm_le h t
 
-instance IsSolid.sup [Abs.IsModulus β] [A₀.IsSolid] [A₁.IsSolid] : (A₀ ⊔ A₁).IsSolid :=
+instance IsSolid.sup [VectorNormed β M] [A₀.IsSolid] [A₁.IsSolid] : (A₀ ⊔ A₁).IsSolid :=
   IsSolid.skewedSup
 
 end EQuasinorm
@@ -157,11 +165,11 @@ namespace ESeminorm
 
 variable {A : ESeminorm β} {a b c : β}
 
-/-- {lit}`EQuasinorm.IsSolid.enorm_le_mul_of_abs_le` for an {lit}`ESeminorm`: since $`C = 1`,
+/-- {lit}`EQuasinorm.IsSolid.enorm_le_mul_of_vnorm_le` for an {lit}`ESeminorm`: since $`C = 1`,
 the inequality is genuine subadditivity. -/
 @[blueprint]
-lemma enorm_le_of_abs_le [Abs.IsModulus β] [A.toEQuasinorm.IsSolid] (h : |a|ₑ ≤ |b|ₑ + |c|ₑ) :
-    ‖a‖ₑ[A] ≤ ‖b‖ₑ[A] + ‖c‖ₑ[A] := by
-  simpa using EQuasinorm.IsSolid.enorm_le_mul_of_abs_le (B := A.toEQuasinorm) h
+lemma enorm_le_of_vnorm_le [VectorNormed β M] [A.toEQuasinorm.IsSolid]
+    (h : |a|ₑ ≤ |b|ₑ + |c|ₑ) : ‖a‖ₑ[A] ≤ ‖b‖ₑ[A] + ‖c‖ₑ[A] := by
+  simpa using EQuasinorm.IsSolid.enorm_le_mul_of_vnorm_le (B := A.toEQuasinorm) h
 
 end ESeminorm
