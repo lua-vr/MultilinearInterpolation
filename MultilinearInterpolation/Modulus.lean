@@ -70,26 +70,62 @@ instance Pi.instIsDecomposable [∀ j, AddCommMonoid (γ j)] [∀ j, AddCommMono
     choose u v huv hu hv hu' hv' using fun j ↦ Modulus.IsDecomposable.exists_decomp (h j)
     exact ⟨u, v, funext huv, hu, hv, hu', hv'⟩
 
+/-- The extended norm as a modulus. Not an instance: on a finite product, which carries the sup
+norm, it would compete with {lit}`Pi.instModulus`. Enable it per type with
+{lit}`instance : Modulus ε ℝ≥0∞ := .ofENorm ε`. -/
+abbrev Modulus.ofENorm (ε : Type*) [ENorm ε] : Modulus ε ℝ≥0∞ := ⟨enorm⟩
+
+/-- In a real normed space, the extended norm is decomposable: split $`x` proportionally,
+$`x = c x + (1 - c) x` with $`c = \min(1, ‖y₀‖ / ‖x‖)`. -/
+lemma Modulus.isDecomposable_ofENorm (E : Type*) [SeminormedAddCommGroup E] [NormedSpace ℝ E] :
+    letI := Modulus.ofENorm E; Modulus.IsDecomposable E ℝ≥0∞ := by
+  let := Modulus.ofENorm E
+  refine ⟨fun x ↦ ?_, fun x y ↦ ?_, fun {x y₀ y₁} h ↦ ?_⟩
+  · simp [Modulus.modulus, ← ofReal_norm]
+  · simp only [Modulus.modulus, ← ofReal_norm]
+    rw [← ENNReal.ofReal_add (norm_nonneg _) (norm_nonneg _)]
+    exact ENNReal.ofReal_le_ofReal (norm_add_le x y)
+  simp only [Modulus.modulus, ← ofReal_norm] at h ⊢
+  rw [← ENNReal.ofReal_add (norm_nonneg _) (norm_nonneg _),
+    ENNReal.ofReal_le_ofReal_iff (by positivity)] at h
+  set c : ℝ := min 1 (‖y₀‖ / ‖x‖)
+  have hc0 : 0 ≤ c := le_min zero_le_one (by positivity)
+  have hc1 : c ≤ 1 := min_le_left ..
+  have hcx : c * ‖x‖ ≤ ‖y₀‖ := by
+    rcases (norm_nonneg x).eq_or_lt with hx | hx
+    · simp [← hx]
+    · exact (le_div_iff₀ hx).1 (min_le_right ..)
+  have hcx' : (1 - c) * ‖x‖ ≤ ‖y₁‖ := by
+    rcases min_choice 1 (‖y₀‖ / ‖x‖) with hc | hc <;> simp only [c, hc]
+    · simp
+    · rcases (norm_nonneg x).eq_or_lt with hx | hx
+      · simp [← hx]
+      · rw [sub_mul, div_mul_cancel₀ _ hx.ne']; linarith
+  refine ⟨c • x, (1 - c) • x, by rw [← add_smul]; simp, ?_⟩
+  simp only [norm_smul, Real.norm_of_nonneg hc0, Real.norm_of_nonneg (sub_nonneg.2 hc1),
+    ENNReal.ofReal_le_ofReal_iff (norm_nonneg _)]
+  refine ⟨hcx, hcx', ?_, ?_⟩ <;> nlinarith [norm_nonneg x]
+
 /-- A real number is measured by its extended norm. -/
-instance Real.instModulus : Modulus ℝ ℝ≥0∞ := ⟨fun x ↦ ‖x‖ₑ⟩
+instance Real.instModulus : Modulus ℝ ℝ≥0∞ := .ofENorm ℝ
 
 @[simp] lemma Real.modulus_eq (x : ℝ) : |x|ₑ = ‖x‖ₑ := rfl
 
-instance Real.instIsDecomposable : Modulus.IsDecomposable ℝ ℝ≥0∞ where
-  modulus_zero_le x := by simp
-  modulus_add_le := enorm_add_le
-  exists_decomp {a b c} h := by
-    simp only [Real.modulus_eq, Real.enorm_eq_ofReal_abs] at h ⊢
-    rw [← ENNReal.ofReal_add (abs_nonneg _) (abs_nonneg _),
-      ENNReal.ofReal_le_ofReal_iff (by positivity)] at h
-    refine ⟨max (min a |b|) (-|b|), a - max (min a |b|) (-|b|), by ring, ?_⟩
-    simp only [ENNReal.ofReal_le_ofReal_iff (abs_nonneg _)]
-    grind
+instance Real.instIsDecomposable : Modulus.IsDecomposable ℝ ℝ≥0∞ :=
+  Modulus.isDecomposable_ofENorm ℝ
+
+/-- A complex number is measured by its extended norm. -/
+instance Complex.instModulus : Modulus ℂ ℝ≥0∞ := .ofENorm ℂ
+
+@[simp] lemma Complex.modulus_eq (z : ℂ) : |z|ₑ = ‖z‖ₑ := rfl
+
+instance Complex.instIsDecomposable : Modulus.IsDecomposable ℂ ℝ≥0∞ :=
+  Modulus.isDecomposable_ofENorm ℂ
 
 /-- An element of $`[0,∞]` is its own modulus. -/
-instance ENNReal.instModulus : Modulus ℝ≥0∞ ℝ≥0∞ := ⟨id⟩
+instance ENNReal.instModulus : Modulus ℝ≥0∞ ℝ≥0∞ := .ofENorm ℝ≥0∞
 
-@[simp] lemma ENNReal.modulus_eq (x : ℝ≥0∞) : |x|ₑ = x := rfl
+@[simp] lemma ENNReal.modulus_eq (x : ℝ≥0∞) : |x|ₑ = x := enorm_eq_self x
 
 instance ENNReal.instIsDecomposable : Modulus.IsDecomposable ℝ≥0∞ ℝ≥0∞ where
   modulus_zero_le _ := zero_le
