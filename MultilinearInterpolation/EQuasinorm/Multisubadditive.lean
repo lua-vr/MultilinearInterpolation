@@ -23,7 +23,7 @@ open scoped ENNReal NNReal
 variable {ι : Type*} [Fintype ι] {α : ι → Type*} [∀ i, AddCommMonoid (α i)] {β : Type*}
   [AddCommMonoid β]
 
-variable {M : Type*} [AddCommMonoid M] [Preorder M] [VNorm β M]
+variable {M : Type*} [AddCommMonoid M] [Preorder M] [Modulus β M]
 
 /- I think it deserves this structure like `MultilinearMap`.
 We may want to define API for operations on multisubadditive maps.
@@ -34,7 +34,7 @@ open Function in
 $$`|f(a_1, \dots, a_i + b_i, \dots, a_k)| ≤
 |f(a_1, \dots, a_i, \dots, a_k)| + |f(a_1, \dots, b_i, \dots, a_k)|.`
 
-Here $`|\cdot| \colon β → M` is the vector norm; for a function-valued $`f` it is pointwise, not
+Here $`|\cdot| \colon β → M` is the modulus; for a function-valued $`f` it is pointwise, not
 the norm of the function, and the inequality above lives in $`M`. -/
 @[blueprint]
 structure MultisubadditiveMap where
@@ -54,25 +54,25 @@ variable (T : MultisubadditiveMap α β) (A : (i : ι) → EQuasinorm (α i)) (B
 
 section Solid
 
-variable [VectorNormed β M] [DecidableEq ι] [B.IsSolid] (Bₛ : ESeminorm β)
+variable [Modulus.IsDecomposable β M] [DecidableEq ι] [B.IsSolid] (Bₛ : ESeminorm β)
   [Bₛ.toEQuasinorm.IsSolid] (f : ∀ i, α i) (i : ι) (x y : α i)
 
 omit [Fintype ι]
 
 open Function in
-/-- {lit}`EQuasinorm.IsSolid.enorm_le_mul_of_vnorm_le` applied to {lit}`subadditive`. -/
+/-- {lit}`EQuasinorm.IsSolid.enorm_le_mul_of_modulus_le` applied to {lit}`subadditive`. -/
 @[blueprint]
 lemma enorm_update_add_le_mul :
     ‖T (update f i (x + y))‖ₑ[B] ≤
       B.C * (‖T (update f i x)‖ₑ[B] + ‖T (update f i y)‖ₑ[B]) :=
-  IsSolid.enorm_le_mul_of_vnorm_le (T.subadditive f i x y)
+  IsSolid.enorm_le_mul_of_modulus_le (T.subadditive f i x y)
 
 open Function in
 /-- {lit}`enorm_update_add_le_mul` for an {lit}`ESeminorm`. -/
 @[blueprint]
 lemma enorm_update_add_le :
     ‖T (update f i (x + y))‖ₑ[Bₛ] ≤ ‖T (update f i x)‖ₑ[Bₛ] + ‖T (update f i y)‖ₑ[Bₛ] :=
-  ESeminorm.enorm_le_of_vnorm_le (T.subadditive f i x y)
+  ESeminorm.enorm_le_of_modulus_le (T.subadditive f i x y)
 
 end Solid
 

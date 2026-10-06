@@ -55,7 +55,7 @@ def jInfNorm (θ : ℝ) (q : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
   ⨅ (a : ℤ → α) (_ : a.support.Finite) (_ : ∑ᶠ n, a n = x),
     discretePhiFunctional θ q (fun n ↦ A.jNorm (2 ^ n) (a n))
 
-variable {M : Type*} [AddCommMonoid M] [Preorder M] [VNorm α M] [VectorNormed α M]
+variable {M : Type*} [AddCommMonoid M] [Preorder M] [Modulus α M] [Modulus.IsDecomposable α M]
 
 /--
 Let $`x = y_\mu + z_\mu` for all $`\mu \in \mathbb{Z}`, let $`a \in \mathbb{Z}`, $`m \in \mathbb{N}`
@@ -76,7 +76,7 @@ lemma exists_decomp_Icc {x : α} {y z : ℤ → α} (hyz : ∀ μ, y μ + z μ =
       ∀ ν, |u ν|ₑ ≤ |r|ₑ ∧
         (ν < a + m → |u ν|ₑ ≤ |y (ν + 1)|ₑ) ∧ (a < ν → |u ν|ₑ ≤ |z ν|ₑ) := by
   -- review: llm proof
-  have h0 := VectorNormed.vnorm_zero_le (β := α) (M := M)
+  have h0 := Modulus.IsDecomposable.modulus_zero_le (β := α)
   induction m generalizing a r with
   | zero =>
     refine ⟨fun ν ↦ if ν = a then r else 0, ?_, ?_, ?_⟩
@@ -90,8 +90,8 @@ lemma exists_decomp_Icc {x : α} {y z : ℤ → α} (hyz : ∀ μ, y μ + z μ =
         exact ⟨h0 _, fun _ ↦ h0 _, fun _ ↦ h0 _⟩
   | succ m ih =>
     have hr' : |r|ₑ ≤ |y (a + 1)|ₑ + |z (a + 1)|ₑ :=
-      hr.trans (by rw [← hyz (a + 1)]; exact VectorNormed.vnorm_add_le _ _)
-    obtain ⟨v, r', rfl, hvy, hrz, hvr, hrr⟩ := VectorNormed.exists_decomp hr'
+      hr.trans (by rw [← hyz (a + 1)]; exact Modulus.IsDecomposable.modulus_add_le _ _)
+    obtain ⟨v, r', rfl, hvy, hrz, hvr, hrr⟩ := Modulus.IsDecomposable.exists_decomp hr'
     obtain ⟨u', hsupp, hsum, hu'⟩ := ih (a + 1) (hrr.trans hr)
     have hu'a : u' a = 0 := by
       by_contra h
@@ -147,7 +147,7 @@ lemma exists_decomp_Ico_symm {x : α} {y z : ℤ → α} (hyz : ∀ μ, y μ + z
   · obtain ⟨h1, h2, h3⟩ := hu ν
     exact ⟨h1, fun h ↦ h2 (by omega), h3⟩
 
-omit [AddCommMonoid M] [VectorNormed α M] in
+omit [AddCommMonoid M] [Modulus.IsDecomposable α M] in
 /--
 Let $`\|y_\mu\|_0 + 2^\mu \|z_\mu\|_1 \le K_\mu(x) + \delta` for all $`\mu \in \mathbb{Z}`,
 and let $`u` satisfy the conclusion of {name}`exists_decomp_Ico_symm`. Put
@@ -195,7 +195,7 @@ lemma jInfNorm_le_kNorm (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1) (q : ℝ≥0�
 end Lemma1
 
 variable {ι : Type*} [Fintype ι] {α : ι → Type*} [∀ i, AddCommGroup (α i)] {β : Type*}
-  [AddCommMonoid β] {M : Type*} [AddCommMonoid M] [Preorder M] [VNorm β M]
+  [AddCommMonoid β] {M : Type*} [AddCommMonoid M] [Preorder M] [Modulus β M]
 
 variable (T : MultisubadditiveMap α β) (A : (i : ι) → Couple (α i)) (B : Couple β)
 

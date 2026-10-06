@@ -26,8 +26,8 @@ end Aux
 namespace MultisubadditiveMap
 
 variable {ι : Type*} [Fintype ι] {α : ι → Type*} [∀ i, AddCommMonoid (α i)] {β : Type*}
-  [AddCommMonoid β] {M : Type*} [AddCommMonoid M] [Preorder M] [VNorm β M]
-  [VectorNormed β M]
+  [AddCommMonoid β] {M : Type*} [AddCommMonoid M] [Preorder M] [Modulus β M]
+  [Modulus.IsDecomposable β M]
 variable {T : MultisubadditiveMap α β} {B : EQuasinorm β}
 
 /-! The expansion of {name}`MultisubadditiveMap.subadditive` over a finite grid. Stated for an
@@ -304,12 +304,12 @@ Remark 9, and $`q = 1` recovers the seminorm case.
 section Core
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {α : ι → Type*} [∀ i, AddCommGroup (α i)]
-  {β : Type*} [AddCommMonoid β] {M : Type*} [AddCommMonoid M] [Preorder M] [VNorm β M]
-  [VectorNormed β M]
+  {β : Type*} [AddCommMonoid β] {M : Type*} [AddCommMonoid M] [Preorder M] [Modulus β M]
+  [Modulus.IsDecomposable β M]
   {T : MultisubadditiveMap α β} {A : (i : ι) → EQuasinorm.Couple (α i)} {B' : EQuasinorm β}
   {θ : ι → ℝ} {C q c₁ c₂ : ℝ≥0∞}
 
-omit [DecidableEq ι] [VectorNormed β M] in
+omit [DecidableEq ι] [Modulus.IsDecomposable β M] in
 /-- The pointwise inequality of the note, applied to one cell of the decomposition grid. -/
 lemma enorm_le_mul_prod_jSummand
     (hθ : ∀ i, θ i ∈ Icc (0 : ℝ) 1)
@@ -397,8 +397,8 @@ end Core
 section Omega
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι] {α : ι → Type*} [∀ i, AddCommGroup (α i)]
-  {β : Type*} [AddCommMonoid β] {M : Type*} [AddCommMonoid M] [Preorder M] [VNorm β M]
-  [VectorNormed β M]
+  {β : Type*} [AddCommMonoid β] {M : Type*} [AddCommMonoid M] [Preorder M] [Modulus β M]
+  [Modulus.IsDecomposable β M]
   {T : MultisubadditiveMap α β} {θ : ι → ℝ}
 
 /-- Janson's Lemma 2, direction (ii) → (i), for arbitrary quasi-normed couples on the source
