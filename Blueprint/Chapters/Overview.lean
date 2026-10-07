@@ -77,13 +77,13 @@ use of the following result.
 
 This is a recipe for getting all the intermediate Lorentz spaces using interpolation.
 
-:::definition "RestrictedWeakType"
+::: definition "RestrictedWeakType"
 We say that a multisubadditive map $`T` has restricted weak type for $`p_0, p_i ∈ (0,∞]` and $`i ∈ ι`
 if it is bounded as an operator
 $$`T : ∏_{i ∈ ι}L_{p_i,1} \to L_{p_0,\infty}.`
 :::
 
-:::definition "StrongType"
+::: definition "StrongType"
 We say that a multisubadditive map $`T` has strong type for $`p_0, p_i ∈ (0,∞]` and $`i ∈ ι`
 if it is bounded as an operator
 $$`T : ∏_{i ∈ ι}L_{p_i} \to L_{p_0},`

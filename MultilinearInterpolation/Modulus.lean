@@ -92,7 +92,9 @@ abbrev Modulus.ofENorm (ε : Type*) [ENorm ε] : Modulus ε ℝ≥0∞ := ⟨eno
 /-- In a real normed space, the extended norm is decomposable: split $`x` proportionally,
 $`x = c x + (1 - c) x` with $`c = \min(1, ‖y₀‖ / ‖x‖)`. -/
 lemma Modulus.isDecomposable_ofENorm (E : Type*) [SeminormedAddCommGroup E] [NormedSpace ℝ E] :
+    -- todo: is this the right way to use the instance?
     letI := Modulus.ofENorm E; Modulus.IsDecomposable E ℝ≥0∞ := by
+  -- review: llm proof
   let := Modulus.ofENorm E
   refine ⟨?_, fun _ ↦ zero_le, fun x y ↦ ?_, fun {x y₀ y₁} h ↦ ?_⟩
   · simp [Modulus.modulus, ← ofReal_norm]
