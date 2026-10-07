@@ -186,12 +186,17 @@ lemma jNorm_le_max_kNorm [A.fst.IsSolid] [A.snd.IsSolid] {x : α} {y z u : ℤ �
       simp only [ite_true]
       grw [IsSolid.solid hux]
 
-/-- Lemma 1, for a couple of solid quasinorms with respect to a decomposable modulus. Janson
-proves it for arbitrary quasinormed groups, by differences of almost optimal decompositions. -/
+/-- Lemma 1, for $`x ∈ A_0 ∩ A_1` and a couple of solid quasinorms with respect to a decomposable
+modulus. Janson proves it for arbitrary quasinormed groups, by differences of almost optimal
+decompositions.
+
+The restriction to $`A_0 ∩ A_1` is necessary: finite sums of elements of finite $`J`-norm lie in
+$`A_0 ∩ A_1`, so {name}`jInfNorm` is infinite outside it for $`q > 0`. -/
 @[blueprint]
 lemma jInfNorm_le_kNorm [A.fst.IsSolid] [A.snd.IsSolid] (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1)
     (q : ℝ≥0∞) :
-    ∃ (C : ℝ≥0∞), C < ∞ ∧ ∀ x, jInfNorm A θ q x ≤ C * ‖x‖ₑ[A.kMethod θ q] :=
+    ∃ (C : ℝ≥0∞), C < ∞ ∧
+      ∀ x ∈ A.inf.finiteLocus, jInfNorm A θ q x ≤ C * ‖x‖ₑ[A.kMethod θ q] :=
   sorry
 
 end Lemma1
@@ -213,14 +218,16 @@ $$`\begin{aligned}\Omega = \Bigl\{ (θ_i)_{i ∈ ι} \in [0,1]^ι :
   \ \text{with } \theta_0 = \alpha_0 + \sum_{i} \alpha_i \theta_i,
   \ \text{for some } q_i, q \in (0,\infty] \Bigr\}.\end{aligned}`
 The value of the parameters $`q,q_i` are under an existential, and are not specified
-for the points of this set.
+for the points of this set. Boundedness is only required on $`∏_i (A_i)_0 ∩ (A_i)_1`, where
+{name}`jInfNorm_le_kNorm` holds.
 -/
 @[blueprint]
 def Ω : Set (ι → ℝ) :=
   {θ | let θ₀ := cα₀ + ∑ i, cα i * θ i
     ∃ (q₀ : ℝ≥0∞) (q : ι → ℝ≥0∞),
     0 ≤ cα₀ + ∑ i, cα i * θ i ∧
-    ∃ C, T.IsBoundedFor (fun i ↦ (A i).kMethod (θ i) (q i)) (B.kMethod θ₀ q₀) C}
+    ∃ C, T.IsBoundedForOn (fun i ↦ (A i).kMethod (θ i) (q i)) (B.kMethod θ₀ q₀) C
+      (fun i x ↦ x ∈ (A i).inf.finiteLocus ∧ ‖x‖ₑ[(A i).kMethod (θ i) (q i)] < ∞)}
 
 /- The source couples are solid with respect to decomposable moduli, as required by
 `jInfNorm_le_kNorm`. They are not mentioned in the statements below, hence the `include`. -/
@@ -236,7 +243,8 @@ $`‖a‖_{θ,q} ≲ ‖a‖_0^{1-θ}‖a‖_1^θ` and needs no solidity. -/
 lemma enorm_le_prod_of_mem_Ω : ∀ θ, θ ∈ Ω T A B cα₀ cα →
     let θ₀ := cα₀ + ∑ i, cα i * θ i
     ∃ C : ℝ≥0∞, C < ∞ ∧
-    ∀ (a : (i : ι) → α i), ‖T a‖ₑ[B.kMethod θ₀ ∞] ≤
+    ∀ (a : (i : ι) → α i), (∀ i, a i ∈ (A i).inf.finiteLocus) →
+    ‖T a‖ₑ[B.kMethod θ₀ ∞] ≤
     C * ∏ i, ‖a i‖ₑ[(A i).fst] ^ (1 - θ i : ℝ) * ‖a i‖ₑ[(A i).snd] ^ (θ i : ℝ) := by
   sorry
 
@@ -246,7 +254,8 @@ lemma knorm_of_mem_Ω : ∀ θ, θ ∈ Ω T A B cα₀ cα →
     let θ₀ := cα₀ + ∑ i, cα i * θ i
     ∃ C : ℝ≥0∞, C < ∞ ∧
     ∀ (t : ℝ≥0∞),
-    ∀ (a : (i : ι) → α i), B.kNorm t (T a) ≤
+    ∀ (a : (i : ι) → α i), (∀ i, a i ∈ (A i).inf.finiteLocus) →
+    B.kNorm t (T a) ≤
     C * t ^ cα₀ * ∏ i, ‖a i‖ₑ[(A i).fst] ^ (1 - θ i) * ‖a i‖ₑ[(A i).snd] ^ (θ i) :=
   sorry
 
@@ -259,7 +268,8 @@ solidity hypotheses on the source couples. -/
 lemma mem_Ω_of_enorm_le_prod : ∀ θ,
     (let θ₀ := cα₀ + ∑ i, cα i * θ i
     ∃ C : ℝ≥0∞, C < ∞ ∧
-    ∀ (a : (i : ι) → α i), ‖T a‖ₑ[B.kMethod θ₀ ∞] ≤
+    ∀ (a : (i : ι) → α i), (∀ i, a i ∈ (A i).inf.finiteLocus) →
+    ‖T a‖ₑ[B.kMethod θ₀ ∞] ≤
     C * ∏ i, ‖a i‖ₑ[(A i).fst] ^ (1 - θ i : ℝ) * ‖a i‖ₑ[(A i).snd] ^ (θ i : ℝ)) →
     θ ∈ Ω T A B cα₀ cα := by
   sorry
@@ -270,7 +280,8 @@ lemma mem_Ω_of_enorm_le_prod : ∀ θ,
 lemma mem_Ω_iff : ∀ θ, θ ∈ Ω T A B cα₀ cα ↔
     let θ₀ := cα₀ + ∑ i, cα i * θ i
     ∃ C : ℝ≥0∞, C < ∞ ∧
-    ∀ (a : (i : ι) → α i), ‖T a‖ₑ[B.kMethod θ₀ ∞] ≤
+    ∀ (a : (i : ι) → α i), (∀ i, a i ∈ (A i).inf.finiteLocus) →
+    ‖T a‖ₑ[B.kMethod θ₀ ∞] ≤
     C * ∏ i, ‖a i‖ₑ[(A i).fst] ^ (1 - θ i : ℝ) * ‖a i‖ₑ[(A i).snd] ^ (θ i : ℝ) :=
   fun θ ↦ ⟨enorm_le_prod_of_mem_Ω T A B cα₀ cα θ, mem_Ω_of_enorm_le_prod T A B cα₀ cα θ⟩
 
@@ -292,13 +303,15 @@ include hMα hA₀ hA₁
 $`T \colon \prod_i (A_i)_{θ_i,q_i} \to B_{θ_0,q_0}` is bounded for every choice of
 exponents with $`q_0^{-1} \le \sum_i q_i^{-1}`.
 This is stronger than mere membership in $`Ω`, where the $`q_i,q_0` are under an existential.
+As in $`Ω`, boundedness is on $`∏_i (A_i)_0 ∩ (A_i)_1`.
 -/
 @[blueprint
   (proofUses := [jInfNorm_le_kNorm, EQuasinorm.discreteKMethod_equiv_kmethod])]
 theorem isBoundedOn_of_mem_interior_Ω (θ) (hθ : θ ∈ interior (Ω T A B cα₀ cα)) :
     let θ₀ := cα₀ + ∑ i, cα i * θ i
     ∀ (q₀ : ℝ≥0∞) (q : ι → ℝ≥0∞) (hq : q₀⁻¹ ≤ ∑ i, (q i)⁻¹),
-    ∃ C, T.IsBoundedFor (fun i ↦ (A i).kMethod (θ i) (q i)) (B.kMethod θ₀ q₀) C :=
+    ∃ C, T.IsBoundedForOn (fun i ↦ (A i).kMethod (θ i) (q i)) (B.kMethod θ₀ q₀) C
+      (fun i x ↦ x ∈ (A i).inf.finiteLocus ∧ ‖x‖ₑ[(A i).kMethod (θ i) (q i)] < ∞) :=
   sorry
 
 end Theorem2

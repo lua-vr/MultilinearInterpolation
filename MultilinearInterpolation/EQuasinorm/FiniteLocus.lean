@@ -19,6 +19,7 @@ namespace EQuasinorm
 variable {α : Type*} [AddCommMonoid α] (A : EQuasinorm α)
 
 /-- the submonoid of finite elements -/
+@[simps]
 def finiteLocus (A : EQuasinorm α) : AddSubmonoid α where
   carrier := { x | ‖x‖ₑ[A] < ∞ }
   zero_mem' := by simp
