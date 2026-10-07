@@ -39,16 +39,29 @@ A decomposable modulus, following the lattice-normed spaces of Kantorovich (see 
 todo: what about definition 3.5.1 in BL ("is of class")? a different possible approach would be to
 quantify over all spaces that are of the class of the couple.
 -/
+/- note0
+Take $`β = M = ℤ` with $`|n| := n`. Then $`|0| = 0` and $`|x + y| = |x| + |y|`,
+yet $`|{-1}| = -1 < 0 = |0|`. So $`|0| = 0` together with subadditivity does not imply $`|0| ≤ |x|`.
+-/
 @[blueprint]
 class Modulus.IsDecomposable (M : outParam Type*) [AddCommMonoid M] [Preorder M] [Modulus β M] :
     Prop where
-  /-- zero is small -/
-  modulus_zero_le (x : β) : |(0 : β)|ₑ ≤ |x|ₑ
+  /-- the modulus of zero is zero -/
+  modulus_zero : |(0 : β)|ₑ = 0
+  /-- the modulus is nonnegative -/
+  modulus_nonneg (x : β) : 0 ≤ |x|ₑ
   /-- subadditivity -/
   modulus_add_le (x y : β) : |x + y|ₑ ≤ |x|ₑ + |y|ₑ
   /-- decomposability -/
   exists_decomp {x y₀ y₁ : β} (h : |x|ₑ ≤ |y₀|ₑ + |y₁|ₑ) :
     ∃ x₀ x₁, x = x₀ + x₁ ∧ |x₀|ₑ ≤ |y₀|ₑ ∧ |x₁|ₑ ≤ |y₁|ₑ ∧ |x₀|ₑ ≤ |x|ₑ ∧ |x₁|ₑ ≤ |x|ₑ
+
+attribute [simp] Modulus.IsDecomposable.modulus_zero Modulus.IsDecomposable.modulus_nonneg
+
+/-- The modulus of zero is minimal. -/
+lemma Modulus.IsDecomposable.modulus_zero_le [AddCommMonoid M] [Preorder M] [Modulus β M]
+    [Modulus.IsDecomposable β M] (x : β) : |(0 : β)|ₑ ≤ |x|ₑ :=
+  modulus_zero (β := β) ▸ modulus_nonneg x
 
 section Instances
 
@@ -64,7 +77,8 @@ lemma Pi.modulus_apply [∀ j, Modulus (γ j) (N j)] (f : ∀ j, γ j) (j : J) :
 instance Pi.instIsDecomposable [∀ j, AddCommMonoid (γ j)] [∀ j, AddCommMonoid (N j)]
     [∀ j, Preorder (N j)] [∀ j, Modulus (γ j) (N j)] [∀ j, Modulus.IsDecomposable (γ j) (N j)] :
     Modulus.IsDecomposable (∀ j, γ j) (∀ j, N j) where
-  modulus_zero_le x j := Modulus.IsDecomposable.modulus_zero_le (x j)
+  modulus_zero := funext fun j ↦ Modulus.IsDecomposable.modulus_zero (β := γ j)
+  modulus_nonneg x j := Modulus.IsDecomposable.modulus_nonneg (x j)
   modulus_add_le f g j := Modulus.IsDecomposable.modulus_add_le (f j) (g j)
   exists_decomp h := by
     choose u v huv hu hv hu' hv' using fun j ↦ Modulus.IsDecomposable.exists_decomp (h j)
@@ -80,7 +94,7 @@ $`x = c x + (1 - c) x` with $`c = \min(1, ‖y₀‖ / ‖x‖)`. -/
 lemma Modulus.isDecomposable_ofENorm (E : Type*) [SeminormedAddCommGroup E] [NormedSpace ℝ E] :
     letI := Modulus.ofENorm E; Modulus.IsDecomposable E ℝ≥0∞ := by
   let := Modulus.ofENorm E
-  refine ⟨fun x ↦ ?_, fun x y ↦ ?_, fun {x y₀ y₁} h ↦ ?_⟩
+  refine ⟨?_, fun _ ↦ zero_le, fun x y ↦ ?_, fun {x y₀ y₁} h ↦ ?_⟩
   · simp [Modulus.modulus, ← ofReal_norm]
   · simp only [Modulus.modulus, ← ofReal_norm]
     rw [← ENNReal.ofReal_add (norm_nonneg _) (norm_nonneg _)]
@@ -128,7 +142,8 @@ instance ENNReal.instModulus : Modulus ℝ≥0∞ ℝ≥0∞ := .ofENorm ℝ≥0
 @[simp] lemma ENNReal.modulus_eq (x : ℝ≥0∞) : |x|ₑ = x := enorm_eq_self x
 
 instance ENNReal.instIsDecomposable : Modulus.IsDecomposable ℝ≥0∞ ℝ≥0∞ where
-  modulus_zero_le _ := zero_le
+  modulus_zero := by simp
+  modulus_nonneg _ := zero_le
   modulus_add_le _ _ := le_rfl
   exists_decomp {a b c} h := by
     simp only [ENNReal.modulus_eq] at h
@@ -199,8 +214,8 @@ instance IsSolid.sup [Modulus.IsDecomposable β M] [A₀.IsSolid] [A₁.IsSolid]
 section OfModulus
 
 variable [Modulus.IsDecomposable β M] (g : EQuasinorm M) (hg : Monotone fun m ↦ ‖m‖ₑ[g])
-  (h0 : ‖|(0 : β)|ₑ‖ₑ[g] = 0)
 
+variable (β) in
 /-- The quasinorm $`x ↦ ‖|x|‖_g` on $`β` induced by a monotone quasinorm $`g` on $`M`, with the
 same constant as $`g`. -/
 @[blueprint]
@@ -209,16 +224,16 @@ def ofModulus : EQuasinorm β where
   C := g.C
   C_lt_top := g.C_lt_top
   C_ge_one := g.C_ge_one
-  enorm_zero := h0
+  enorm_zero := by simp
   enorm_add_le_mul x y :=
     (hg (Modulus.IsDecomposable.modulus_add_le x y)).trans (g.enorm_add_le_mul _ _)
 
 @[simp]
-lemma enorm_ofModulus (x : β) : ‖x‖ₑ[ofModulus g hg h0] = ‖|x|ₑ‖ₑ[g] := rfl
+lemma enorm_ofModulus (x : β) : ‖x‖ₑ[ofModulus β g hg] = ‖|x|ₑ‖ₑ[g] := rfl
 
 /-- A quasinorm induced by a modulus is solid. -/
 @[blueprint]
-instance IsSolid.ofModulus : (ofModulus g hg h0).IsSolid := ⟨fun h ↦ hg h⟩
+instance IsSolid.ofModulus : (ofModulus β g hg).IsSolid := ⟨fun h ↦ hg h⟩
 
 end OfModulus
 
