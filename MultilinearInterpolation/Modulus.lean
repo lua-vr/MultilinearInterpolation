@@ -13,7 +13,7 @@ public import MultilinearInterpolation.EQuasinorm.ESeminorm
 
 A modulus $`|\cdot| \colon β → M` takes values in an ordered monoid $`M`, e.g.
 $`‖\cdot‖ₑ ∘ b ∈ γ → ℝ≥0∞` for $`b ∈ γ → ε`. A quasinorm on $`β` is solid if it is monotone
-along $`|\cdot|`.
+along $`|\cdot|`; e.g. $`x ↦ ‖|x|‖_g` for a monotone quasinorm $`g` on $`M`.
 -/
 
 open Verso.Genre Manual Informal InlineLean
@@ -195,6 +195,38 @@ instance IsSolid.skewedSup [Modulus.IsDecomposable β M] [A₀.IsSolid] [A₁.Is
 
 instance IsSolid.sup [Modulus.IsDecomposable β M] [A₀.IsSolid] [A₁.IsSolid] : (A₀ ⊔ A₁).IsSolid :=
   IsSolid.skewedSup
+
+section OfModulus
+
+variable [Modulus.IsDecomposable β M] (g : EQuasinorm M) (hg : Monotone fun m ↦ ‖m‖ₑ[g])
+  (h0 : ‖|(0 : β)|ₑ‖ₑ[g] = 0)
+
+/-- The quasinorm $`x ↦ ‖|x|‖_g` on $`β` induced by a monotone quasinorm $`g` on $`M`, with the
+same constant as $`g`. -/
+@[blueprint]
+def ofModulus : EQuasinorm β where
+  enorm := ⟨fun x ↦ ‖|x|ₑ‖ₑ[g]⟩
+  C := g.C
+  C_lt_top := g.C_lt_top
+  C_ge_one := g.C_ge_one
+  enorm_zero := h0
+  enorm_add_le_mul x y :=
+    (hg (Modulus.IsDecomposable.modulus_add_le x y)).trans (g.enorm_add_le_mul _ _)
+
+@[simp]
+lemma enorm_ofModulus (x : β) : ‖x‖ₑ[ofModulus g hg h0] = ‖|x|ₑ‖ₑ[g] := rfl
+
+/-- A quasinorm induced by a modulus is solid. -/
+@[blueprint]
+instance IsSolid.ofModulus : (ofModulus g hg h0).IsSolid := ⟨fun h ↦ hg h⟩
+
+end OfModulus
+
+/-- On $`[0,∞]`-valued functions, where the modulus is the identity, solidity is monotonicity.
+This supplies the hypothesis of {lit}`EQuasinorm.ofModulus`. -/
+lemma IsSolid.monotone {J : Type*} {g : EQuasinorm (J → ℝ≥0∞)} [g.IsSolid] :
+    Monotone fun m ↦ ‖m‖ₑ[g] :=
+  fun _ _ h ↦ IsSolid.solid h
 
 end EQuasinorm
 
