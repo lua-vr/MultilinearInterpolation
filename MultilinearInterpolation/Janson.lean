@@ -186,9 +186,11 @@ lemma jNorm_le_max_kNorm [A.fst.IsSolid] [A.snd.IsSolid] {x : α} {y z u : ℤ �
       simp only [ite_true]
       grw [IsSolid.solid hux]
 
-/-- Lemma 1. -/
+/-- Lemma 1, for a couple of solid quasinorms with respect to a decomposable modulus. Janson
+proves it for arbitrary quasinormed groups, by differences of almost optimal decompositions. -/
 @[blueprint]
-lemma jInfNorm_le_kNorm (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1) (q : ℝ≥0∞) :
+lemma jInfNorm_le_kNorm [A.fst.IsSolid] [A.snd.IsSolid] (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1)
+    (q : ℝ≥0∞) :
     ∃ (C : ℝ≥0∞), C < ∞ ∧ ∀ x, jInfNorm A θ q x ≤ C * ‖x‖ₑ[A.kMethod θ q] :=
   sorry
 
@@ -220,12 +222,19 @@ def Ω : Set (ι → ℝ) :=
     0 ≤ cα₀ + ∑ i, cα i * θ i ∧
     ∃ C, T.IsBoundedFor (fun i ↦ (A i).kMethod (θ i) (q i)) (B.kMethod θ₀ q₀) C}
 
+/- The source couples are solid with respect to decomposable moduli, as required by
+`jInfNorm_le_kNorm`. They are not mentioned in the statements below, hence the `include`. -/
+variable {Mα : ι → Type*} [∀ i, AddCommMonoid (Mα i)] [∀ i, Preorder (Mα i)]
+  [∀ i, Modulus (α i) (Mα i)] [hMα : ∀ i, Modulus.IsDecomposable (α i) (Mα i)]
+  [hA₀ : ∀ i, (A i).fst.IsSolid] [hA₁ : ∀ i, (A i).snd.IsSolid]
+
 section Theorem1
 
-/-- Lemma 2, part 1. -/
+/-- Lemma 2, part 1, direction (i) → (ii). It follows from the interpolation inequality
+$`‖a‖_{θ,q} ≲ ‖a‖_0^{1-θ}‖a‖_1^θ` and needs no solidity. -/
 @[blueprint]
-lemma mem_Ω_iff : ∀ θ, θ ∈ Ω T A B cα₀ cα ↔
-    let θ₀ := cα₀ + ∑ i, cα i
+lemma enorm_le_prod_of_mem_Ω : ∀ θ, θ ∈ Ω T A B cα₀ cα →
+    let θ₀ := cα₀ + ∑ i, cα i * θ i
     ∃ C : ℝ≥0∞, C < ∞ ∧
     ∀ (a : (i : ι) → α i), ‖T a‖ₑ[B.kMethod θ₀ ∞] ≤
     C * ∏ i, ‖a i‖ₑ[(A i).fst] ^ (1 - θ i : ℝ) * ‖a i‖ₑ[(A i).snd] ^ (θ i : ℝ) := by
@@ -234,12 +243,36 @@ lemma mem_Ω_iff : ∀ θ, θ ∈ Ω T A B cα₀ cα ↔
 /-- Lemma 2, part 2. -/
 @[blueprint]
 lemma knorm_of_mem_Ω : ∀ θ, θ ∈ Ω T A B cα₀ cα →
-    let θ₀ := cα₀ + ∑ i, cα i
+    let θ₀ := cα₀ + ∑ i, cα i * θ i
     ∃ C : ℝ≥0∞, C < ∞ ∧
     ∀ (t : ℝ≥0∞),
     ∀ (a : (i : ι) → α i), B.kNorm t (T a) ≤
     C * t ^ cα₀ * ∏ i, ‖a i‖ₑ[(A i).fst] ^ (1 - θ i) * ‖a i‖ₑ[(A i).snd] ^ (θ i) :=
   sorry
+
+include hMα hA₀ hA₁
+
+/-- Lemma 2, part 1, direction (ii) → (i). It uses {name}`jInfNorm_le_kNorm`, hence the
+solidity hypotheses on the source couples. -/
+@[blueprint
+  (proofUses := [jInfNorm_le_kNorm])]
+lemma mem_Ω_of_enorm_le_prod : ∀ θ,
+    (let θ₀ := cα₀ + ∑ i, cα i * θ i
+    ∃ C : ℝ≥0∞, C < ∞ ∧
+    ∀ (a : (i : ι) → α i), ‖T a‖ₑ[B.kMethod θ₀ ∞] ≤
+    C * ∏ i, ‖a i‖ₑ[(A i).fst] ^ (1 - θ i : ℝ) * ‖a i‖ₑ[(A i).snd] ^ (θ i : ℝ)) →
+    θ ∈ Ω T A B cα₀ cα := by
+  sorry
+
+/-- Lemma 2, part 1. -/
+@[blueprint
+  (proofUses := [enorm_le_prod_of_mem_Ω, mem_Ω_of_enorm_le_prod])]
+lemma mem_Ω_iff : ∀ θ, θ ∈ Ω T A B cα₀ cα ↔
+    let θ₀ := cα₀ + ∑ i, cα i * θ i
+    ∃ C : ℝ≥0∞, C < ∞ ∧
+    ∀ (a : (i : ι) → α i), ‖T a‖ₑ[B.kMethod θ₀ ∞] ≤
+    C * ∏ i, ‖a i‖ₑ[(A i).fst] ^ (1 - θ i : ℝ) * ‖a i‖ₑ[(A i).snd] ^ (θ i : ℝ) :=
+  fun θ ↦ ⟨enorm_le_prod_of_mem_Ω T A B cα₀ cα θ, mem_Ω_of_enorm_le_prod T A B cα₀ cα θ⟩
 
 /-- The set $`Ω` is convex. In particular, if we do not care about the choice of $`q_i`s, then
 $`T` is bounded in the convex hull of the $`(θ_i)_i`s for which it is already known to be bounded.
@@ -253,6 +286,8 @@ end Theorem1
 
 section Theorem2
 
+include hMα hA₀ hA₁
+
 /-- If $`(θ_i)_i` is in the interior of $`Ω`, then
 $`T \colon \prod_i (A_i)_{θ_i,q_i} \to B_{θ_0,q_0}` is bounded for every choice of
 exponents with $`q_0^{-1} \le \sum_i q_i^{-1}`.
@@ -261,7 +296,7 @@ This is stronger than mere membership in $`Ω`, where the $`q_i,q_0` are under a
 @[blueprint
   (proofUses := [jInfNorm_le_kNorm, EQuasinorm.discreteKMethod_equiv_kmethod])]
 theorem isBoundedOn_of_mem_interior_Ω (θ) (hθ : θ ∈ interior (Ω T A B cα₀ cα)) :
-    let θ₀ := cα₀ + ∑ i, cα i
+    let θ₀ := cα₀ + ∑ i, cα i * θ i
     ∀ (q₀ : ℝ≥0∞) (q : ι → ℝ≥0∞) (hq : q₀⁻¹ ≤ ∑ i, (q i)⁻¹),
     ∃ C, T.IsBoundedFor (fun i ↦ (A i).kMethod (θ i) (q i)) (B.kMethod θ₀ q₀) C :=
   sorry
