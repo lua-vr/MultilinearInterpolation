@@ -31,7 +31,7 @@ map $`T`, {bpref "EQuasinorm.Couple"}[couples] of {bpref "EQuasinorm"}[quasinorm
 $`i ∈ ι` and an output
 quasinorm couple $`B`. We are interested in knowing for which values of the parameters
 $`θ_0, \theta_i \in [0,1]` and $`q_0, q_i ∈ (0, ∞]` for $`i ∈ ι` the map $`T` is
-{bpref "MultisubadditiveMap.IsBoundedFor"}[bounded]
+{bpref "MultisubadditiveMap.IsBoundedForOn"}[bounded]
 as an operator between the $`K`-{bpref "EQuasinorm.kMethod"}[interpolation spaces]
 $$`T : \prod_{i ∈ ι}(A_i)_{θ_i,p_i} → (B)_{θ_0,p_0}.`
 It is known (see an example in {citet janson}[]) that without further assumptions, we have a

@@ -76,18 +76,19 @@ lemma enorm_update_add_le :
 
 end Solid
 
-/-- A multisubadditive operator is bounded for quasinorms $`A_i`, $`B` and a finite constant $`C` if
-for all $`x = (x_i)_{i ∈ ι}`,
-$$`\|T x\|_{B} ≤ C ∏_{i∈ ι} \|x_i\|_{A_i}`. -/
+/-- A multisubadditive operator is bounded for quasinorms $`A_i`, $`B` and a finite constant $`C` on
+a predicate $`P` if for all $`x = (x_i)_{i ∈ ι}` with $`P_i(x_i)` for all $`i`,
+$$`\|T x\|_{B} ≤ C ∏_{i∈ ι} \|x_i\|_{A_i}.`
+Since $`0 · ∞ = 0` in $`[0,∞]`, one usually wants $`P_i` to imply $`\|x_i\|_{A_i} < ∞`. -/
 @[blueprint]
-def IsBoundedFor : Prop :=
-  C < ∞ ∧ ∀ x, (∀ i, ‖x i‖ₑ[A i] < ∞) → ‖T x‖ₑ[B] ≤ C * ∏ i, ‖x i‖ₑ[A i]
+def IsBoundedForOn (P : ∀ i, α i → Prop) : Prop :=
+  C < ∞ ∧ ∀ x, (∀ i, P i (x i)) → ‖T x‖ₑ[B] ≤ C * ∏ i, ‖x i‖ₑ[A i]
 
 /-- The operator $`T` is bounded if, and only if, it is bounded between the
 same quasinorms raised to a common power. -/
 @[blueprint]
-lemma isBoundedFor_iff_isBoundedFor_pow {p : ℝ} (hp : 0 < p) :
-    T.IsBoundedFor A B C ↔ T.IsBoundedFor (fun i ↦ (A i).pow hp) (B.pow hp) C :=
+lemma isBoundedForOn_iff_isBoundedForOn_pow {p : ℝ} (hp : 0 < p) (P : ∀ i, α i → Prop) :
+    T.IsBoundedForOn A B C P ↔ T.IsBoundedForOn (fun i ↦ (A i).pow hp) (B.pow hp) C P :=
   sorry
 
 end MultisubadditiveMap
