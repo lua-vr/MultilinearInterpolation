@@ -2,4 +2,5 @@
 _out
 .tex-aux
 *.synctex.gz
+*.orig
 latex/auto
