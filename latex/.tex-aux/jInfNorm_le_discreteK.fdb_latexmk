@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1790805623.72619 "jInfNorm_le_discreteK.tex" "jInfNorm_le_discreteK.pdf" "jInfNorm_le_discreteK" 1790805624.28105 0
-  ".tex-aux/jInfNorm_le_discreteK.aux" 1790805624.18907 1355 bc35158e9362268bfd621d1ca35dcc4c "pdflatex"
+["pdflatex"] 1791491270.95287 "jInfNorm_le_discreteK.tex" "jInfNorm_le_discreteK.pdf" "jInfNorm_le_discreteK" 1791491271.3287 0
+  ".tex-aux/jInfNorm_le_discreteK.aux" 1791491271.25789 1444 921a67509c895487b4fcf51ff9577367 "pdflatex"
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1095.tfm" 1136768653 1536 02c06700a42be0f5a28664c7273f82e7 ""
@@ -12,6 +12,9 @@
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm" 1246382020 940 228d6584342e91276bf566bcf9716b83 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1136768653 1324 c910af8c371558dc20f2d7822f66fe64 ""
+  "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx6.tfm" 1136768653 1344 8a0be4fe4d376203000810ad4dc81558 ""
+  "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx7.tfm" 1136768653 1336 3125ccb448c1a09074e3aa4a9832f130 ""
+  "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx8.tfm" 1136768653 1332 1fde11373e221473104d6cc5993f046e ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmex10.tfm" 1136768653 992 662f679a0b3d2d53c1b94050fdaa3f50 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm" 1136768653 1528 abec98dbc43e172678c11b3b9031252a ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm" 1136768653 1524 4414a8315f39513458b80dfc63bff03a ""
@@ -67,8 +70,8 @@
   "/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def" 1774899586 30909 7dedb28cb21a1e79c47a35a35ae3c507 ""
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1777593600 43785 66587115382950aca692b5f6e3c2fb74 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1780411107 4754230 fd73faac2c19779d61b8c317c9e61ffa ""
-  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1782597386 3527882 d18e4d9da82c565b58517e0fb0c754c5 ""
-  "jInfNorm_le_discreteK.tex" 1790805623.58151 16686 354875b083e4905dd039976de4835eb5 ""
+  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1791463187 3527880 a7d2dd1c0142d8d90bb6b374aa5f3d85 ""
+  "jInfNorm_le_discreteK.tex" 1791490314.70672 20531 df2689362cb120ef0cc85715fd5dc6c6 ""
   (generated)
   ".tex-aux/jInfNorm_le_discreteK.aux"
   ".tex-aux/jInfNorm_le_discreteK.log"

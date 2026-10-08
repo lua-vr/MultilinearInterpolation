@@ -1,0 +1,22 @@
+# After a successful build, copy the PDF over its Zotero attachment.
+use File::Copy;
+use File::Compare;
+
+# Root name of the .tex file => attachment path inside ~/Zotero/storage.
+%zotero_attachment = (
+  'jInfNorm_le_discreteK' => 'FU8TRQS9/jInfNorm_le_discreteK.pdf',
+);
+
+$success_cmd = 'internal copy_to_zotero %R %D';
+
+sub copy_to_zotero {
+  my ($root, $pdf) = @_;
+  my $rel = $zotero_attachment{$root} or return 0;
+  my $dest = "$ENV{HOME}/Zotero/storage/$rel";
+  # Only replace an existing attachment, and only if the PDF changed.
+  return 0 unless -f $dest && -f $pdf;
+  return 0 if compare($pdf, $dest) == 0;
+  if (copy($pdf, $dest)) { print "Copied $pdf to $dest\n"; }
+  else { warn "copy_to_zotero: $dest: $!\n"; }
+  return 0;
+}

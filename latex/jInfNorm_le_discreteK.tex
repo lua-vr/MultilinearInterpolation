@@ -14,7 +14,7 @@
 \newcommand{\norm}[2]{\lVert #1\rVert_{#2}}
 \newcommand{\cJ}{\mathcal J}
 \newcommand{\Z}{\mathbb Z}
-\newcommand{\W}{W_N}
+\newcommand{\one}{\mathbf 1}
 
 \title{The finite \(J\)-norm is dominated by the discrete \(K\)-norm\\
 \large (the direction \(\cJ \lesssim \norm{\cdot}{K}\) of Janson's Lemma~1, over a monoid)}
@@ -68,11 +68,10 @@ For a family \(f = (f_\nu)_{\nu \in S}\) in \([0,\infty]\) indexed by a countabl
   : u \colon \Z \to \alpha \text{ finitely supported},\ \textstyle\sum_{\nu \in \Z} u_\nu = x \Bigr\}
   \qquad (\texttt{jInfNorm}).
 \]
-Since \(J_\nu(0) = 0\), a family \(u \colon \W \to \alpha\) on the window
-\(\W = \{-N, \dots, N-1\}\) with \(\sum_{\nu \in \W} u_\nu = x\), extended by zero to \(\Z\), is
-admissible, with cost \(\lVert (2^{-\nu\theta} J_\nu(u_\nu))_{\nu \in \W} \rVert_{\ell^q}\).
-Conversely every admissible \(u\) is supported in some window. Hence \(\cJ\) is equivalently the
-infimum of these costs over \(N \in \mathbb N\) and \(u \colon \W \to \alpha\).
+Since \(J_\nu(0) = 0\), a family \(u \colon \{-N, \dots, N-1\} \to \alpha\) with \(\sum_{\nu=-N}^{N-1} u_\nu = x\), extended by zero to \(\Z\), is
+admissible, with cost \(\lVert (2^{-\nu\theta} J_\nu(u_\nu))_{\nu=-N}^{N-1} \rVert_{\ell^q}\).
+Conversely every admissible \(u\) is supported in \(\{-N, \dots, N-1\}\) for some \(N\). Hence \(\cJ\) is equivalently the
+infimum of these costs over \(N \in \mathbb N\) and \(u \colon \{-N, \dots, N-1\} \to \alpha\).
 
 \begin{theorem}\label{thm:main}
   For every \(x \in \Delta\),
@@ -89,10 +88,11 @@ For each level \(\mu\) choose a near-optimal decomposition \(x = y_\mu + z_\mu\)
 by \(y_{\nu+1}\) and by \(z_\nu\). Then \(J_\nu(u_\nu) \lesssim K_{\nu+1}(x)\), except for one
 of the two norms of each of the two end pieces, which is controlled only by \(x\) itself.
 After weighting, these end terms decay geometrically in \(N\), because \(0<\theta<1\) and
-\(x \in \Delta\). The \(\ell^q\)-norm of a maximum is estimated by a sum of \(q\)-th powers,
-so no quasi-triangle inequality in \(\ell^q\) is needed.
+\(x \in \Delta\). The \(\ell^q\)-norm is estimated through its \(r\)-th power,
+\(r = \min(q,1)\), which is subadditive with constant \(1\). The error terms vanish in the
+limit, so the main term keeps the constant \(2^\theta\) for every \(q\).
 
-\section{Three elementary facts}
+\section{Elementary facts}
 
 \begin{lemma}\label{lem:K-dyadic}
   For every \(x \in \alpha\) and \(\nu \in \Z\),
@@ -127,18 +127,56 @@ No finiteness assumption on \(x\) is needed; the hypothesis of \texttt{monotone\
 An additive error is used because the infimum need not be attained, and a multiplicative error
 \(1 + \varepsilon\) is useless when \(K_\mu(x) = 0\).
 
-\begin{lemma}\label{lem:lq-max}
-  Let \(f, g\) be families in \([0,\infty]\) indexed by a countable set \(S\). If
-  \(q < \infty\), then
-  \(\norm{\max(f,g)}{\ell^q}^q \le \norm{f}{\ell^q}^q + \norm{g}{\ell^q}^q\).
-  If \(q = \infty\), then \(\norm{\max(f,g)}{\ell^\infty} = \max(\norm{f}{\ell^\infty},
-  \norm{g}{\ell^\infty})\).
+\begin{lemma}\label{lem:lq-sub}
+  Put \(r = \min(q,1)\). For \(f, g \colon \Z \to [0,\infty]\),
+  \[
+    \norm{f+g}{\ell^q}^r \le \norm{f}{\ell^q}^r + \norm{g}{\ell^q}^r .
+  \]
 \end{lemma}
 
 \begin{proof}
-  For \(q < \infty\), sum the pointwise inequality \(\max(s,t)^q \le s^q + t^q\) over \(S\).
-  For \(q = \infty\), both sides are the supremum of all values of \(f\) and \(g\).
+  If \(q \ge 1\), including \(q = \infty\), then \(r = 1\) and this is Minkowski's inequality.
+  Let \(0 < q < 1\), so that \(r = q\) and \(\norm{f}{\ell^q}^q = \sum_{\nu \in \Z} f_\nu^q\).
+  For \(s, t \in [0,\infty]\) we have \((s+t)^q \le s^q + t^q\). This is clear if \(s+t\) is
+  \(0\) or \(\infty\); otherwise it follows from \(\lambda^q \ge \lambda\) for
+  \(\lambda \in [0,1]\), applied to \(\lambda = s/(s+t)\) and \(\lambda = t/(s+t)\). Summing
+  this inequality with \(s = f_\nu\), \(t = g_\nu\) over \(\nu \in \Z\) gives the claim.
 \end{proof}
+
+In Mathlib, Lemma~\ref{lem:lq-sub} is \texttt{inhmgELpNorm\_add\_le}. For \(q \ne 0\),
+\(\norm{f}{\ell^q}^r\) equals \texttt{inhmgELpNorm f q Measure.count}, by
+\begin{itemize}
+  \item \texttt{inhmgELpNorm\_eq\_eLpNorm} if \(q \ge 1\),
+  \item \texttt{inhmgELpNorm\_eq\_eLpNorm\_pow} if \(q \le 1\).
+\end{itemize}
+
+\begin{lemma}\label{lem:lq-facts}
+  Let \(f, g \colon \Z \to [0,\infty]\).
+  \begin{enumerate}
+    \item[(a)] If \(c \in [0,\infty)\) and \(f_\nu \le c\, g_\nu\) for all \(\nu \in \Z\), then
+      \(\norm{f}{\ell^q} \le c \norm{g}{\ell^q}\).
+    \item[(b)] For \(k \in \Z\), \(\norm{(f_{\nu+k})_{\nu \in \Z}}{\ell^q} = \norm{f}{\ell^q}\).
+    \item[(c)] If \(S \subseteq \Z\) is finite with \(n\) elements and \(c \in [0,\infty]\), then
+      \(\norm{c\, \one_S}{\ell^q} \le c\, n^{1/q}\), where \(1/\infty = 0\).
+  \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+  (a) The \(\ell^q\)-norm is monotone and positively homogeneous. (b) The map
+  \(\nu \mapsto \nu + k\) is a bijection of \(\Z\), and sums and suprema are invariant under
+  reindexing. (c) If \(q < \infty\), then \(\norm{c\,\one_S}{\ell^q}^q = n c^q\). If
+  \(q = \infty\), then \(\norm{c\,\one_S}{\ell^\infty}\) is \(c\) or \(0\), hence at most
+  \(c = c\, n^0\).
+\end{proof}
+
+In Lean:
+\begin{itemize}
+  \item[(a)] \texttt{eLpNorm\_le\_mul\_eLpNorm\_of\_ae\_le\_mul'} with \(c : \mathbb R_{\ge 0}\);
+  \item[(b)] \texttt{eLpNorm\_comp\_measurePreserving} with\\
+    \texttt{measurePreserving\_add\_right Measure.count k};
+  \item[(c)] \texttt{eLpNorm\_indicator\_const\_le} with \texttt{Measure.count\_apply\_finset}.
+\end{itemize}
+Every function on \(\Z\) is measurable (\texttt{measurable\_of\_countable}).
 
 \section{Splitting \(x\) into \(2N\) pieces}
 
@@ -198,8 +236,8 @@ the same reason (c) is stated relative to \(r\) and not to \(x\).
 \begin{proposition}\label{prop:split}
   Let \(N \ge 1\), \(x \in \alpha\), and for \(\mu = -N+1, \dots, N-1\) let
   \(x = y_\mu + z_\mu\) be arbitrary decompositions. Then there is
-  \(u \colon \Z \to \alpha\) vanishing outside \(\W\) with \(\sum_{\nu \in \Z} u_\nu = x\) and,
-  for every \(\nu \in \W\),
+  \(u \colon \Z \to \alpha\) vanishing outside \(\{-N, \dots, N-1\}\) with \(\sum_{\nu \in \Z} u_\nu = x\) and,
+  for every \(\nu \in \{-N, \dots, N-1\}\),
   \begin{enumerate}
     \item[(a)] \(\abs{u_\nu} \le \abs{y_{\nu+1}}\) if \(\nu \le N-2\);
     \item[(b)] \(\abs{u_\nu} \le \abs{z_\nu}\) if \(\nu \ge -N+1\);
@@ -209,7 +247,7 @@ the same reason (c) is stated relative to \(r\) and not to \(x\).
 
 \begin{proof}
   Apply Proposition~\ref{prop:split-general} with \(a = -N\), \(m = 2N-1\) and \(r = x\);
-  then \(I = \W\).
+  then \(I = \{-N, \dots, N-1\}\).
 \end{proof}
 
 \section{The pointwise estimate}
@@ -222,7 +260,7 @@ the same reason (c) is stated relative to \(r\) and not to \(x\).
   \end{equation}
   and let \(u \colon \Z \to \alpha\) be given by Proposition~\ref{prop:split}. Put
   \(E_{-N} = 2^{-N}\norm{x}{1}\), \(E_{N-1} = \norm{x}{0}\) and \(E_\nu = 0\) for the other
-  \(\nu \in \W\). Then for every \(\nu \in \W\),
+  \(\nu \in \{-N, \dots, N-1\}\). Then for every \(\nu \in \{-N, \dots, N-1\}\),
   \[
     J_\nu(u_\nu) \le \max\bigl(K_{\nu+1}(x) + \delta,\ E_\nu\bigr).
   \]
@@ -249,61 +287,82 @@ the same reason (c) is stated relative to \(r\) and not to \(x\).
 \section{Proof of Theorem~\ref{thm:main}}
 
 We prove \(\cJ(x) \le 2^\theta \norm{x}{K}\); the bound with \(2^{1-\theta}\) is
-Remark~\ref{rem:other-constant}. Fix \(x \in \Delta\), \(N \ge 1\) and \(\delta > 0\), and let
-\(u\) be as in Lemma~\ref{lem:pointwise}. Write
+Remark~\ref{rem:other-constant}. Fix \(x \in \Delta\), and put \(r = \min(q,1)\) and
+\(a_\mu = 2^{-\mu\theta} K_\mu(x)\) for \(\mu \in \Z\), so that
+\(\norm{a}{\ell^q} = \norm{x}{K}\). Fix \(N \ge 1\) and \(\delta > 0\), let \(u\) be as in
+Lemma~\ref{lem:pointwise}, and put
 \[
-  a_\mu = 2^{-\mu\theta} K_\mu(x), \qquad
-  b_\nu = 2^{-\nu\theta} J_\nu(u_\nu), \qquad
-  e_\nu = 2^{-\nu\theta} E_\nu .
+  b_\nu = 2^{-\nu\theta} J_\nu(u_\nu) \quad (\nu \in \Z), \qquad
+  e_\nu = 2^{-\nu\theta} E_\nu \quad (\nu \in \{-N, \dots, N-1\}),
 \]
-Since \(2^{-\nu\theta} = 2^\theta \cdot 2^{-(\nu+1)\theta}\), multiplying
-Lemma~\ref{lem:pointwise} by \(2^{-\nu\theta}\) gives
-\begin{equation}\label{eq:weighted}
-  b_\nu \le \max\bigl(2^\theta (a_{\nu+1} + \delta\, 2^{-(\nu+1)\theta}),\ e_\nu\bigr)
-  \qquad (\nu \in \W).
-\end{equation}
-The end terms are
+and \(e_\nu = 0\) for the other \(\nu \in \Z\). The end terms are
 \[
   e_{-N} = 2^{N\theta} 2^{-N}\norm{x}{1} = 2^{-(1-\theta)N}\norm{x}{1},
   \qquad
   e_{N-1} = 2^{-(N-1)\theta}\norm{x}{0}.
 \]
-Since \(u\) vanishes outside \(\W\) and \(\sum_{\nu \in \Z} u_\nu = x\), the family \(u\) is
-admissible in the definition of \(\cJ\), and \(b_\nu = 0\) for \(\nu \notin \W\), so \(\cJ(x) \le \norm{b}{\ell^q}\).
+Since \(u\) vanishes outside \(\{-N, \dots, N-1\}\) and \(\sum_{\nu \in \Z} u_\nu = x\), the
+family \(u\) is admissible in the definition of \(\cJ\), so \(\cJ(x) \le \norm{b}{\ell^q}\).
 
-\emph{Case \(q < \infty\).} By \eqref{eq:weighted}, Lemma~\ref{lem:lq-max}, and the fact that
-\(e\) vanishes except at \(-N\) and \(N-1\),
-\[
-  \cJ(x)^q \le \sum_{\nu \in \W} b_\nu^q
-  \le 2^{\theta q} \sum_{\nu \in \W} \bigl(a_{\nu+1} + \delta\, 2^{-(\nu+1)\theta}\bigr)^q
-    + e_{-N}^q + e_{N-1}^q .
-\]
-The left-hand side does not depend on \(\delta\). The right-hand side is a finite sum of
-functions of \(\delta\) that are continuous on \([0,\infty)\) with values in \([0,\infty]\)
-(addition, multiplication by a finite constant, and \(t \mapsto t^q\) are continuous there).
-Letting \(\delta \to 0\) and substituting \(\mu = \nu + 1\),
-\[
-  \cJ(x)^q \le 2^{\theta q} \sum_{\mu = -N+1}^{N} a_\mu^q + e_{-N}^q + e_{N-1}^q
-  \le 2^{\theta q}\norm{x}{K}^q + e_{-N}^q + e_{N-1}^q ,
-\]
-where the last step drops the terms with \(\mu \notin \{-N+1, \dots, N\}\). Since
-\(0 < \theta < 1\) and \(\norm{x}{0}, \norm{x}{1} < \infty\), both \(e_{-N}\) and
-\(e_{N-1}\) tend to \(0\) as \(N \to \infty\), and so do their \(q\)-th powers. Letting
-\(N \to \infty\) gives \(\cJ(x)^q \le 2^{\theta q}\norm{x}{K}^q\), and taking \(q\)-th roots
-proves the claim.
+\begin{lemma}\label{lem:termwise}
+  For every \(\nu \in \Z\),
+  \[
+    b_\nu \le 2^\theta a_{\nu+1} + \delta\, 2^{N\theta}\, \one_{\{-N, \dots, N-1\}}(\nu) + e_\nu .
+  \]
+\end{lemma}
 
-\emph{Case \(q = \infty\).} By \eqref{eq:weighted} and Lemma~\ref{lem:lq-max}, and since
-\(2^{-(\nu+1)\theta} \le 2^{(N-1)\theta}\) on \(\W\),
+\begin{proof}
+  Let \(\nu \in \{-N, \dots, N-1\}\). Bounding the maximum in Lemma~\ref{lem:pointwise} by the
+  sum gives \(J_\nu(u_\nu) \le K_{\nu+1}(x) + \delta + E_\nu\), and we multiply this by
+  \(2^{-\nu\theta}\). Since \(2^{-\nu\theta} = 2^\theta\, 2^{-(\nu+1)\theta}\), the first term
+  becomes \(2^\theta a_{\nu+1}\). Since \(\nu \ge -N\) and \(\theta > 0\), we have
+  \(2^{-\nu\theta} \le 2^{N\theta}\), which bounds the second term. The third term becomes
+  \(e_\nu\).
+
+  Let \(\nu \notin \{-N, \dots, N-1\}\). Then \(u_\nu = 0\), so
+  \(b_\nu = 2^{-\nu\theta} J_\nu(0) = 0\), because quasinorms vanish at \(0\).
+\end{proof}
+
+The main term carries no indicator, so that Lemma~\ref{lem:lq-facts}(b) applies to it.
+
+Since \(N \ge 1\), the indices \(-N\) and \(N-1\) are distinct, so
+\(e = e_{-N}\one_{\{-N\}} + e_{N-1}\one_{\{N-1\}}\). By Lemma~\ref{lem:termwise} and
+Lemma~\ref{lem:lq-facts}(a) with \(c = 1\), \(\norm{b}{\ell^q}\) is at most the
+\(\ell^q\)-norm of the sum of the four families
 \[
-  \cJ(x) \le \max_{\nu \in \W} b_\nu
-  \le \max\bigl(2^\theta(\norm{x}{K} + \delta\, 2^{(N-1)\theta}),\ e_{-N},\ e_{N-1}\bigr).
+  (2^\theta a_{\nu+1})_{\nu \in \Z}, \qquad
+  \delta\, 2^{N\theta}\, \one_{\{-N, \dots, N-1\}}, \qquad
+  e_{-N}\one_{\{-N\}}, \qquad
+  e_{N-1}\one_{\{N-1\}} .
 \]
-Let \(\delta \to 0\), then \(N \to \infty\). \qed
+By Lemma~\ref{lem:lq-sub}, applied three times, \(\norm{b}{\ell^q}^r\) is at most the sum of
+the \(r\)-th powers of their norms. By Lemma~\ref{lem:lq-facts}(a) and (b) with \(k = 1\), the
+norm of the first family is at most \(2^\theta \norm{a}{\ell^q} = 2^\theta \norm{x}{K}\). By
+Lemma~\ref{lem:lq-facts}(c), the norms of the other three are at most
+\(\delta\, 2^{N\theta} (2N)^{1/q}\), \(e_{-N}\) and \(e_{N-1}\). Hence
+\begin{equation}\label{eq:fixed-N}
+  \cJ(x)^r \le 2^{\theta r}\norm{x}{K}^r + \bigl(\delta\, 2^{N\theta} (2N)^{1/q}\bigr)^r
+    + e_{-N}^r + e_{N-1}^r .
+\end{equation}
+
+The left-hand side of \eqref{eq:fixed-N} depends on neither \(\delta\) nor \(N\). Fix \(N\)
+and let \(\delta \to 0\). Since \(2^{N\theta} (2N)^{1/q}\) is finite and \(r > 0\), the second
+term tends to \(0\), and since addition on \([0,\infty]\) is continuous,
+\[
+  \cJ(x)^r \le 2^{\theta r}\norm{x}{K}^r + e_{-N}^r + e_{N-1}^r .
+\]
+Now let \(N \to \infty\). Since \(\theta < 1\) and \(\norm{x}{1} < \infty\), \(e_{-N} \to 0\);
+since \(\theta > 0\) and \(\norm{x}{0} < \infty\), \(e_{N-1} \to 0\). As \(r > 0\), their
+\(r\)-th powers tend to \(0\) as well. This gives
+\(\cJ(x)^r \le 2^{\theta r}\norm{x}{K}^r\), and taking \(r\)-th roots proves the claim.
+\qed
 
 \medskip
 The two limits are taken one after the other: \(\delta \to 0\) for fixed \(N\), then
 \(N \to \infty\). This is legitimate because \(\cJ(x)\) depends on neither, and the end terms
-do not depend on \(\delta\). No assumption \(\norm{x}{K} < \infty\) is needed.
+do not depend on \(\delta\). No assumption \(\norm{x}{K} < \infty\) is needed, and no case
+distinction between \(q < \infty\) and \(q = \infty\). In Lean both limits are taken with
+\texttt{ge\_of\_tendsto'}, the first along \(\delta = (n+1)^{-1}\), \(n \to \infty\).
 
 \section{Remarks}
 
@@ -317,7 +376,8 @@ do not depend on \(\delta\). No assumption \(\norm{x}{K} < \infty\) is needed.
   The exceptional entries are unchanged, so
   \(J_\nu(u_\nu) \le \max(2(K_{\nu-1}(x) + \delta), E_\nu)\). Since
   \(2 \cdot 2^{-\nu\theta} = 2^{1-\theta} 2^{-(\nu-1)\theta}\), the rest of the proof goes
-  through with \(2^\theta a_{\nu+1}\) replaced by \(2^{1-\theta} a_{\nu-1}\). This uses the
+  through with \(2^\theta a_{\nu+1}\) replaced by \(2^{1-\theta} a_{\nu-1}\), \(\delta\) by
+  \(2\delta\), and \(k = 1\) by \(k = -1\) in Lemma~\ref{lem:lq-facts}(b). This uses the
   second inequality of Lemma~\ref{lem:K-dyadic}. Choosing the better of the two versions gives
   the constant \(2^{\min(\theta, 1-\theta)}\).
 \end{remark}
@@ -328,15 +388,20 @@ do not depend on \(\delta\). No assumption \(\norm{x}{K} < \infty\) is needed.
     \item (R), \eqref{eq:abs-add} and transitivity of \(\le\): only in
       Proposition~\ref{prop:split-general}.
     \item Solidity of \(A_0, A_1\): only in Lemma~\ref{lem:pointwise}.
-    \item \(x \in \Delta\) and \(0 < \theta < 1\): only in \(e_{-N}, e_{N-1} \to 0\). Each end
+    \item \(x \in \Delta\) and \(0 < \theta < 1\): in \(e_{-N}, e_{N-1} \to 0\). Each end
       uses one half of each condition: \(e_{-N}\) uses \(\theta < 1\) and
       \(\norm{x}{1} < \infty\), \(e_{N-1}\) uses \(\theta > 0\) and \(\norm{x}{0} < \infty\).
-    \item The quasi-triangle inequalities of \(A_0\), \(A_1\) and of \(\ell^q\): never.
-      Lemma~\ref{lem:lq-max} replaces Minkowski's inequality, which is why the constant does
-      not depend on \(q\).
+      Besides, \(\theta > 0\) gives the bound \(2^{-\nu\theta} \le 2^{N\theta}\) in
+      Lemma~\ref{lem:termwise}, where any finite bound would do.
+    \item The quasi-triangle inequalities of \(A_0\) and \(A_1\): never. For \(\ell^q\), only
+      Lemma~\ref{lem:lq-sub} is used. Its constant is \(1\) for every \(q\), which is why the
+      constant of Theorem~\ref{thm:main} does not depend on \(q\); the quasi-triangle
+      inequality of \(\ell^q\) would contribute a factor \(2^{1/q-1}\) for \(q < 1\).
   \end{itemize}
-  For \(q = 0\), Mathlib's \texttt{eLpNorm} is identically \(0\), so \(\cJ \equiv 0\) and the
-  inequality is trivial.
+  For \(q = 0\), Mathlib's \texttt{eLpNorm} is identically \(0\). The family with \(u_0 = x\)
+  and \(u_\nu = 0\) for \(\nu \ne 0\) (\texttt{Pi.single 0 x}) is admissible, so
+  \(\cJ(x) = 0\) and the inequality is trivial. This case is excluded from the proof above
+  because there \(r = 0\).
 \end{remark}
 
 \begin{remark}[Why \(x \in \Delta\) is necessary]
