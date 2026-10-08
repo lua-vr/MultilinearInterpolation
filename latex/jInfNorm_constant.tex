@@ -1,0 +1,337 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=2.8cm]{geometry}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\abs}[1]{\lvert #1\rvert}
+\newcommand{\norm}[2]{\lVert #1\rVert_{#2}}
+\newcommand{\cJ}{\mathcal J}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\R}{\mathbb R}
+\newcommand{\one}{\mathbf 1}
+
+\title{On the constant in the inequality \(\cJ \le C\,\norm{\cdot}{K}\)\\
+\large (Janson's Lemma~1)}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Setting and results}
+
+Let \(\alpha\) be an additive commutative monoid and \(A_0, A_1\) quasinorms on \(\alpha\) with
+values in \([0,\infty]\) (a \texttt{Couple}), written \(\norm{\cdot}{0}\), \(\norm{\cdot}{1}\).
+For \(t > 0\), \(\nu \in \Z\) and \(x, u \in \alpha\) put
+\[
+  K(t,x) = \inf_{x = x_0 + x_1}\bigl(\norm{x_0}{0} + t\norm{x_1}{1}\bigr),\qquad
+  K_\nu(x) = K(2^\nu, x),\qquad
+  J_\nu(u) = \max\bigl(\norm{u}{0},\ 2^\nu\norm{u}{1}\bigr)
+\]
+(\texttt{kNorm} and \texttt{jNorm}), and
+\(\Delta = \{x \in \alpha : \norm{x}{0} < \infty,\ \norm{x}{1} < \infty\}\)
+(\texttt{A.inf.finiteLocus}). Fix \(0 < \theta < 1\) and \(0 < q \le \infty\). For
+\(f\colon \Z \to [0,\infty]\), \(\norm{f}{\ell^q}\) is the \(\ell^q\)-norm
+(\texttt{eLpNorm f q Measure.count}). We compare
+\begin{align*}
+  \norm{x}{K} &= \bigl\lVert (2^{-\nu\theta} K_\nu(x))_{\nu\in\Z} \bigr\rVert_{\ell^q}
+    && (\texttt{discreteKMethod}),\\
+  \norm{x}{K,c} &= \Bigl(\int_0^\infty \bigl(t^{-\theta} K(t,x)\bigr)^q\,\frac{dt}{t}\Bigr)^{1/q}
+    && (\texttt{kMethod}),\\
+  \cJ(x) &= \inf_u \bigl\lVert (2^{-\nu\theta} J_\nu(u_\nu))_{\nu\in\Z} \bigr\rVert_{\ell^q}
+    && (\texttt{jInfNorm}).
+\end{align*}
+For \(q = \infty\), \(\norm{x}{K,c}\) is the essential supremum of \(t^{-\theta}K(t,x)\) over
+\(t > 0\). In \(\cJ(x)\) the infimum runs over all finitely supported \(u\colon \Z \to \alpha\)
+with \(\sum_\nu u_\nu = x\).
+We consider two classes of couples.
+\begin{itemize}
+  \item[(S)] \(\alpha\) carries a modulus \(x \mapsto \abs{x}\) with the refined Riesz
+    decomposition (R) of the companion note \texttt{jInfNorm\_le\_discreteK.tex}
+    (\texttt{Modulus.IsDecomposable}), and \(A_0, A_1\) are solid (\texttt{IsSolid}):
+    \(\abs{x} \le \abs{y}\) implies \(\norm{x}{i} \le \norm{y}{i}\).
+  \item[(N)] \(\alpha\) is an abelian group, and \(A_0, A_1\) are norms in the sense of
+    groups: \(\norm{x+y}{i} \le \norm{x}{i} + \norm{y}{i}\) and \(\norm{-x}{i} = \norm{x}{i}\).
+\end{itemize}
+Class (N) is the normed case of Janson's setting~\cite{Janson}, where the spaces are
+quasi-normed abelian groups. The upper bound for class (S) is Theorem~1 of the companion note:
+
+\begin{theorem}\label{thm:solid}
+  Let the couple be of class (S) and \(0 < q \le \infty\). Then
+  \(\cJ(x) \le 2^{\min(\theta,1-\theta)} \norm{x}{K}\) for every \(x \in \Delta\).
+\end{theorem}
+
+Corollary~\ref{cor:sharp} shows that this constant is optimal for \(q = \infty\), and that
+no constant \(C \le 1\) is possible, also for \(\norm{\cdot}{K,c}\) and large finite \(q\).
+The example behind it is a couple on \(\R\) whose quasinorms only detect whether an element
+is zero. Then every nonzero piece of a \(J\)-decomposition costs as much as \(x\) itself, so
+splitting \(x\) over several levels does not help, while \(K(t,x)\) still takes the minimum of
+the two norms at each level. Proposition~\ref{prop:differences} gives the constant
+\(1 + 2^{\min(\theta,1-\theta)}\) for class (N) and \(q \ge 1\), by differences of
+near-optimal decompositions.
+
+\section{An example}
+
+For a statement \(P\) let \(\one(P)\) be \(1\) if \(P\) holds and \(0\) otherwise.
+
+\begin{proposition}\label{prop:example}
+  Let \(0 < \theta < 1\). On \(\alpha = \R\), with the modulus \(\abs{\cdot}\)
+  (\texttt{Real.instModulus}), put
+  \[
+    \norm{v}{0} = 2^\theta\, \one(v \ne 0), \qquad \norm{v}{1} = \one(v \ne 0).
+  \]
+  \begin{enumerate}
+    \item[(a)] This couple belongs to both classes (S) and (N), and \(1 \in \Delta\).
+    \item[(b)] \(K(t, 1) = \min(2^\theta, t)\) for every \(t > 0\).
+    \item[(c)] \(\cJ(1) = 2^{\min(\theta, 1-\theta)}\) for every \(q \in (0, \infty]\).
+    \item[(d)] \(\norm{1}{K} = 1\) if \(q = \infty\), and
+      \(\norm{1}{K}^q = S_q := \bigl(1 - 2^{-(1-\theta)q}\bigr)^{-1} + \bigl(1 - 2^{-\theta q}\bigr)^{-1}\)
+      if \(q < \infty\).
+    \item[(e)] \(\norm{1}{K,c} = 2^{\theta(1-\theta)}\) if \(q = \infty\), and
+      \(\norm{1}{K,c} = 2^{\theta(1-\theta)} \bigl(\theta(1-\theta) q\bigr)^{-1/q}\) if
+      \(q < \infty\).
+  \end{enumerate}
+\end{proposition}
+
+\begin{proof}
+  (a) Each \(\norm{\cdot}{i}\) has the form \(c_i\,\one(v \ne 0)\) with \(c_i > 0\). It vanishes
+  exactly at \(0\) and is even. If \(v + w \ne 0\), then \(v \ne 0\) or \(w \ne 0\), so
+  \(\norm{v+w}{i} \le \norm{v}{i} + \norm{w}{i}\). Hence the couple is of class (N), and each
+  \(\norm{\cdot}{i}\) is an \texttt{EQuasinorm} with constant \(1\). For solidity, let
+  \(\abs{v} \le \abs{w}\). If \(w = 0\), then \(v = 0\); in both cases
+  \(\norm{v}{i} \le \norm{w}{i}\). The modulus \(\abs{\cdot}\) on \(\R\) satisfies (R)
+  (\texttt{Real.instIsDecomposable}), so the couple is of class (S). Both norms are finite,
+  so \(1 \in \Delta\).
+
+  (b) In a decomposition \(1 = x_0 + x_1\) at least one part is nonzero, and the cost is
+  \(2^\theta\one(x_0 \ne 0) + t\,\one(x_1 \ne 0)\). The decompositions \(1 = 1 + 0\) and
+  \(1 = 0 + 1\) cost \(2^\theta\) and \(t\), and a decomposition with both parts nonzero costs
+  \(2^\theta + t\). Hence \(K(t,1) = \min(2^\theta, t)\).
+
+  (d) Put \(a_\nu = 2^{-\nu\theta} K_\nu(1) = 2^{-\nu\theta}\min(2^\theta, 2^\nu)\). If
+  \(\nu \le 0\), then \(2^\nu \le 1 < 2^\theta\), so \(a_\nu = 2^{\nu(1-\theta)}\). If
+  \(\nu \ge 1\), then \(2^\nu \ge 2 > 2^\theta\), so \(a_\nu = 2^{(1-\nu)\theta}\). Both are
+  geometric sequences with largest value \(a_0 = a_1 = 1\), which gives the case
+  \(q = \infty\). For \(q < \infty\),
+  \[
+    \sum_{\nu\in\Z} a_\nu^q = \sum_{k\ge0} 2^{-k(1-\theta)q} + \sum_{k\ge0} 2^{-k\theta q} = S_q .
+  \]
+
+  (e) By (b), the function \(t \mapsto t^{-\theta}\min(2^\theta, t)\) equals
+  \(t^{1-\theta}\) on \((0, 2^\theta]\) and \(2^\theta t^{-\theta}\) on \([2^\theta, \infty)\).
+  It is continuous, increasing on the first interval and decreasing on the second, so its
+  (essential) supremum is its value \(2^{\theta(1-\theta)}\) at \(t = 2^\theta\). For
+  \(q < \infty\),
+  \[
+    \int_0^{2^\theta} t^{(1-\theta)q}\,\frac{dt}{t} + 2^{\theta q}\int_{2^\theta}^\infty
+    t^{-\theta q}\,\frac{dt}{t}
+    = \frac{2^{\theta(1-\theta)q}}{(1-\theta)q} + \frac{2^{\theta q}\,2^{-\theta^2 q}}{\theta q}
+    = \frac{2^{\theta(1-\theta)q}}{\theta(1-\theta)q}.
+  \]
+
+  (c) If \(u \ne 0\), then \(J_\nu(u) = \max(2^\theta, 2^\nu)\), so
+  \(2^{-\nu\theta}J_\nu(u) = c_\nu\), where \(c_\nu = 2^{(1-\nu)\theta}\) for \(\nu \le 0\)
+  and \(c_\nu = 2^{\nu(1-\theta)}\) for \(\nu \ge 1\). The sequence \(c\) decreases on
+  \(\nu \le 0\) and increases on \(\nu \ge 1\), so
+  \(\min_\nu c_\nu = \min(c_0, c_1) = \min(2^\theta, 2^{1-\theta}) = 2^{\min(\theta,1-\theta)}\).
+
+  Let \(u\) be admissible for \(\cJ(1)\). Since \(\sum_\nu u_\nu = 1 \ne 0\), some
+  \(u_\mu\) is nonzero. The \(\ell^q\)-norm of a sequence is at least each of its entries, so the
+  cost of \(u\) is at least \(c_\mu \ge 2^{\min(\theta,1-\theta)}\). Conversely, a sequence
+  with a single nonzero entry has that entry as its \(\ell^q\)-norm. Placing \(1\) at level
+  \(0\) or at level \(1\) therefore costs \(c_0 = 2^\theta\) or \(c_1 = 2^{1-\theta}\).
+\end{proof}
+
+\begin{corollary}\label{cor:sharp}
+  Let \(0 < \theta < 1\), and suppose that \(\cJ(x) \le C\norm{x}{K}\) for all couples of
+  class (S), or for all couples of class (N), and all \(x \in \Delta\).
+  \begin{enumerate}
+    \item[(i)] If \(q = \infty\), then \(C \ge 2^{\min(\theta,1-\theta)}\). Hence the constant of
+      Theorem~\ref{thm:solid} is optimal for \(q = \infty\). In particular, the constant
+      \(2^\theta\), which the proof of Theorem~\ref{thm:solid} gives when it uses only the
+      shift \(\nu \mapsto \nu + 1\), is optimal for \(\theta \le 1/2\).
+    \item[(ii)] If \(q < \infty\), then \(C \ge 2^{\min(\theta,1-\theta)} S_q^{-1/q}\). This
+      bound tends to \(2^{\min(\theta,1-\theta)}\) as \(q \to \infty\), so \(C > 1\) for all
+      large \(q\). For \(\theta = 1/2\) the bound equals \(\bigl((2^{q/2} - 1)/2\bigr)^{1/q}\),
+      which exceeds \(1\) if and only if \(q > 2\log_2 3 \approx 3.17\).
+  \end{enumerate}
+  If instead \(\cJ(x) \le C\norm{x}{K,c}\), the form of \texttt{jInfNorm\_le\_kNorm}, then
+  \[
+    C \ge 2^{\min(\theta,1-\theta)^2}\bigl(\theta(1-\theta)q\bigr)^{1/q}
+    \qquad (\text{the second factor read as } 1 \text{ if } q = \infty),
+  \]
+  and this bound exceeds \(1\) whenever \(q \ge 1/(\theta(1-\theta))\), including
+  \(q = \infty\).
+\end{corollary}
+
+\begin{proof}
+  Apply the inequality to the couple of Proposition~\ref{prop:example} and \(x = 1\), and
+  divide (c) by (d) or (e). For (ii), \(S_q \to 2\) as \(q \to \infty\), so
+  \(S_q^{1/q} \to 1\). For \(\theta = 1/2\), \(S_q = 2/(1 - 2^{-q/2})\), so
+  \(2^{q/2}/S_q = (2^{q/2} - 1)/2\), which exceeds \(1\) if and only if \(2^{q/2} > 3\). For
+  the continuous method,
+  \(\min(\theta,1-\theta) - \theta(1-\theta) = \min(\theta,1-\theta)^2\): if
+  \(\theta \le 1/2\), the difference is \(\theta - \theta + \theta^2\), and otherwise it is
+  \((1-\theta) - \theta(1-\theta) = (1-\theta)^2\). Since \(2^{\min(\theta,1-\theta)^2} > 1\),
+  the bound exceeds \(1\) as soon as \(\theta(1-\theta)q \ge 1\).
+\end{proof}
+
+\section{The argument by differences}
+
+Janson's proof of his Lemma~1 truncates infinite \(J\)-decompositions and does not track
+constants. The following argument starts from near-optimal \(K\)-decompositions, as in
+Theorem~\ref{thm:solid}, but takes differences of consecutive decompositions instead of
+using (R).
+
+\begin{proposition}\label{prop:differences}
+  For couples of class (N), every \(q \in [1, \infty]\) and every \(x \in \Delta\),
+  \(\cJ(x) \le \bigl(1 + 2^{\min(\theta,1-\theta)}\bigr)\norm{x}{K}\).
+\end{proposition}
+
+\begin{proof}
+  We prove the bound with \(1 + 2^\theta\); the bound with \(1 + 2^{1-\theta}\) is
+  Remark~\ref{rem:other-shift}. Put \(a_\mu = 2^{-\mu\theta}K_\mu(x)\). The decompositions
+  \(x = x + 0\) and \(x = 0 + x\) show \(K_\mu(x) \le \min(\norm{x}{0}, 2^\mu\norm{x}{1})\),
+  which is finite because \(x \in \Delta\).
+
+  Fix \(N \ge 1\) and \(\delta > 0\), and put \(W_N = \{-N, \dots, N-1\}\). For every
+  \(\mu \in \Z\) choose \(x = y_\mu + z_\mu\) with
+  \begin{equation}\label{eq:near-opt}
+    \norm{y_\mu}{0} + 2^\mu\norm{z_\mu}{1} \le \varepsilon_\mu := K_\mu(x) + \delta .
+  \end{equation}
+  Since \(y_\mu + z_\mu = x = y_{\mu+1} + z_{\mu+1}\), we have
+  \(y_{\mu+1} - y_\mu = z_\mu - z_{\mu+1}\). Define \(v\colon \Z \to \alpha\) by
+  \[
+    v_{-N} = y_{-N+1}, \qquad v_\nu = y_{\nu+1} - y_\nu \quad (-N < \nu < N-1), \qquad
+    v_{N-1} = z_{N-1},
+  \]
+  and \(v_\nu = 0\) for \(\nu \notin W_N\). Since \(N \ge 1\), the indices \(-N\) and
+  \(N-1\) are distinct; for \(N = 1\) the middle range is empty. The middle terms telescope, so
+  \[
+    \sum_{\nu\in\Z} v_\nu = y_{-N+1} + (y_{N-1} - y_{-N+1}) + z_{N-1} = y_{N-1} + z_{N-1} = x,
+  \]
+  and \(v\) is admissible in the definition of \(\cJ\). Put \(E_{-N} = 2^{-N}\norm{x}{1}\),
+  \(E_{N-1} = \norm{x}{0}\) and \(E_\nu = 0\) otherwise. We claim that for every
+  \(\nu \in W_N\)
+  \begin{equation}\label{eq:J-bound}
+    J_\nu(v_\nu) \le \varepsilon_\nu + \varepsilon_{\nu+1} + E_\nu .
+  \end{equation}
+  It suffices to bound both entries of \(J_\nu(v_\nu)\) by the right-hand side. We use the
+  triangle inequality, symmetry, and \eqref{eq:near-opt} in the forms
+  \(\norm{y_\mu}{0} \le \varepsilon_\mu\) and \(2^\mu\norm{z_\mu}{1} \le \varepsilon_\mu\).
+  \begin{itemize}
+    \item If \(-N < \nu < N-1\), then
+      \(\norm{v_\nu}{0} \le \norm{y_{\nu+1}}{0} + \norm{y_\nu}{0} \le \varepsilon_{\nu+1} +
+      \varepsilon_\nu\) and
+      \(2^\nu\norm{v_\nu}{1} \le 2^\nu\norm{z_\nu}{1} + \tfrac12\, 2^{\nu+1}\norm{z_{\nu+1}}{1}
+      \le \varepsilon_\nu + \tfrac12\varepsilon_{\nu+1}\).
+    \item If \(\nu = -N\), then \(\norm{v_\nu}{0} = \norm{y_{-N+1}}{0} \le \varepsilon_{-N+1}\).
+      Since \(y_{-N+1} = x - z_{-N+1}\),
+      \(2^{-N}\norm{y_{-N+1}}{1} \le 2^{-N}\norm{x}{1} + \tfrac12\,2^{-N+1}\norm{z_{-N+1}}{1}
+      \le E_{-N} + \tfrac12\varepsilon_{-N+1}\).
+    \item If \(\nu = N-1\), then, since \(z_{N-1} = x - y_{N-1}\),
+      \(\norm{v_\nu}{0} \le \norm{x}{0} + \norm{y_{N-1}}{0} \le E_{N-1} + \varepsilon_{N-1}\),
+      and \(2^{N-1}\norm{z_{N-1}}{1} \le \varepsilon_{N-1}\).
+  \end{itemize}
+
+  Multiply \eqref{eq:J-bound} by \(2^{-\nu\theta} = 2^\theta\, 2^{-(\nu+1)\theta}\). With
+  \(w_\nu = 2^{-\nu\theta}\one(\nu \in W_N)\) and \(e_\nu = 2^{-\nu\theta}E_\nu\), this gives
+  \[
+    b_\nu := 2^{-\nu\theta}J_\nu(v_\nu) \le a_\nu + 2^\theta a_{\nu+1} + 2\delta\, w_\nu + e_\nu
+  \]
+  for \(\nu \in W_N\), and also for \(\nu \notin W_N\), where \(b_\nu = 0\). Since
+  \(q \ge 1\), Minkowski's inequality and the shift invariance of \(\norm{\cdot}{\ell^q}\) give
+  \[
+    \cJ(x) \le \norm{b}{\ell^q}
+    \le (1 + 2^\theta)\norm{x}{K} + 2\delta\norm{w}{\ell^q} + e_{-N} + e_{N-1}.
+  \]
+  The sequence \(w\) is finitely supported and does not depend on \(\delta\), so
+  \(\norm{w}{\ell^q} < \infty\), and letting \(\delta \to 0\) removes the middle term. Finally
+  \(e_{-N} = 2^{N\theta}2^{-N}\norm{x}{1} = 2^{-(1-\theta)N}\norm{x}{1}\) and
+  \(e_{N-1} = 2^{-(N-1)\theta}\norm{x}{0}\) tend to \(0\) as \(N \to \infty\), because
+  \(0 < \theta < 1\) and \(x \in \Delta\).
+\end{proof}
+
+\begin{remark}[The constant \(1 + 2^{1-\theta}\)]\label{rem:other-shift}
+  Take instead \(v_{-N} = y_{-N}\), \(v_\nu = y_\nu - y_{\nu-1} = z_{\nu-1} - z_\nu\) for
+  \(-N < \nu < N-1\), and \(v_{N-1} = z_{N-2}\). These sum to
+  \(y_{N-2} + z_{N-2} = x\). Since \(2^\nu\norm{z_{\nu-1}}{1} = 2\cdot 2^{\nu-1}\norm{z_{\nu-1}}{1}
+  \le 2\varepsilon_{\nu-1}\), the same case analysis gives
+  \(J_\nu(v_\nu) \le \varepsilon_\nu + 2\varepsilon_{\nu-1} + E_\nu\). Because
+  \(2\cdot 2^{-\nu\theta} = 2^{1-\theta}\,2^{-(\nu-1)\theta}\), this becomes
+  \(b_\nu \le a_\nu + 2^{1-\theta}a_{\nu-1} + 3\delta\, w_\nu + e_\nu\), and the rest of the
+  proof is unchanged.
+\end{remark}
+
+\begin{remark}[\(p\)-normed couples]
+  Suppose that \(\norm{x+y}{i}^p \le \norm{x}{i}^p + \norm{y}{i}^p\) for some
+  \(0 < p \le 1\), and \(\norm{-x}{i} = \norm{x}{i}\). Taking \(p\)-th powers in the proof,
+  as Janson indicates, gives
+  \(b_\nu^p \le a_\nu^p + 2^{\theta p}a_{\nu+1}^p\) up to terms that vanish in the limit. Put
+  \(s = \min(p, q)\). If \(q \ge p\), Minkowski's inequality in \(\ell^{q/p}\) applies to
+  \(b^p\); if \(q < p\), the map \(t \mapsto t^{q/p}\) is subadditive, which gives
+  \(b_\nu^q \le a_\nu^q + 2^{\theta q}a_{\nu+1}^q\). In both cases
+  \(\cJ(x) \le (1 + 2^{\theta s})^{1/s}\norm{x}{K}\), and likewise with \(1-\theta\). This
+  constant grows like \(2^{1/s}\) as \(s \to 0\). For a general quasinorm, the passage to an
+  equivalent \(p\)-norm (Aoki--Rolewicz) costs a further factor that depends on the
+  quasi-triangle constant.
+\end{remark}
+
+\begin{corollary}
+  For couples of class (N) and \(q = \infty\), the best constant \(C\) in
+  \(\cJ(x) \le C\norm{x}{K}\) satisfies
+  \(2^{\min(\theta,1-\theta)} \le C \le 1 + 2^{\min(\theta,1-\theta)}\).
+\end{corollary}
+
+\begin{proof}
+  Corollary~\ref{cor:sharp}(i) and Proposition~\ref{prop:differences}.
+\end{proof}
+
+\section{Remarks}
+
+\begin{remark}[Where the summand \(1\) comes from]
+  In Proposition~\ref{prop:differences} each piece is a difference of two near-optimal
+  decompositions, so the triangle inequality bounds its norms by costs at two levels,
+  \(\varepsilon_\nu + \varepsilon_{\nu+1}\). After weighting this is
+  \(a_\nu + 2^\theta a_{\nu+1}\), and Minkowski's inequality adds the two contributions. In
+  Theorem~\ref{thm:solid}, (R) produces pieces with \(\abs{u_\nu} \le \abs{y_{\nu+1}}\) and
+  \(\abs{u_\nu} \le \abs{z_\nu}\), so each of the two norms of \(u_\nu\) is bounded through a
+  single decomposition, and \(K_\nu \le K_{\nu+1}\) leaves only \(2^\theta a_{\nu+1}\). The
+  triangle inequalities of \(A_0\), \(A_1\) and \(\ell^q\) are not used there, which is why that
+  constant does not depend on \(q\) or on quasi-triangle constants.
+\end{remark}
+
+\begin{remark}[Normed vector spaces]
+  The quasinorms of Proposition~\ref{prop:example} are not homogeneous. For homogeneous norms,
+  spreading \(x\) over several levels lowers \(\cJ(x)\). For example, let
+  \(\norm{v}{0} = c\abs{v}\) and \(\norm{v}{1} = \abs{v}\) on \(\R\), and \(q = \infty\). Then
+  \(K(t,1) = \min(c, t)\) as before. Put \(w_\nu = 2^{-\nu\theta}\max(c, 2^\nu)\). Every
+  admissible \(u\) satisfies
+  \[
+    1 \le \sum_\nu \abs{u_\nu} \le \sup_\nu (w_\nu\abs{u_\nu}) \sum_\nu w_\nu^{-1},
+  \]
+  and the truncations of \((w_\nu^{-1})_\nu\) to \(\abs{\nu} \le M\), normalized to sum \(1\),
+  approach equality as \(M \to \infty\), so
+  \(\cJ(1) = \bigl(\sum_\nu w_\nu^{-1}\bigr)^{-1}\). For \(c = \sqrt2\) and \(\theta = 1/2\)
+  this gives \(\cJ(1) = (\sqrt2 - 1)/2 \approx 0.207\), while \(\norm{1}{K} = 1\).
+
+  Numerically, a grid search over \(c\) and \(\theta\) in these one-dimensional couples finds
+  no larger ratio \(\cJ(1)/\norm{1}{K}\), for \(q = \infty\) and \(q = 1\). A search over pairs of
+  polyhedral norms on \(\R^2\) and \(\R^3\), with both sides computed by linear programming on
+  truncated level ranges, found ratios of at most about \(0.21\). We do not know whether
+  \(\cJ \le C\norm{\cdot}{K}\) holds with some \(C < 1\) for all couples of normed vector
+  spaces.
+\end{remark}
+
+\begin{thebibliography}{1}
+\bibitem{Janson}
+  S.~Janson, \emph{On interpolation of multi-linear operators}, in: M.~Cwikel et al.\ (eds.),
+  Function Spaces and Applications, Lecture Notes in Math.\ 1302, Springer, Berlin, 1988,
+  pp.~290--302.
+\end{thebibliography}
+
+\end{document}

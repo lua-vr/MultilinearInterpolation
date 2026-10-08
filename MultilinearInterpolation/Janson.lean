@@ -124,7 +124,7 @@ lemma exists_decomp_Icc {x : α} {y z : ℤ → α} (hyz : ∀ μ, y μ + z μ =
 
 /--
 Let $`N \ge 1` and $`x = y_\mu + z_\mu` for all $`\mu \in \mathbb{Z}`. Then there is
-$`u \colon \mathbb{Z} \to \alpha` vanishing outside $`W_N = \{-N, \dots, N-1\}` with
+$`u \colon \mathbb{Z} \to \alpha` vanishing outside $`\{-N, \dots, N-1\}` with
 $`\sum_{\nu \in \mathbb{Z}} u_\nu = x` and:
 
 * $`|u_\nu| \le |y_{\nu+1}|` if $`\nu < N - 1`;
@@ -152,7 +152,8 @@ omit [AddCommMonoid M] [Modulus.IsDecomposable α M] in
 Let $`\|y_\mu\|_0 + 2^\mu \|z_\mu\|_1 \le K_\mu(x) + \delta` for all $`\mu \in \mathbb{Z}`,
 and let $`u` satisfy the conclusion of {name}`exists_decomp_Ico_symm`. Put
 $`E_{-N} = 2^{-N}\|x\|_1`, $`E_{N-1} = \|x\|_0` and $`E_\nu = 0` otherwise. Then
-$$`J_\nu(u_\nu) \le \max\bigl(K_{\nu+1}(x) + \delta,\ E_\nu\bigr)` for $`\nu \in W_N`.
+$$`J_\nu(u_\nu) \le \max\bigl(K_{\nu+1}(x) + \delta,\ E_\nu\bigr)`
+for $`\nu \in \{-N, \dots, N-1\}`.
 -/
 @[blueprint]
 lemma jNorm_le_max_kNorm [A.fst.IsSolid] [A.snd.IsSolid] {x : α} {y z u : ℤ → α}

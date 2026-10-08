@@ -315,6 +315,9 @@ namespace Couple
 
 variable (A : Couple α)
 
+/-- The couple with the two quasinorms swapped. -/
+def swap : Couple α := ⟨A.snd, A.fst⟩
+
 abbrev jNorm := EQuasinorm.jNorm A.fst A.snd
 
 abbrev inf := A.fst ⊓ A.snd
