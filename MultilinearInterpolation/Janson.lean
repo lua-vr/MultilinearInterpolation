@@ -55,6 +55,19 @@ def jInfNorm (θ : ℝ) (q : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
   ⨅ (a : ℤ → α) (_ : a.support.Finite) (_ : ∑ᶠ n, a n = x),
     discretePhiFunctional θ q (fun n ↦ A.jNorm (2 ^ n) (a n))
 
+/-- Swapping the two quasinorms replaces $`θ` by $`1 - θ` in {name}`jInfNorm`. -/
+@[blueprint]
+lemma jInfNorm_swap (θ : ℝ) (q : ℝ≥0∞) (x : α) :
+    jInfNorm A.swap θ q x = jInfNorm A (1 - θ) q x := by
+  refine (neg_injective.surjective_comp_right (γ := α)).iInf_congr _ fun a ↦ ?_
+  refine iInf_congr_Prop ?_ fun _ ↦ iInf_congr_Prop ?_ fun _ ↦ ?_
+  · rw [Function.support_comp_eq_preimage, Set.neg_preimage, Set.finite_neg]
+  · exact (finsum_comp_equiv (Equiv.neg ℤ) (f := a)).congr_left
+  · rw [← discretePhiFunctional_reflect]
+    refine congrArg _ (funext fun n ↦ ?_)
+    rw [Function.comp_apply, neg_neg]
+    exact (jNorm_swap_zpow n (a n)).symm
+
 variable {M : Type*} [AddCommMonoid M] [Preorder M] [Modulus α M] [Modulus.IsDecomposable α M]
 
 /--
@@ -187,18 +200,34 @@ lemma jNorm_le_max_kNorm [A.fst.IsSolid] [A.snd.IsSolid] {x : α} {y z u : ℤ �
       simp only [ite_true]
       grw [IsSolid.solid hux]
 
+/-- Lemma 1 with the constant $`2^\theta`, for the discrete $`K`-method, $`x ∈ A_0 ∩ A_1` and a
+couple of solid quasinorms with respect to a decomposable modulus. -/
+@[blueprint]
+lemma jInfNorm_le_two_rpow_mul_discreteKMethod [A.fst.IsSolid] [A.snd.IsSolid]
+    (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1) (q : ℝ≥0∞) : ∀ x ∈ A.inf.finiteLocus,
+    jInfNorm A θ q x ≤ 2 ^ θ * ‖x‖ₑ[A.discreteKMethod θ q] :=
+  sorry
+
 /-- Lemma 1 with the constant $`2^{\min(\theta, 1-\theta)}`, for the discrete $`K`-method,
 $`x ∈ A_0 ∩ A_1` and a couple of solid quasinorms with respect to a decomposable modulus. The
 constant is optimal for $`q = \infty`. Janson proves Lemma 1, without explicit constant, for
 arbitrary quasinormed groups, by differences of almost optimal decompositions.
+
+The constant $`2^{1-\theta}` follows from {name}`jInfNorm_le_two_rpow_mul_discreteKMethod` for the
+swapped couple, by {name}`jInfNorm_swap` and {name}`Couple.enorm_discreteKMethod_swap`.
 
 The restriction to $`A_0 ∩ A_1` is necessary: finite sums of elements of finite $`J`-norm lie in
 $`A_0 ∩ A_1`, so {name}`jInfNorm` is infinite outside it for $`q > 0`. -/
 @[blueprint]
 lemma jInfNorm_le_discreteKMethod [A.fst.IsSolid] [A.snd.IsSolid]
     (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1) (q : ℝ≥0∞) : ∀ x ∈ A.inf.finiteLocus,
-    jInfNorm A θ q x ≤ 2 ^ min θ (1 - θ) * ‖x‖ₑ[A.discreteKMethod θ q] :=
-  sorry
+    jInfNorm A θ q x ≤ 2 ^ min θ (1 - θ) * ‖x‖ₑ[A.discreteKMethod θ q] := by
+  intro x hx
+  rcases min_choice θ (1 - θ) with h | h <;> rw [h]
+  · exact jInfNorm_le_two_rpow_mul_discreteKMethod A θ hθ q x hx
+  · have := jInfNorm_le_two_rpow_mul_discreteKMethod A.swap (1 - θ)
+      ⟨sub_pos.2 hθ.2, sub_lt_self 1 hθ.1⟩ q x (finiteLocus_inf_comm A.fst A.snd ▸ hx)
+    rwa [jInfNorm_swap, Couple.enorm_discreteKMethod_swap, sub_sub_cancel] at this
 
 end Lemma1
 
