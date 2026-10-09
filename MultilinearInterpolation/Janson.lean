@@ -187,17 +187,17 @@ lemma jNorm_le_max_kNorm [A.fst.IsSolid] [A.snd.IsSolid] {x : α} {y z u : ℤ �
       simp only [ite_true]
       grw [IsSolid.solid hux]
 
-/-- Lemma 1, for $`x ∈ A_0 ∩ A_1` and a couple of solid quasinorms with respect to a decomposable
-modulus. Janson proves it for arbitrary quasinormed groups, by differences of almost optimal
-decompositions.
+/-- Lemma 1 with the constant $`2^{\min(\theta, 1-\theta)}`, for the discrete $`K`-method,
+$`x ∈ A_0 ∩ A_1` and a couple of solid quasinorms with respect to a decomposable modulus. The
+constant is optimal for $`q = \infty`. Janson proves Lemma 1, without explicit constant, for
+arbitrary quasinormed groups, by differences of almost optimal decompositions.
 
 The restriction to $`A_0 ∩ A_1` is necessary: finite sums of elements of finite $`J`-norm lie in
 $`A_0 ∩ A_1`, so {name}`jInfNorm` is infinite outside it for $`q > 0`. -/
 @[blueprint]
-lemma jInfNorm_le_kNorm [A.fst.IsSolid] [A.snd.IsSolid] (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1)
-    (q : ℝ≥0∞) :
-    ∃ (C : ℝ≥0∞), C < ∞ ∧
-      ∀ x ∈ A.inf.finiteLocus, jInfNorm A θ q x ≤ C * ‖x‖ₑ[A.kMethod θ q] :=
+lemma jInfNorm_le_discreteKMethod [A.fst.IsSolid] [A.snd.IsSolid]
+    (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1) (q : ℝ≥0∞) : ∀ x ∈ A.inf.finiteLocus,
+    jInfNorm A θ q x ≤ 2 ^ min θ (1 - θ) * ‖x‖ₑ[A.discreteKMethod θ q] :=
   sorry
 
 end Lemma1
@@ -220,7 +220,7 @@ $$`\begin{aligned}\Omega = \Bigl\{ (θ_i)_{i ∈ ι} \in [0,1]^ι :
   \ \text{for some } q_i, q \in (0,\infty] \Bigr\}.\end{aligned}`
 The value of the parameters $`q,q_i` are under an existential, and are not specified
 for the points of this set. Boundedness is only required on $`∏_i (A_i)_0 ∩ (A_i)_1`, where
-{name}`jInfNorm_le_kNorm` holds.
+{name}`jInfNorm_le_discreteKMethod` holds.
 -/
 @[blueprint]
 def Ω : Set (ι → ℝ) :=
@@ -262,10 +262,10 @@ lemma knorm_of_mem_Ω : ∀ θ, θ ∈ Ω T A B cα₀ cα →
 
 include hMα hA₀ hA₁
 
-/-- Lemma 2, part 1, direction (ii) → (i). It uses {name}`jInfNorm_le_kNorm`, hence the
+/-- Lemma 2, part 1, direction (ii) → (i). It uses {name}`jInfNorm_le_discreteKMethod`, hence the
 solidity hypotheses on the source couples. -/
 @[blueprint
-  (proofUses := [jInfNorm_le_kNorm])]
+  (proofUses := [jInfNorm_le_discreteKMethod, EQuasinorm.discreteKMethod_equiv_kmethod])]
 lemma mem_Ω_of_enorm_le_prod : ∀ θ,
     (let θ₀ := cα₀ + ∑ i, cα i * θ i
     ∃ C : ℝ≥0∞, C < ∞ ∧
@@ -307,7 +307,7 @@ This is stronger than mere membership in $`Ω`, where the $`q_i,q_0` are under a
 As in $`Ω`, boundedness is on $`∏_i (A_i)_0 ∩ (A_i)_1`.
 -/
 @[blueprint
-  (proofUses := [jInfNorm_le_kNorm, EQuasinorm.discreteKMethod_equiv_kmethod])]
+  (proofUses := [jInfNorm_le_discreteKMethod, EQuasinorm.discreteKMethod_equiv_kmethod])]
 theorem isBoundedOn_of_mem_interior_Ω (θ) (hθ : θ ∈ interior (Ω T A B cα₀ cα)) :
     let θ₀ := cα₀ + ∑ i, cα i * θ i
     ∀ (q₀ : ℝ≥0∞) (q : ι → ℝ≥0∞) (hq : q₀⁻¹ ≤ ∑ i, (q i)⁻¹),
