@@ -28,6 +28,12 @@ def finiteLocus (A : EQuasinorm α) : AddSubmonoid α where
       ‖x + y‖ₑ[A] ≤ A.C * (‖x‖ₑ[A] + ‖y‖ₑ[A]) := by apply enorm_add_le_mul
       _ < ∞ := by finiteness
 
+lemma finiteLocus_inf_comm (A₀ A₁ : EQuasinorm α) :
+    (A₁ ⊓ A₀).finiteLocus = (A₀ ⊓ A₁).finiteLocus := by
+  ext x
+  change ‖x‖ₑ[A₁ ⊓ A₀] < ∞ ↔ ‖x‖ₑ[A₀ ⊓ A₁] < ∞
+  rw [enorm_inf_comm]
+
 namespace FiniteLocus
 
 instance : Norm A.finiteLocus := ⟨(‖·‖ₑ[A].toReal)⟩

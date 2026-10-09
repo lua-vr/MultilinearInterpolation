@@ -8,6 +8,8 @@ module
 
 public import MultilinearInterpolation.EQuasinorm.Basic
 public import MultilinearInterpolation.EQuasinorm.ESeminorm
+import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+import MultilinearInterpolation.Mathlib.MeasureTheory.Measure.Count
 import VersoBlueprint
 meta import VersoBlueprint
 
@@ -41,6 +43,21 @@ def discretePhiFunctional (θ : ℝ) (q : ℝ≥0∞) (f : ℤ → ℝ≥0∞) :
   eLpNorm (fun (k : ℤ) ↦ 2 ^ (-k * θ) * f k) q
     Measure.count
 
+/-- Reflection: $`Φ_θ(ν ↦ 2^ν f(-ν)) = Φ_{1-θ}(f)`. -/
+@[blueprint]
+lemma discretePhiFunctional_reflect (θ : ℝ) (q : ℝ≥0∞) (f : ℤ → ℝ≥0∞) :
+    discretePhiFunctional θ q (fun k ↦ 2 ^ k * f (-k)) = discretePhiFunctional (1 - θ) q f := by
+  have h : (fun k : ℤ ↦ (2 : ℝ≥0∞) ^ (-k * θ) * (2 ^ k * f (-k))) =
+      (fun k : ℤ ↦ (2 : ℝ≥0∞) ^ (-k * (1 - θ)) * f k) ∘ Neg.neg := by
+    ext k
+    rw [Function.comp_apply, ← mul_assoc, ← ENNReal.rpow_intCast,
+      ← ENNReal.rpow_add _ _ two_ne_zero ENNReal.ofNat_ne_top]
+    congr 2
+    push_cast
+    ring
+  rw [discretePhiFunctional, discretePhiFunctional, h, eLpNorm_comp_measurePreserving
+    .of_discrete (neg_bijective.measurePreserving_count .of_discrete)]
+
 /-- The space $`K_{θ,q}(\bar{A})` in Section 3.1. -/
 @[blueprint]
 def kMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQuasinorm α where
@@ -63,6 +80,16 @@ def discreteKMethod (A₀ A₁ : EQuasinorm α) (θ : ℝ) (q : ℝ≥0∞) : EQ
   enorm_zero := sorry
   enorm_add_le_mul := sorry
 
+/-- Swapping the two quasinorms replaces $`θ` by $`1 - θ`. Stated for the extended norms only,
+since the constant of {name}`discreteKMethod` need not be invariant under the swap. -/
+@[blueprint]
+lemma enorm_discreteKMethod_swap (x : α) :
+    ‖x‖ₑ[discreteKMethod A₁ A₀ θ q] = ‖x‖ₑ[discreteKMethod A₀ A₁ (1 - θ) q] := by
+  change discretePhiFunctional θ q (fun k ↦ kNorm A₁ A₀ (2 ^ k) x) =
+    discretePhiFunctional (1 - θ) q (fun k ↦ kNorm A₀ A₁ (2 ^ k) x)
+  rw [← discretePhiFunctional_reflect]
+  exact congrArg _ (funext fun k ↦ kNorm_swap_zpow k x)
+
 /-- Lemma 3.1.3. -/
 @[blueprint]
 lemma discreteKMethod_equiv_kmethod : discreteKMethod A₀ A₁ θ q ≈ kMethod A₀ A₁ θ q := by
@@ -77,6 +104,10 @@ variable (A : Couple α)
 abbrev kMethod := EQuasinorm.kMethod A.fst A.snd
 
 abbrev discreteKMethod := EQuasinorm.discreteKMethod A.fst A.snd
+
+lemma enorm_discreteKMethod_swap (x : α) :
+    ‖x‖ₑ[A.swap.discreteKMethod θ q] = ‖x‖ₑ[A.discreteKMethod (1 - θ) q] :=
+  EQuasinorm.enorm_discreteKMethod_swap x
 
 end Couple
 

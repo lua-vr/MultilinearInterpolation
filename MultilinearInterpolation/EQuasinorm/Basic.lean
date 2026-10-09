@@ -145,6 +145,19 @@ lemma enorm_rpow_mul_enorm_rpow_le_rpow_neg_mul_jNorm
       gcongr
       exact enorm_rpow_mul_enorm_rpow_le_jNorm hθ₀ hθ₁
 
+/-- Swapping the two quasinorms: $`J(t,x;A_1,A_0) = t\,J(t^{-1},x;A_0,A_1)`. -/
+@[blueprint]
+lemma jNorm_swap (ht₀ : t ≠ 0) (ht : t ≠ ∞) (x : α) :
+    jNorm A₁ A₀ t x = t * jNorm A₀ A₁ t⁻¹ x := by
+  rw [jNorm, jNorm, mul_max, ← mul_assoc, ENNReal.mul_inv_cancel ht₀ ht, one_mul, max_comm]
+
+/-- The dyadic case of {name}`jNorm_swap`: $`J_\nu(x;A_1,A_0) = 2^\nu J_{-\nu}(x;A_0,A_1)`. -/
+@[blueprint]
+lemma jNorm_swap_zpow (ν : ℤ) (x : α) :
+    jNorm A₁ A₀ (2 ^ ν) x = 2 ^ ν * jNorm A₀ A₁ (2 ^ (-ν)) x := by
+  rw [jNorm_swap (ENNReal.zpow_pos two_ne_zero ofNat_ne_top ν).ne'
+    (ENNReal.zpow_ne_top two_ne_zero ofNat_ne_top ν), ENNReal.zpow_neg]
+
 end jNorm
 
 
@@ -170,6 +183,10 @@ def skewedInf (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
 @[blueprint]
 instance : Min (EQuasinorm α) :=
   ⟨fun A₀ A₁ ↦ A₀.skewedInf A₁ 1⟩
+
+lemma enorm_inf_comm (x : α) : ‖x‖ₑ[A₁ ⊓ A₀] = ‖x‖ₑ[A₀ ⊓ A₁] := by
+  change jNorm A₁ A₀ 1 x = jNorm A₀ A₁ 1 x
+  rw [jNorm_swap one_ne_zero one_ne_top, inv_one, one_mul]
 
 lemma inf_mono (h₀ : A₀ ≤ A₀') (h₁ : A₁ ≤ A₁') : A₀ ⊓ A₁ ≤ A₀' ⊓ A₁' := by
   sorry
@@ -240,6 +257,22 @@ lemma kNorm_le_mul (hs0 : s ≠ 0) (hs_top : s ≠ ∞) (ht_top : t ≠ ∞) :
   conv_lhs => rw [← one_mul (‖a.fst‖ₑ[A₀])]
   gcongr
   exact le_max_left ..
+
+/-- Swapping the two quasinorms: $`K(t,x;A_1,A_0) = t\,K(t^{-1},x;A_0,A_1)`. -/
+@[blueprint]
+lemma kNorm_swap (ht₀ : t ≠ 0) (ht : t ≠ ∞) (x : α) :
+    kNorm A₁ A₀ t x = t * kNorm A₀ A₁ t⁻¹ x := by
+  simp_rw [kNorm, ENNReal.mul_iInf_of_ne ht₀ ht]
+  refine (Equiv.prodComm α α).iInf_congr fun a ↦ iInf_congr_Prop (by simp [add_comm]) fun _ ↦ ?_
+  rw [Equiv.prodComm_apply, Prod.fst_swap, Prod.snd_swap, mul_add, ← mul_assoc,
+    ENNReal.mul_inv_cancel ht₀ ht, one_mul, add_comm]
+
+/-- The dyadic case of {name}`kNorm_swap`: $`K_\nu(x;A_1,A_0) = 2^\nu K_{-\nu}(x;A_0,A_1)`. -/
+@[blueprint]
+lemma kNorm_swap_zpow (ν : ℤ) (x : α) :
+    kNorm A₁ A₀ (2 ^ ν) x = 2 ^ ν * kNorm A₀ A₁ (2 ^ (-ν)) x := by
+  rw [kNorm_swap (ENNReal.zpow_pos two_ne_zero ofNat_ne_top ν).ne'
+    (ENNReal.zpow_ne_top two_ne_zero ofNat_ne_top ν), ENNReal.zpow_neg]
 
 end kNorm
 
@@ -316,7 +349,7 @@ namespace Couple
 variable (A : Couple α)
 
 /-- The couple with the two quasinorms swapped. -/
-def swap : Couple α := ⟨A.snd, A.fst⟩
+abbrev swap : Couple α := ⟨A.snd, A.fst⟩
 
 abbrev jNorm := EQuasinorm.jNorm A.fst A.snd
 
