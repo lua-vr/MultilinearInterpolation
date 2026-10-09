@@ -1,10 +1,12 @@
 \documentclass[11pt]{article}
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage[margin=2.8cm]{geometry}
+\emergencystretch=3em
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
 \theoremstyle{remark}
@@ -91,27 +93,24 @@ After weighting, these end terms decay geometrically in \(N\), because \(0<\thet
 \(x \in \Delta\). The \(\ell^q\)-norm is estimated through its \(r\)-th power,
 \(r = \min(q,1)\), which is subadditive with constant \(1\). The error terms vanish in the
 limit, so the main term keeps the constant \(2^\theta\) for every \(q\).
+Swapping \(A_0\) and \(A_1\) replaces \(\theta\) by \(1-\theta\) in both norms, so the bound
+with \(2^{1-\theta}\) follows from the bound with \(2^\theta\) for the swapped couple.
 
 \section{Elementary facts}
 
 \begin{lemma}\label{lem:K-dyadic}
   For every \(x \in \alpha\) and \(\nu \in \Z\),
-  \(K_\nu(x) \le K_{\nu+1}(x) \le 2 K_\nu(x)\).
+  \(K_\nu(x) \le K_{\nu+1}(x)\).
 \end{lemma}
 
 \begin{proof}
   For any decomposition \(x = x_0 + x_1\),
-  \[
-    \norm{x_0}{0} + 2^\nu\norm{x_1}{1}
-    \le \norm{x_0}{0} + 2^{\nu+1}\norm{x_1}{1}
-    \le 2\bigl(\norm{x_0}{0} + 2^\nu\norm{x_1}{1}\bigr).
-  \]
-  Taking the infimum over all decompositions gives both inequalities.
+  \(\norm{x_0}{0} + 2^\nu\norm{x_1}{1} \le \norm{x_0}{0} + 2^{\nu+1}\norm{x_1}{1}\).
+  Taking the infimum over all decompositions gives the claim.
 \end{proof}
 
 No finiteness assumption on \(x\) is needed; the hypothesis of \texttt{monotone\_kNorm} in
-\texttt{Basic.lean} is superfluous for dyadic points. The second inequality is a case of
-\texttt{kNorm\_le\_mul}. The main proof uses only the first one.
+\texttt{Basic.lean} is superfluous for dyadic points.
 
 \begin{lemma}\label{lem:near-opt}
   For every \(x \in \alpha\), \(\mu \in \Z\) and \(\delta > 0\) there is a decomposition
@@ -155,16 +154,16 @@ In Mathlib, Lemma~\ref{lem:lq-sub} is \texttt{inhmgELpNorm\_add\_le}. For \(q \n
   \begin{enumerate}
     \item[(a)] If \(c \in [0,\infty)\) and \(f_\nu \le c\, g_\nu\) for all \(\nu \in \Z\), then
       \(\norm{f}{\ell^q} \le c \norm{g}{\ell^q}\).
-    \item[(b)] For \(k \in \Z\), \(\norm{(f_{\nu+k})_{\nu \in \Z}}{\ell^q} = \norm{f}{\ell^q}\).
+    \item[(b)] For every bijection \(\sigma\) of \(\Z\),
+      \(\norm{(f_{\sigma(\nu)})_{\nu \in \Z}}{\ell^q} = \norm{f}{\ell^q}\).
     \item[(c)] If \(S \subseteq \Z\) is finite with \(n\) elements and \(c \in [0,\infty]\), then
       \(\norm{c\, \one_S}{\ell^q} \le c\, n^{1/q}\), where \(1/\infty = 0\).
   \end{enumerate}
 \end{lemma}
 
 \begin{proof}
-  (a) The \(\ell^q\)-norm is monotone and positively homogeneous. (b) The map
-  \(\nu \mapsto \nu + k\) is a bijection of \(\Z\), and sums and suprema are invariant under
-  reindexing. (c) If \(q < \infty\), then \(\norm{c\,\one_S}{\ell^q}^q = n c^q\). If
+  (a) The \(\ell^q\)-norm is monotone and positively homogeneous. (b) Sums and suprema are
+  invariant under reindexing by a bijection. (c) If \(q < \infty\), then \(\norm{c\,\one_S}{\ell^q}^q = n c^q\). If
   \(q = \infty\), then \(\norm{c\,\one_S}{\ell^\infty}\) is \(c\) or \(0\), hence at most
   \(c = c\, n^0\).
 \end{proof}
@@ -173,9 +172,11 @@ In Lean:
 \begin{itemize}
   \item[(a)] \texttt{eLpNorm\_le\_mul\_eLpNorm\_of\_ae\_le\_mul'} with \(c : \mathbb R_{\ge 0}\);
   \item[(b)] \texttt{eLpNorm\_comp\_measurePreserving} with\\
-    \texttt{measurePreserving\_add\_right Measure.count k};
+    \texttt{Function.Bijective.measurePreserving\_count};
   \item[(c)] \texttt{eLpNorm\_indicator\_const\_le} with \texttt{Measure.count\_apply\_finset}.
 \end{itemize}
+The lemma \texttt{Function.Bijective.measurePreserving\_count} (a measurable bijection
+preserves \texttt{Measure.count}) is not in Mathlib; it is added in this project.
 Every function on \(\Z\) is measurable (\texttt{measurable\_of\_countable}).
 
 \section{Splitting \(x\) into \(2N\) pieces}
@@ -284,10 +285,13 @@ the same reason (c) is stated relative to \(r\) and not to \(x\).
   E_{-N}\).
 \end{proof}
 
-\section{Proof of Theorem~\ref{thm:main}}
+\section{The bound with \(2^\theta\)}
 
-We prove \(\cJ(x) \le 2^\theta \norm{x}{K}\); the bound with \(2^{1-\theta}\) is
-Remark~\ref{rem:other-constant}. Fix \(x \in \Delta\), and put \(r = \min(q,1)\) and
+\begin{proposition}\label{prop:two-theta}
+  For every \(x \in \Delta\), \(\cJ(x) \le 2^\theta \norm{x}{K}\).
+\end{proposition}
+
+Fix \(x \in \Delta\), and put \(r = \min(q,1)\) and
 \(a_\mu = 2^{-\mu\theta} K_\mu(x)\) for \(\mu \in \Z\), so that
 \(\norm{a}{\ell^q} = \norm{x}{K}\). Fix \(N \ge 1\) and \(\delta > 0\), let \(u\) be as in
 Lemma~\ref{lem:pointwise}, and put
@@ -336,7 +340,7 @@ Lemma~\ref{lem:lq-facts}(a) with \(c = 1\), \(\norm{b}{\ell^q}\) is at most the
   e_{N-1}\one_{\{N-1\}} .
 \]
 By Lemma~\ref{lem:lq-sub}, applied three times, \(\norm{b}{\ell^q}^r\) is at most the sum of
-the \(r\)-th powers of their norms. By Lemma~\ref{lem:lq-facts}(a) and (b) with \(k = 1\), the
+the \(r\)-th powers of their norms. By Lemma~\ref{lem:lq-facts}(a) and (b) with \(\sigma(\nu) = \nu + 1\), the
 norm of the first family is at most \(2^\theta \norm{a}{\ell^q} = 2^\theta \norm{x}{K}\). By
 Lemma~\ref{lem:lq-facts}(c), the norms of the other three are at most
 \(\delta\, 2^{N\theta} (2N)^{1/q}\), \(e_{-N}\) and \(e_{N-1}\). Hence
@@ -354,7 +358,8 @@ term tends to \(0\), and since addition on \([0,\infty]\) is continuous,
 Now let \(N \to \infty\). Since \(\theta < 1\) and \(\norm{x}{1} < \infty\), \(e_{-N} \to 0\);
 since \(\theta > 0\) and \(\norm{x}{0} < \infty\), \(e_{N-1} \to 0\). As \(r > 0\), their
 \(r\)-th powers tend to \(0\) as well. This gives
-\(\cJ(x)^r \le 2^{\theta r}\norm{x}{K}^r\), and taking \(r\)-th roots proves the claim.
+\(\cJ(x)^r \le 2^{\theta r}\norm{x}{K}^r\), and taking \(r\)-th roots proves
+Proposition~\ref{prop:two-theta}.
 \qed
 
 \medskip
@@ -364,23 +369,161 @@ do not depend on \(\delta\). No assumption \(\norm{x}{K} < \infty\) is needed, a
 distinction between \(q < \infty\) and \(q = \infty\). In Lean both limits are taken with
 \texttt{ge\_of\_tendsto'}, the first along \(\delta = (n+1)^{-1}\), \(n \to \infty\).
 
-\section{Remarks}
+\section{Symmetry, and the bound with \(2^{1-\theta}\)}
 
-\begin{remark}[The constant \(2^{1-\theta}\)]\label{rem:other-constant}
-  Feed Proposition~\ref{prop:split} the decompositions one level lower: for
-  \(\mu = -N+1, \dots, N-1\), let \(x = y_\mu + z_\mu\) satisfy \eqref{eq:near-opt} at level
-  \(\mu - 1\). For \(\nu \le N-2\), (a) and Lemma~\ref{lem:K-dyadic} give
-  \(\norm{u_\nu}{0} \le K_\nu(x) + \delta \le 2(K_{\nu-1}(x) + \delta)\); for
-  \(\nu \ge -N+1\), (b) gives
-  \(2^\nu\norm{u_\nu}{1} = 2 \cdot 2^{\nu-1}\norm{u_\nu}{1} \le 2(K_{\nu-1}(x) + \delta)\).
-  The exceptional entries are unchanged, so
-  \(J_\nu(u_\nu) \le \max(2(K_{\nu-1}(x) + \delta), E_\nu)\). Since
-  \(2 \cdot 2^{-\nu\theta} = 2^{1-\theta} 2^{-(\nu-1)\theta}\), the rest of the proof goes
-  through with \(2^\theta a_{\nu+1}\) replaced by \(2^{1-\theta} a_{\nu-1}\), \(\delta\) by
-  \(2\delta\), and \(k = 1\) by \(k = -1\) in Lemma~\ref{lem:lq-facts}(b). This uses the
-  second inequality of Lemma~\ref{lem:K-dyadic}. Choosing the better of the two versions gives
-  the constant \(2^{\min(\theta, 1-\theta)}\).
-\end{remark}
+In this section the couple and \(\theta\) are written as arguments. For \(t \in [0,\infty]\)
+and \(x, u \in \alpha\) put
+\[
+  K(t,x;A_0,A_1) = \inf_{x = x_0 + x_1}\bigl(\norm{x_0}{0} + t\norm{x_1}{1}\bigr),\qquad
+  J(t,u;A_0,A_1) = \max\bigl(\norm{u}{0},\ t\norm{u}{1}\bigr)
+\]
+(\texttt{kNorm} and \texttt{jNorm}), so that \(K_\nu(x) = K(2^\nu,x;A_0,A_1)\) and
+\(J_\nu(u) = J(2^\nu,u;A_0,A_1)\). We write \(K_\nu(x;A_0,A_1)\), \(J_\nu(u;A_0,A_1)\),
+\(\norm{x}{K}(A_0,A_1;\theta)\) and \(\cJ(x;A_0,A_1;\theta)\) for the quantities of
+Section~1. The swapped couple \((A_1,A_0)\) is \texttt{A.swap} (\texttt{Couple.swap}).
+For \(g \colon \Z \to [0,\infty]\) put
+\(\Phi_\theta(g) = \lVert (2^{-\nu\theta} g_\nu)_{\nu\in\Z} \rVert_{\ell^q}\)
+(\texttt{discretePhiFunctional}). Then
+\(\norm{x}{K}(A_0,A_1;\theta) = \Phi_\theta(\nu \mapsto K_\nu(x;A_0,A_1))\), and the cost of an
+admissible family \(u\) in \(\cJ(x;A_0,A_1;\theta)\) is
+\(\Phi_\theta(\nu \mapsto J_\nu(u_\nu;A_0,A_1))\).
+
+\begin{lemma}\label{lem:swap-KJ}
+  Let \(0 < t < \infty\) and \(x, u \in \alpha\). Then
+  \begin{enumerate}
+    \item[(a)] \(K(t,x;A_1,A_0) = t\,K(t^{-1},x;A_0,A_1)\);
+    \item[(b)] \(J(t,u;A_1,A_0) = t\,J(t^{-1},u;A_0,A_1)\).
+  \end{enumerate}
+  In particular, for \(\nu \in \Z\),
+  \[
+    K_\nu(x;A_1,A_0) = 2^\nu K_{-\nu}(x;A_0,A_1),\qquad
+    J_\nu(u;A_1,A_0) = 2^\nu J_{-\nu}(u;A_0,A_1).
+  \]
+\end{lemma}
+
+\begin{proof}
+  Since \(t \ne 0,\infty\), multiplication by \(t\) commutes with infima and with \(\max\) on
+  \([0,\infty]\), and \(t\,t^{-1} = 1\). Hence \(t\,K(t^{-1},x;A_0,A_1)\) is the infimum of
+  \(t\norm{x_0}{0} + \norm{x_1}{1}\) over all decompositions \(x = x_0 + x_1\), and
+  \(t\,J(t^{-1},u;A_0,A_1) = \max(t\norm{u}{0},\norm{u}{1})\).
+  For (a), reindex the infimum by \((x_0,x_1) \mapsto (x_1,x_0)\); since \(\alpha\) is
+  commutative, this map is a bijection of the set of decompositions of \(x\).
+  (b) is the commutativity of \(\max\).
+  The special cases are \(t = 2^\nu\), where \((2^\nu)^{-1} = 2^{-\nu}\).
+\end{proof}
+
+In Lean (\texttt{Basic.lean}):
+\begin{itemize}
+  \item (a) is \texttt{kNorm\_swap}. Its proof uses \texttt{ENNReal.mul\_iInf\_of\_ne},
+    \texttt{ENNReal.mul\_inv\_cancel}, \texttt{Equiv.iInf\_congr} with
+    \texttt{Equiv.prodComm}, and \texttt{iInf\_congr\_Prop} with \texttt{add\_comm};
+  \item (b) is \texttt{jNorm\_swap}, by \texttt{mul\_max}, \texttt{ENNReal.mul\_inv\_cancel}
+    and \texttt{max\_comm};
+  \item the dyadic cases are \texttt{kNorm\_swap\_zpow} and \texttt{jNorm\_swap\_zpow}, by
+    \texttt{ENNReal.zpow\_pos}, \texttt{ENNReal.zpow\_ne\_top} and \texttt{ENNReal.zpow\_neg}.
+\end{itemize}
+
+\begin{lemma}\label{lem:reflect}
+  For \(g \colon \Z \to [0,\infty]\) and \(\theta \in \mathbb R\),
+  \(\Phi_\theta(\nu \mapsto 2^\nu g_{-\nu}) = \Phi_{1-\theta}(g)\).
+\end{lemma}
+
+\begin{proof}
+  Since \(2^{-\nu\theta}2^\nu = 2^{\nu(1-\theta)} = 2^{-(-\nu)(1-\theta)}\), the family
+  defining the left-hand side is \((h_{-\nu})_{\nu\in\Z}\), where
+  \(h_\mu = 2^{-\mu(1-\theta)} g_\mu\) is the family defining \(\Phi_{1-\theta}(g)\). Apply
+  Lemma~\ref{lem:lq-facts}(b) with \(\sigma(\nu) = -\nu\).
+\end{proof}
+
+In Lean this is \texttt{discretePhiFunctional\_reflect} (\texttt{KMethod.lean}). The weight in
+\texttt{discretePhiFunctional} is the real power
+\(2^{(-\nu)\cdot\theta}\), while \(2^\nu\) is an integer power. The identity of the weights
+follows from \texttt{ENNReal.rpow\_intCast}, \texttt{ENNReal.rpow\_add} (with
+\texttt{two\_ne\_zero} and \texttt{ENNReal.ofNat\_ne\_top}) and \texttt{push\_cast; ring} on
+the exponents. The reflection is \texttt{eLpNorm\_comp\_measurePreserving} with
+\texttt{AEStronglyMeasurable.of\_discrete} and
+\texttt{neg\_bijective.measurePreserving\_count .of\_discrete}.
+
+\begin{proposition}\label{prop:swap}
+  For \(x \in \alpha\) and \(\theta \in \mathbb R\),
+  \begin{enumerate}
+    \item[(a)] \(\norm{x}{K}(A_1,A_0;\theta) = \norm{x}{K}(A_0,A_1;1-\theta)\);
+    \item[(b)] \(\cJ(x;A_1,A_0;\theta) = \cJ(x;A_0,A_1;1-\theta)\).
+  \end{enumerate}
+\end{proposition}
+
+\begin{proof}
+  (a) By Lemma~\ref{lem:swap-KJ} and Lemma~\ref{lem:reflect} with
+  \(g_\mu = K_\mu(x;A_0,A_1)\),
+  \[
+    \norm{x}{K}(A_1,A_0;\theta) = \Phi_\theta\bigl(\nu \mapsto 2^\nu K_{-\nu}(x;A_0,A_1)\bigr)
+    = \Phi_{1-\theta}(g) = \norm{x}{K}(A_0,A_1;1-\theta).
+  \]
+
+  (b) For \(u \colon \Z \to \alpha\) let \(w \colon \Z \to \alpha\), \(w_\nu = u_{-\nu}\).
+  By Lemma~\ref{lem:swap-KJ}, \(J_\nu(u_\nu;A_1,A_0) = 2^\nu J_{-\nu}(w_{-\nu};A_0,A_1)\).
+  So by Lemma~\ref{lem:reflect} with \(g_\mu = J_\mu(w_\mu;A_0,A_1)\), the cost of \(u\) for
+  \((A_1,A_0;\theta)\) is \(\Phi_{1-\theta}(g)\), the cost of \(w\) for
+  \((A_0,A_1;1-\theta)\). The family \(u\) is admissible if and only if \(w\) is: the support
+  of \(w\) is the negative of the support of \(u\), and \(\sum_\nu w_\nu = \sum_\nu u_\nu\)
+  because \(\nu \mapsto -\nu\) is a bijection of \(\Z\). Every family \(\Z \to \alpha\) is of
+  the form \(w\) for some \(u\), namely for \(u_\nu = w_{-\nu}\). Hence, as \(u\) runs through
+  the admissible families, \(w\) runs through all admissible families, and the two infima in
+  (b) are infima of the same set of costs.
+\end{proof}
+
+In Lean:
+\begin{itemize}
+  \item (a) is \texttt{enorm\_discreteKMethod\_swap}. It is stated for the values of the
+    extended norms, not as an equality of \texttt{EQuasinorm}s, since the constant field
+    \texttt{C} of \texttt{discreteKMethod} need not be invariant under the swap. The variant
+    for \texttt{A.swap} is\\ \texttt{Couple.enorm\_discreteKMethod\_swap}.
+  \item (b) is \texttt{jInfNorm\_swap}, by \texttt{Function.Surjective.iInf\_congr} along
+    \(u \mapsto u \circ \texttt{Neg.neg}\), which is surjective by
+    \texttt{neg\_injective.surjective\_comp\_right}.
+    The two Prop-indexed infima are handled by \texttt{iInf\_congr\_Prop}, using
+    \texttt{Function.support\_comp\_eq\_preimage}, \texttt{Set.neg\_preimage} and
+    \texttt{Set.finite\_neg} for the support, and \texttt{finsum\_comp\_equiv} with
+    \texttt{Equiv.neg} \(\Z\) for the sum.
+\end{itemize}
+
+\begin{corollary}\label{cor:one-minus-theta}
+  For every \(x \in \Delta\), \(\cJ(x) \le 2^{1-\theta}\norm{x}{K}\).
+\end{corollary}
+
+\begin{proof}
+  The hypotheses are invariant under swapping \(A_0\) and \(A_1\) and replacing \(\theta\) by
+  \(1-\theta\): (R) concerns \(\alpha\) alone, both quasinorms are solid,
+  \(0 < 1-\theta < 1\), and the definition of \(\Delta\) is symmetric in \(A_0\) and \(A_1\).
+  So Proposition~\ref{prop:two-theta} applies to \((A_1,A_0)\) and \(1-\theta\). Together with
+  Proposition~\ref{prop:swap}(b) and (a), each taken with \(1-\theta\) in place of \(\theta\),
+  it gives
+  \[
+    \cJ(x;A_0,A_1;\theta) = \cJ(x;A_1,A_0;1-\theta)
+    \le 2^{1-\theta}\norm{x}{K}(A_1,A_0;1-\theta) = 2^{1-\theta}\norm{x}{K}(A_0,A_1;\theta).
+    \qedhere
+  \]
+\end{proof}
+
+In Lean:
+\begin{itemize}
+  \item Proposition~\ref{prop:two-theta} is \texttt{jInfNorm\_le\_two\_rpow\_mul\_discreteKMethod},
+    and Theorem~\ref{thm:main} is \texttt{jInfNorm\_le\_discreteKMethod}.
+  \item \(\Delta\) is \texttt{A.inf.finiteLocus}, defined through \(J(1,\cdot\,;A_0,A_1)\).
+    Its invariance under the swap is \texttt{finiteLocus\_inf\_comm}, which follows from
+    \texttt{enorm\_inf\_comm}, that is, Lemma~\ref{lem:swap-KJ}(b) with \(t = 1\).
+  \item \texttt{Couple.swap} is an \texttt{abbrev}, so instance search finds
+    \texttt{A.swap.fst.IsSolid} from \texttt{A.snd.IsSolid}.
+  \item \(1 - (1 - \theta) = \theta\) is \texttt{sub\_sub\_cancel}.
+\end{itemize}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+  Since \(2^{\min(\theta,1-\theta)}\) is \(2^\theta\) or \(2^{1-\theta}\)
+  (\texttt{min\_choice}), the theorem follows from Proposition~\ref{prop:two-theta} and
+  Corollary~\ref{cor:one-minus-theta}.
+\end{proof}
+
+\section{Remarks}
 
 \begin{remark}[Where the hypotheses are used]
   \leavevmode
