@@ -9,6 +9,7 @@ module
 public import MultilinearInterpolation.EQuasinorm.Basic
 public import MultilinearInterpolation.EQuasinorm.ESeminorm
 import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+import MultilinearInterpolation.Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import MultilinearInterpolation.Mathlib.MeasureTheory.Function.LpSeminorm.Count
 import MultilinearInterpolation.Mathlib.MeasureTheory.Function.LpSeminorm.SMul
 import MultilinearInterpolation.Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
@@ -53,13 +54,18 @@ lemma discretePhiFunctional_reflect (θ : ℝ) (q : ℝ≥0∞) (f : ℤ → ℝ
   have h : (fun k : ℤ ↦ (2 : ℝ≥0∞) ^ (-k * θ) * (2 ^ k * f (-k))) =
       (fun k : ℤ ↦ (2 : ℝ≥0∞) ^ (-k * (1 - θ)) * f k) ∘ Neg.neg := by
     ext k
-    rw [Function.comp_apply, ← mul_assoc, ← ENNReal.rpow_intCast,
-      ← ENNReal.rpow_add _ _ two_ne_zero ENNReal.ofNat_ne_top]
+    rw [Function.comp_apply, ← mul_assoc,
+      ← ENNReal.rpow_add_intCast two_ne_zero ENNReal.ofNat_ne_top]
     congr 2
     push_cast
     ring
   rw [discretePhiFunctional, discretePhiFunctional, h, eLpNorm_comp_measurePreserving
     .of_discrete (neg_bijective.measurePreserving_count .of_discrete)]
+
+/-- For $`q = 0`, $`Φ_θ` vanishes. -/
+@[simp, blueprint]
+lemma discretePhiFunctional_exponent_zero (f : ℤ → ℝ≥0∞) : discretePhiFunctional θ 0 f = 0 :=
+  eLpNorm_exponent_zero .of_discrete
 
 /-- Monotonicity: $`f ≤ g` implies $`Φ_θ(f) ≤ Φ_θ(g)`. -/
 @[blueprint]

@@ -9,6 +9,9 @@ module
 public import MultilinearInterpolation.EQuasinorm.Multisubadditive
 public import MultilinearInterpolation.EQuasinorm.ESeminorm
 public import MultilinearInterpolation.KMethod
+import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
+import MultilinearInterpolation.Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import MultilinearInterpolation.Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
 Following
@@ -17,7 +20,7 @@ Following
 
 @[expose] public noncomputable section
 
-open Set EQuasinorm MeasureTheory
+open Set EQuasinorm MeasureTheory Filter Topology
 open scoped ENNReal NNReal
 
 
@@ -53,6 +56,23 @@ $$`\inf\Bigl\{\,\bigl\|\{2^{-\theta n}J(2^{n},a_{n})\}_{n \in \mathbb{Z}}\bigr\|
 def jInfNorm (θ : ℝ) (q : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
   ⨅ (a : ℤ → α) (_ : a.support.Finite) (_ : ∑ᶠ n, a n = x),
     discretePhiFunctional θ q (fun n ↦ A.jNorm (2 ^ n) (a n))
+
+/-- A finitely supported $`a \colon \mathbb{Z} \to \alpha` with $`\sum_n a_n = x` bounds
+{name}`jInfNorm` by its cost. -/
+@[blueprint]
+lemma jInfNorm_le_discretePhiFunctional {θ : ℝ} {q : ℝ≥0∞} {x : α} {a : ℤ → α}
+    (ha : a.support.Finite) (hsum : ∑ᶠ n, a n = x) :
+    jInfNorm A θ q x ≤ discretePhiFunctional θ q (fun n ↦ A.jNorm (2 ^ n) (a n)) :=
+  iInf_le_of_le a (iInf_le_of_le ha (iInf_le _ hsum))
+
+/-- For $`q = 0`, {name}`jInfNorm` vanishes: the family equal to $`x` at $`0` and to $`0`
+elsewhere costs $`0`. -/
+@[simp, blueprint]
+lemma jInfNorm_exponent_zero (θ : ℝ) (x : α) : jInfNorm A θ 0 x = 0 := by
+  refine le_antisymm ((jInfNorm_le_discretePhiFunctional A (a := Pi.single 0 x)
+    ((finite_singleton 0).subset Pi.support_single_subset) ?_).trans_eq
+    (discretePhiFunctional_exponent_zero _)) zero_le
+  rw [finsum_eq_single _ 0 fun i hi ↦ Pi.single_eq_of_ne hi _, Pi.single_eq_same]
 
 /-- Swapping the two quasinorms replaces $`θ` by $`1 - θ` in {name}`jInfNorm`. -/
 @[blueprint]
@@ -158,49 +178,45 @@ lemma exists_decomp_Ico_symm {x : α} {y z : ℤ → α} (hyz : ∀ μ, y μ + z
   · obtain ⟨h1, h2, h3⟩ := hu ν
     exact ⟨h1, fun h ↦ h2 (by omega), h3⟩
 
-omit [AddCommMonoid M] [Modulus.IsDecomposable α M] in
-/--
-Let $`\|y_\mu\|_0 + 2^\mu \|z_\mu\|_1 \le K_\mu(x) + \delta` for all $`\mu \in \mathbb{Z}`,
-and let $`u` satisfy the conclusion of {name}`exists_decomp_Ico_symm`. Put
-$`E_{-N} = 2^{-N}\|x\|_1`, $`E_{N-1} = \|x\|_0` and $`E_\nu = 0` otherwise. Then
-$$`J_\nu(u_\nu) \le \max\bigl(K_{\nu+1}(x) + \delta,\ E_\nu\bigr)`
-for $`\nu \in \{-N, \dots, N-1\}`.
--/
+/-- The error at the two ends of the decomposition of {name}`exists_decomp_Ico_symm`:
+$$`E_N = 2^{-N}\|x\|_1\,\mathbf{1}_{\{-N\}} + \|x\|_0\,\mathbf{1}_{\{N-1\}}.` -/
 @[blueprint]
-lemma jNorm_le_max_kNorm [A.fst.IsSolid] [A.snd.IsSolid] {x : α} {y z u : ℤ → α}
-    {δ : ℝ≥0∞} {N : ℕ}
-    (hyz : ∀ μ : ℤ, ‖y μ‖ₑ[A.fst] + 2 ^ μ * ‖z μ‖ₑ[A.snd] ≤ A.kNorm (2 ^ μ) x + δ)
-    (hu : ∀ ν, |u ν|ₑ ≤ |x|ₑ ∧
-      (ν < N - 1 → |u ν|ₑ ≤ |y (ν + 1)|ₑ) ∧ (-N < ν → |u ν|ₑ ≤ |z ν|ₑ))
-    {ν : ℤ} (hν : ν ∈ Ico (-N : ℤ) N) :
-    A.jNorm (2 ^ ν) (u ν) ≤ max (A.kNorm (2 ^ (ν + 1)) x + δ)
-      (if ν = -N then 2 ^ ν * ‖x‖ₑ[A.snd] else if ν = N - 1 then ‖x‖ₑ[A.fst] else 0) := by
-  obtain ⟨hux, huy, huz⟩ := hu ν
-  obtain ⟨hν₀, hν₁⟩ := hν
-  refine max_le ?_ ?_
-  · rcases lt_or_eq_of_le (show ν ≤ N - 1 by omega) with h | rfl
-    · refine le_max_of_le_left ?_
-      grw [IsSolid.solid (huy h), ← hyz (ν + 1)]
-      exact le_self_add
-    · refine le_max_of_le_right ?_
-      simp only [show (N : ℤ) - 1 ≠ -N by omega, ite_false, ite_true]
-      exact IsSolid.solid hux
-  · rcases lt_or_eq_of_le hν₀ with h | rfl
-    · refine le_max_of_le_left ?_
-      have hK : A.kNorm (2 ^ ν) x ≤ A.kNorm (2 ^ (ν + 1)) x :=
-        monotone_kNorm (ENNReal.zpow_le_of_le one_le_two (by omega))
-      grw [IsSolid.solid (huz h), ← hK, ← hyz ν]
-      exact le_add_self
-    · refine le_max_of_le_right ?_
-      simp only [ite_true]
-      grw [IsSolid.solid hux]
+def boundaryError (N : ℕ) (x : α) : ℤ → ℝ≥0∞ :=
+  Pi.single (-N : ℤ) (2 ^ (-N : ℤ) * ‖x‖ₑ[A.snd]) + Pi.single ((N : ℤ) - 1) ‖x‖ₑ[A.fst]
+
+/-- For $`0 < θ < 1`, $`q ≠ 0` and $`x ∈ A_0 ∩ A_1`, with $`r = \min(q, 1)`,
+$`Φ_{θ,q}(E_N)^r → 0` as $`N → ∞`. The two terms of $`E_N` contribute
+$`2^{(θ-1)N}\|x\|_1` and $`2^θ\,2^{-θN}\|x\|_0` to $`Φ_{θ,q}`. -/
+@[blueprint]
+lemma tendsto_discretePhiFunctional_boundaryError_rpow {θ : ℝ} (hθ : θ ∈ Ioo (0 : ℝ) 1)
+    {q : ℝ≥0∞} (hq : q ≠ 0) {x : α} (hx : x ∈ A.inf.finiteLocus) :
+    Tendsto (fun N : ℕ ↦ discretePhiFunctional θ q (boundaryError A N x) ^ (min q 1).toReal)
+      atTop (𝓝 0) := by
+  have hr : 0 < (min q 1).toReal := ENNReal.toReal_pos (by simp [hq]) (by simp)
+  obtain ⟨hx₀, hx₁⟩ := mem_finiteLocus_inf.1 hx
+  have key {a : ℝ} (ha : a < 0) {c : ℝ≥0∞} (hc : c ≠ ∞) :
+      Tendsto (fun N : ℕ ↦ ((2 : ℝ≥0∞) ^ (a * N) * c) ^ (min q 1).toReal) atTop (𝓝 0) :=
+    (zero_mul c ▸ ENNReal.Tendsto.mul_const ((ENNReal.tendsto_rpow_atBot_of_one_lt_base
+      ENNReal.one_lt_two).comp (tendsto_natCast_atTop_atTop.const_mul_atTop_of_neg ha))
+      (Or.inr hc)).ennrpow_const_nhds_zero hr
+  refine tendsto_nhds_bot_mono' (add_zero (0 : ℝ≥0∞) ▸ (key (sub_neg.2 hθ.2) hx₁.ne).add
+    (key (neg_neg_of_pos hθ.1) (c := 2 ^ θ * ‖x‖ₑ[A.fst]) (by finiteness))) fun N ↦ ?_
+  grw [boundaryError, discretePhiFunctional_add_rpow_le hq, discretePhiFunctional_single hq,
+    discretePhiFunctional_single hq]
+  simp only [← mul_assoc, ← ENNReal.rpow_add_intCast two_ne_zero ENNReal.ofNat_ne_top,
+    ← ENNReal.rpow_add _ _ two_ne_zero ENNReal.ofNat_ne_top]
+  exact le_of_eq (by congr 4 <;> push_cast <;> ring)
 
 omit [AddCommMonoid M] [Modulus.IsDecomposable α M] in
 /--
-Under the hypotheses of {name}`jNorm_le_max_kNorm`, and if $`u` vanishes outside
-$`\{-N, \dots, N-1\}`, then for every $`\nu \in \mathbb{Z}`
-$$`J_\nu(u_\nu) \le K_{\nu+1}(x) + \delta\,\mathbf{1}_{\{-N,\dots,N-1\}}(\nu) + E_\nu,
-\qquad E = 2^{-N}\|x\|_1\,\mathbf{1}_{\{-N\}} + \|x\|_0\,\mathbf{1}_{\{N-1\}}.`
+Let $`\|y_\mu\|_0 + 2^\mu \|z_\mu\|_1 \le K_\mu(x) + \delta` for all $`\mu \in \mathbb{Z}`,
+and let $`u` vanish outside $`\{-N, \dots, N-1\}` and satisfy the bounds of
+{name}`exists_decomp_Ico_symm`. Then for every $`\nu \in \mathbb{Z}`, with $`E_N` the
+{name}`boundaryError`,
+$$`J_\nu(u_\nu) \le K_{\nu+1}(x) + \delta\,\mathbf{1}_{\{-N,\dots,N-1\}}(\nu) + E_N(\nu).`
+For $`-N \le \nu \le N-1`, solidity gives $`\|u_\nu\|_0 \le \|y_{\nu+1}\|_0` and
+$`2^\nu\|u_\nu\|_1 \le 2^\nu\|z_\nu\|_1`, both at most $`K_{\nu+1}(x) + \delta`, except at
+$`\nu = N-1` and at $`\nu = -N` respectively, where only $`|u_\nu| \le |x|` is available.
 -/
 @[blueprint]
 lemma jNorm_le_kNorm_add [A.fst.IsSolid] [A.snd.IsSolid] {x : α} {y z u : ℤ → α}
@@ -210,25 +226,95 @@ lemma jNorm_le_kNorm_add [A.fst.IsSolid] [A.snd.IsSolid] {x : α} {y z u : ℤ �
     (hu : ∀ ν, |u ν|ₑ ≤ |x|ₑ ∧
       (ν < N - 1 → |u ν|ₑ ≤ |y (ν + 1)|ₑ) ∧ (-N < ν → |u ν|ₑ ≤ |z ν|ₑ)) (ν : ℤ) :
     A.jNorm (2 ^ ν) (u ν) ≤ A.kNorm (2 ^ (ν + 1)) x + (Ico (-N : ℤ) N).indicator (fun _ ↦ δ) ν +
-      (Pi.single (-N : ℤ) (2 ^ (-N : ℤ) * ‖x‖ₑ[A.snd]) +
-        Pi.single ((N : ℤ) - 1) ‖x‖ₑ[A.fst] : ℤ → ℝ≥0∞) ν := by
+      boundaryError A N x ν := by
   by_cases hν : ν ∈ Ico (-N : ℤ) N
-  · refine (jNorm_le_max_kNorm A hyz hu hν).trans (max_le ?_ ?_)
-    · rw [indicator_of_mem hν]
-      exact le_self_add
-    · refine le_add_left ?_
-      simp only [Pi.add_apply, Pi.single_apply]
-      split_ifs <;> first | omega | simp_all
-  · rw [Function.notMem_support.1 (mt (@hsupp ν) hν)]
-    simp [jNorm_zero]
+  swap
+  · simp [Function.notMem_support.1 (mt (@hsupp ν) hν)]
+  obtain ⟨hux, huy, huz⟩ := hu ν
+  rw [indicator_of_mem hν]
+  obtain ⟨hν₀, hν₁⟩ := hν
+  refine max_le ?_ ?_
+  · rcases lt_or_eq_of_le (show ν ≤ N - 1 by omega) with h | rfl
+    · grw [IsSolid.solid (huy h), ← hyz (ν + 1)]
+      exact le_add_right le_self_add
+    · rw [boundaryError, Pi.add_apply, Pi.single_eq_same]
+      exact le_add_left (le_add_left (IsSolid.solid hux))
+  · rcases lt_or_eq_of_le hν₀ with h | rfl
+    · have hK : A.kNorm (2 ^ ν) x ≤ A.kNorm (2 ^ (ν + 1)) x :=
+        monotone_kNorm (ENNReal.zpow_le_of_le one_le_two (by omega))
+      grw [IsSolid.solid (huz h), ← hK, ← hyz ν]
+      exact le_add_right le_add_self
+    · rw [boundaryError, Pi.add_apply, Pi.single_eq_same]
+      refine le_add_left (le_add_right ?_)
+      grw [IsSolid.solid hux]
+
+/--
+For $`N ≥ 1` and $`δ > 0`, with $`E_N` the {name}`boundaryError`,
+$$`\mathcal{J}(x) \le \Phi_{\theta,q}\bigl(\nu \mapsto K_{\nu+1}(x)
+  + \delta\,\mathbf{1}_{\{-N,\dots,N-1\}}(\nu) + E_N(\nu)\bigr).`
+The family $`u` of {name}`exists_decomp_Ico_symm` is admissible, and
+{name}`jNorm_le_kNorm_add` bounds its cost termwise.
+-/
+@[blueprint]
+lemma jInfNorm_le_discretePhiFunctional_kNorm_add [A.fst.IsSolid] [A.snd.IsSolid]
+    (θ : ℝ) (q : ℝ≥0∞) {δ : ℝ≥0∞} (hδ : δ ≠ 0) {N : ℕ} (hN : 1 ≤ N) (x : α) :
+    jInfNorm A θ q x ≤ discretePhiFunctional θ q
+      ((fun ν : ℤ ↦ A.kNorm (2 ^ (ν + 1)) x) + (Ico (-N : ℤ) N).indicator (fun _ ↦ δ) +
+        boundaryError A N x) := by
+  obtain ⟨y, z, hyz⟩ := exists_seq_decomp_le_kNorm_add A hδ x
+  obtain ⟨u, hsupp, hsum, hu⟩ := exists_decomp_Ico_symm (fun μ ↦ (hyz μ).1) hN
+  refine (jInfNorm_le_discretePhiFunctional A ((Finset.finite_toSet _).subset hsupp) hsum).trans
+    (discretePhiFunctional_mono fun ν ↦ ?_)
+  exact jNorm_le_kNorm_add A (fun μ ↦ (hyz μ).2) (by simpa using hsupp) hu ν
+
+/--
+The estimate for fixed $`N ≥ 1` and $`δ > 0`. With $`r = \min(q, 1)`,
+$$`\mathcal{J}(x)^r \le (2^\theta\|x\|_K)^r + \bigl(2^{N\theta}\delta\,(2N)^{1/q}\bigr)^r
+  + \Phi_{\theta,q}(E_N)^r.`
+The bound of {name}`jInfNorm_le_discretePhiFunctional_kNorm_add` splits into three terms by
+{name}`discretePhiFunctional_add_rpow_le`; the first two are computed or estimated separately.
+-/
+@[blueprint]
+lemma jInfNorm_rpow_le_of_delta [A.fst.IsSolid] [A.snd.IsSolid] {θ : ℝ} (hθ : 0 ≤ θ)
+    {q : ℝ≥0∞} (hq : q ≠ 0) {δ : ℝ≥0∞} (hδ : δ ≠ 0) {N : ℕ} (hN : 1 ≤ N) (x : α) :
+    jInfNorm A θ q x ^ (min q 1).toReal ≤
+      (2 ^ θ * ‖x‖ₑ[A.discreteKMethod θ q]) ^ (min q 1).toReal +
+      (2 ^ (N * θ) * δ * (2 * N : ℝ≥0∞) ^ (1 / q.toReal)) ^ (min q 1).toReal +
+      discretePhiFunctional θ q (boundaryError A N x) ^ (min q 1).toReal := by
+  grw [jInfNorm_le_discretePhiFunctional_kNorm_add A θ q hδ hN x,
+    discretePhiFunctional_add_rpow_le hq, discretePhiFunctional_add_rpow_le hq,
+    discretePhiFunctional_shift (fun k ↦ A.kNorm (2 ^ k) x),
+    discretePhiFunctional_indicator_Ico_le hθ]
+  rfl
 
 /-- Lemma 1 with the constant $`2^\theta`, for the discrete $`K`-method, $`x ∈ A_0 ∩ A_1` and a
-couple of solid quasinorms with respect to a decomposable modulus. -/
+couple of solid quasinorms with respect to a decomposable modulus.
+
+For $`q ≠ 0`, let $`N → ∞` in {name}`jInfNorm_rpow_le_of_delta`, with $`δ_N > 0` chosen so
+that the middle term is at most $`N^{-r}`, where $`r = \min(q, 1)`. The last term tends to $`0`
+by {name}`tendsto_discretePhiFunctional_boundaryError_rpow`. For $`q = 0` the left-hand side
+vanishes ({name}`jInfNorm_exponent_zero`). -/
 @[blueprint]
 lemma jInfNorm_le_two_rpow_mul_discreteKMethod [A.fst.IsSolid] [A.snd.IsSolid]
     (θ : ℝ) (hθ : θ ∈ Ioo (0 : ℝ) 1) (q : ℝ≥0∞) : ∀ x ∈ A.inf.finiteLocus,
-    jInfNorm A θ q x ≤ 2 ^ θ * ‖x‖ₑ[A.discreteKMethod θ q] :=
-  sorry
+    jInfNorm A θ q x ≤ 2 ^ θ * ‖x‖ₑ[A.discreteKMethod θ q] := by
+  intro x hx
+  rcases eq_or_ne q 0 with rfl | hq
+  · simp
+  have hr : 0 < (min q 1).toReal := ENNReal.toReal_pos (by simp [hq]) (by simp)
+  have hδ (N : ℕ) : ∃ δ : ℝ≥0∞, 0 < δ ∧
+      2 ^ ((N : ℝ) * θ) * δ * (2 * N : ℝ≥0∞) ^ (1 / q.toReal) < (N : ℝ≥0∞)⁻¹ := by
+    obtain ⟨δ, h₀, h⟩ := ENNReal.exists_pos_mul_lt (a := 2 ^ ((N : ℝ) * θ) *
+      (2 * N : ℝ≥0∞) ^ (1 / q.toReal)) (b := (N : ℝ≥0∞)⁻¹) (by finiteness) (by simp)
+    exact ⟨δ, h₀, by rwa [mul_left_comm, ← mul_assoc] at h⟩
+  choose δ hδ₀ hδ using hδ
+  have := ge_of_tendsto
+    ((tendsto_const_nhds.add (ENNReal.tendsto_inv_nat_nhds_zero.ennrpow_const_nhds_zero hr)).add
+      (tendsto_discretePhiFunctional_boundaryError_rpow A hθ hq hx))
+    ((eventually_ge_atTop 1).mono fun N hN ↦
+      (jInfNorm_rpow_le_of_delta A hθ.1.le hq (hδ₀ N).ne' hN x).trans (by grw [(hδ N).le]))
+  rw [add_zero, add_zero] at this
+  exact (ENNReal.rpow_le_rpow_iff hr).1 this
 
 /-- Lemma 1 with the constant $`2^{\min(\theta, 1-\theta)}`, for the discrete $`K`-method,
 $`x ∈ A_0 ∩ A_1` and a couple of solid quasinorms with respect to a decomposable modulus. The
@@ -250,6 +336,8 @@ lemma jInfNorm_le_discreteKMethod [A.fst.IsSolid] [A.snd.IsSolid]
   · have := jInfNorm_le_two_rpow_mul_discreteKMethod A.swap (1 - θ)
       ⟨sub_pos.2 hθ.2, sub_lt_self 1 hθ.1⟩ q x (finiteLocus_inf_comm A.fst A.snd ▸ hx)
     rwa [jInfNorm_swap, Couple.enorm_discreteKMethod_swap, sub_sub_cancel] at this
+
+#simp 2 + 2
 
 end Lemma1
 

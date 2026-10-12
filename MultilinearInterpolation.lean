@@ -7,6 +7,7 @@ import MultilinearInterpolation.EQuasinorm.Multisubadditive
 import MultilinearInterpolation.JMethod
 import MultilinearInterpolation.Janson
 import MultilinearInterpolation.KMethod
+import MultilinearInterpolation.Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import MultilinearInterpolation.Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import MultilinearInterpolation.Mathlib.MeasureTheory.Function.LpSeminorm.Count
 import MultilinearInterpolation.Mathlib.MeasureTheory.Function.LpSeminorm.SMul
