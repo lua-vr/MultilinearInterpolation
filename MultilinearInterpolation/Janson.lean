@@ -51,7 +51,6 @@ $$`\inf\Bigl\{\,\bigl\|\{2^{-\theta n}J(2^{n},a_{n})\}_{n \in \mathbb{Z}}\bigr\|
  : a \colon \mathbb{Z} \to \alpha \text{ finitely supported},\ \sum_{n}a_{n}=x\,\Bigr\}.` -/
 @[blueprint]
 def jInfNorm (θ : ℝ) (q : ℝ≥0∞) (x : α) : ℝ≥0∞ :=
-  -- todo: what if we remove (_ : support.Finite)?
   ⨅ (a : ℤ → α) (_ : a.support.Finite) (_ : ∑ᶠ n, a n = x),
     discretePhiFunctional θ q (fun n ↦ A.jNorm (2 ^ n) (a n))
 
@@ -191,9 +190,7 @@ lemma jNorm_le_max_kNorm [A.fst.IsSolid] [A.snd.IsSolid] {x : α} {y z u : ℤ �
   · rcases lt_or_eq_of_le hν₀ with h | rfl
     · refine le_max_of_le_left ?_
       have hK : A.kNorm (2 ^ ν) x ≤ A.kNorm (2 ^ (ν + 1)) x :=
-        iInf₂_mono fun _ _ ↦ by
-          gcongr
-          exacts [one_le_two, by omega]
+        monotone_kNorm (ENNReal.zpow_le_of_le one_le_two (by omega))
       grw [IsSolid.solid (huz h), ← hK, ← hyz ν]
       exact le_add_self
     · refine le_max_of_le_right ?_
@@ -260,7 +257,8 @@ def Ω : Set (ι → ℝ) :=
       (fun i x ↦ x ∈ (A i).inf.finiteLocus ∧ ‖x‖ₑ[(A i).kMethod (θ i) (q i)] < ∞)}
 
 /- The source couples are solid with respect to decomposable moduli, as required by
-`jInfNorm_le_kNorm`. They are not mentioned in the statements below, hence the `include`. -/
+`jInfNorm_le_discreteKMethod`. They are not mentioned in the statements below, hence the
+`include`. -/
 variable {Mα : ι → Type*} [∀ i, AddCommMonoid (Mα i)] [∀ i, Preorder (Mα i)]
   [∀ i, Modulus (α i) (Mα i)] [hMα : ∀ i, Modulus.IsDecomposable (α i) (Mα i)]
   [hA₀ : ∀ i, (A i).fst.IsSolid] [hA₁ : ∀ i, (A i).snd.IsSolid]

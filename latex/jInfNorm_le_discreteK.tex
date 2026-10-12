@@ -27,12 +27,13 @@
 
 \section{Setting and statement}
 
-Let \(\alpha\) be an additive commutative monoid with a preorder \(\le\) and a map
-\(x \mapsto \abs{x}\) from \(\alpha\) to itself satisfying
+Let \(\alpha\) be an additive commutative monoid, \(M\) an additive commutative monoid with a
+preorder \(\le\), and \(x \mapsto \abs{x}\) a map \(\alpha \to M\) (\texttt{Modulus}) satisfying
+\(\abs{0} = 0\), \(0 \le \abs{x}\),
 \begin{equation}\label{eq:abs-add}
   \abs{x+y} \le \abs{x} + \abs{y} \qquad (x, y \in \alpha),
 \end{equation}
-together with the following \emph{refined Riesz decomposition}:
+and the following \emph{refined Riesz decomposition}:
 \begin{itemize}
   \item[(R)] if \(\abs{x} \le \abs{y} + \abs{z}\), then there are \(x_0, x_1 \in \alpha\) with
   \[
@@ -40,11 +41,20 @@ together with the following \emph{refined Riesz decomposition}:
     \abs{x_0} \le \abs{x},\quad \abs{x_1} \le \abs{x}.
   \]
 \end{itemize}
-The first three conditions of (R) are the field \texttt{exists\_decomp} of
-\texttt{Abs.IsModulus}; the last two are new. They hold for the three existing instances with
-the witnesses already used there: on \(\mathbb R\), \(x_0\) is \(x\) clamped to
-\([-\abs{y}, \abs{y}]\) and \(x_1 = x - x_0\) has the sign of \(x\); on \([0,\infty]\),
-\(x_0 = \min(x, y)\) and \(x_1 = x - x_0\); on products, (R) is checked pointwise.
+These four conditions are the fields \texttt{modulus\_zero}, \texttt{modulus\_nonneg},
+\texttt{modulus\_add\_le} and \texttt{exists\_decomp} of \texttt{Modulus.IsDecomposable}. The
+first two give \(\abs{0} \le \abs{x}\) (\texttt{modulus\_zero\_le}). The instances are the
+following.
+\begin{itemize}
+  \item On \(\mathbb R\) and \(\mathbb C\), \(M = [0,\infty]\), \(\abs{x}\) is the norm, and
+    (R) holds with
+    \(x_0 = cx\), \(x_1 = (1-c)x\), \(c = \min(1, \abs{y}/\abs{x})\)
+    (\texttt{Modulus.isDecomposable\_ofENorm}, for every real normed space).
+  \item On \([0,\infty]\), \(M = [0,\infty]\), \(\abs{x} = x\), \(x_0 = \min(x, y)\) and
+    \(x_1 = x - x_0\).
+  \item On products, \(M\) is the product of the value monoids, \(\abs{\cdot}\) is taken
+    pointwise, and (R) is checked pointwise.
+\end{itemize}
 
 Let \(A_0, A_1\) be quasinorms on \(\alpha\) with values in \([0,\infty]\) that are
 \emph{solid}: \(\abs{x} \le \abs{y}\) implies \(\norm{x}{i} \le \norm{y}{i}\), where
@@ -109,8 +119,10 @@ with \(2^{1-\theta}\) follows from the bound with \(2^\theta\) for the swapped c
   Taking the infimum over all decompositions gives the claim.
 \end{proof}
 
-No finiteness assumption on \(x\) is needed; the hypothesis of \texttt{monotone\_kNorm} in
-\texttt{Basic.lean} is superfluous for dyadic points.
+The same argument shows that \(t \mapsto \inf_{x = x_0 + x_1}\bigl(\norm{x_0}{0} +
+t\norm{x_1}{1}\bigr)\) is monotone on \([0,\infty]\) for every \(x \in \alpha\); in Lean this is
+\texttt{monotone\_kNorm}. The lemma is its case \(2^\nu \le 2^{\nu+1}\)
+(\texttt{ENNReal.zpow\_le\_of\_le}).
 
 \begin{lemma}\label{lem:near-opt}
   For every \(x \in \alpha\), \(\mu \in \Z\) and \(\delta > 0\) there is a decomposition
@@ -177,7 +189,8 @@ In Lean:
 \end{itemize}
 The lemma \texttt{Function.Bijective.measurePreserving\_count} (a measurable bijection
 preserves \texttt{Measure.count}) is not in Mathlib; it is added in this project.
-Every function on \(\Z\) is measurable (\texttt{measurable\_of\_countable}).
+Every function on \(\Z\) is measurable and a.e.\ strongly measurable, by
+\texttt{Measurable.of\_discrete} and \texttt{AEStronglyMeasurable.of\_discrete}.
 
 \section{Splitting \(x\) into \(2N\) pieces}
 
@@ -233,6 +246,11 @@ Both new conditions of (R) are needed. The condition \(\abs{x_1} \le \abs{x}\) g
 \(\abs{r'} \le \abs{x}\), without which the induction hypothesis could not be applied; the
 condition \(\abs{x_0} \le \abs{x}\), through (c), gives (b) at the left end of \(I'\). For
 the same reason (c) is stated relative to \(r\) and not to \(x\).
+
+In Lean, Propositions~\ref{prop:split-general} and~\ref{prop:split} are
+\texttt{exists\_decomp\_Icc} and \texttt{exists\_decomp\_Ico\_symm}, with (a)--(c) stated for
+every \(\nu \in \Z\). For \(\nu \notin I\) they hold because \(u_\nu = 0\) and
+\(\abs{0} \le \abs{w}\) for every \(w \in \alpha\).
 
 \begin{proposition}\label{prop:split}
   Let \(N \ge 1\), \(x \in \alpha\), and for \(\mu = -N+1, \dots, N-1\) let
@@ -366,8 +384,11 @@ Proposition~\ref{prop:two-theta}.
 The two limits are taken one after the other: \(\delta \to 0\) for fixed \(N\), then
 \(N \to \infty\). This is legitimate because \(\cJ(x)\) depends on neither, and the end terms
 do not depend on \(\delta\). No assumption \(\norm{x}{K} < \infty\) is needed, and no case
-distinction between \(q < \infty\) and \(q = \infty\). In Lean both limits are taken with
-\texttt{ge\_of\_tendsto'}, the first along \(\delta = (n+1)^{-1}\), \(n \to \infty\).
+distinction between \(q < \infty\) and \(q = \infty\). In Lean the first limit can be taken
+with \texttt{ge\_of\_tendsto'} along \(\delta = n^{-1}\), \(n \to \infty\)
+(\texttt{ENNReal.tendsto\_inv\_nat\_nhds\_zero}); in \([0,\infty]\), \(n^{-1} \ne 0\) also for
+\(n = 0\). The second limit needs \texttt{ge\_of\_tendsto} with
+\texttt{Filter.eventually\_ge\_atTop 1}, since \eqref{eq:fixed-N} holds only for \(N \ge 1\).
 
 \section{Symmetry, and the bound with \(2^{1-\theta}\)}
 
@@ -530,6 +551,8 @@ In Lean:
   \begin{itemize}
     \item (R), \eqref{eq:abs-add} and transitivity of \(\le\): only in
       Proposition~\ref{prop:split-general}.
+    \item \(\abs{0} = 0\) and \(0 \le \abs{x}\): only in the Lean form of
+      Proposition~\ref{prop:split-general}, through \(\abs{0} \le \abs{w}\) for \(\nu \notin I\).
     \item Solidity of \(A_0, A_1\): only in Lemma~\ref{lem:pointwise}.
     \item \(x \in \Delta\) and \(0 < \theta < 1\): in \(e_{-N}, e_{N-1} \to 0\). Each end
       uses one half of each condition: \(e_{-N}\) uses \(\theta < 1\) and
