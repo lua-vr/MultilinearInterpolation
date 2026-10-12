@@ -150,7 +150,6 @@ lemma exists_decomp_Ico_symm {x : α} {y z : ℤ → α} (hyz : ∀ μ, y μ + z
       ∑ᶠ ν, u ν = x ∧
       ∀ ν, |u ν|ₑ ≤ |x|ₑ ∧
         (ν < N - 1 → |u ν|ₑ ≤ |y (ν + 1)|ₑ) ∧ (-N < ν → |u ν|ₑ ≤ |z ν|ₑ) := by
-  -- review: llm proof
   obtain ⟨u, hs, hsum, hu⟩ := exists_decomp_Icc hyz (-N) (2 * N - 1) le_rfl
   refine ⟨u, fun ν hν ↦ ?_, hsum, fun ν ↦ ?_⟩
   · have := hs hν
@@ -176,7 +175,6 @@ lemma jNorm_le_max_kNorm [A.fst.IsSolid] [A.snd.IsSolid] {x : α} {y z u : ℤ �
     {ν : ℤ} (hν : ν ∈ Ico (-N : ℤ) N) :
     A.jNorm (2 ^ ν) (u ν) ≤ max (A.kNorm (2 ^ (ν + 1)) x + δ)
       (if ν = -N then 2 ^ ν * ‖x‖ₑ[A.snd] else if ν = N - 1 then ‖x‖ₑ[A.fst] else 0) := by
-  -- review: llm proof
   obtain ⟨hux, huy, huz⟩ := hu ν
   obtain ⟨hν₀, hν₁⟩ := hν
   refine max_le ?_ ?_
@@ -196,6 +194,33 @@ lemma jNorm_le_max_kNorm [A.fst.IsSolid] [A.snd.IsSolid] {x : α} {y z u : ℤ �
     · refine le_max_of_le_right ?_
       simp only [ite_true]
       grw [IsSolid.solid hux]
+
+omit [AddCommMonoid M] [Modulus.IsDecomposable α M] in
+/--
+Under the hypotheses of {name}`jNorm_le_max_kNorm`, and if $`u` vanishes outside
+$`\{-N, \dots, N-1\}`, then for every $`\nu \in \mathbb{Z}`
+$$`J_\nu(u_\nu) \le K_{\nu+1}(x) + \delta\,\mathbf{1}_{\{-N,\dots,N-1\}}(\nu) + E_\nu,
+\qquad E = 2^{-N}\|x\|_1\,\mathbf{1}_{\{-N\}} + \|x\|_0\,\mathbf{1}_{\{N-1\}}.`
+-/
+@[blueprint]
+lemma jNorm_le_kNorm_add [A.fst.IsSolid] [A.snd.IsSolid] {x : α} {y z u : ℤ → α}
+    {δ : ℝ≥0∞} {N : ℕ}
+    (hyz : ∀ μ : ℤ, ‖y μ‖ₑ[A.fst] + 2 ^ μ * ‖z μ‖ₑ[A.snd] ≤ A.kNorm (2 ^ μ) x + δ)
+    (hsupp : u.support ⊆ Ico (-N : ℤ) N)
+    (hu : ∀ ν, |u ν|ₑ ≤ |x|ₑ ∧
+      (ν < N - 1 → |u ν|ₑ ≤ |y (ν + 1)|ₑ) ∧ (-N < ν → |u ν|ₑ ≤ |z ν|ₑ)) (ν : ℤ) :
+    A.jNorm (2 ^ ν) (u ν) ≤ A.kNorm (2 ^ (ν + 1)) x + (Ico (-N : ℤ) N).indicator (fun _ ↦ δ) ν +
+      (Pi.single (-N : ℤ) (2 ^ (-N : ℤ) * ‖x‖ₑ[A.snd]) +
+        Pi.single ((N : ℤ) - 1) ‖x‖ₑ[A.fst] : ℤ → ℝ≥0∞) ν := by
+  by_cases hν : ν ∈ Ico (-N : ℤ) N
+  · refine (jNorm_le_max_kNorm A hyz hu hν).trans (max_le ?_ ?_)
+    · rw [indicator_of_mem hν]
+      exact le_self_add
+    · refine le_add_left ?_
+      simp only [Pi.add_apply, Pi.single_apply]
+      split_ifs <;> first | omega | simp_all
+  · rw [Function.notMem_support.1 (mt (@hsupp ν) hν)]
+    simp [jNorm_zero]
 
 /-- Lemma 1 with the constant $`2^\theta`, for the discrete $`K`-method, $`x ∈ A_0 ∩ A_1` and a
 couple of solid quasinorms with respect to a decomposable modulus. -/

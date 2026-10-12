@@ -9,6 +9,9 @@ module
 public import MultilinearInterpolation.EQuasinorm.Basic
 public import MultilinearInterpolation.EQuasinorm.ESeminorm
 import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+import MultilinearInterpolation.Mathlib.MeasureTheory.Function.LpSeminorm.Count
+import MultilinearInterpolation.Mathlib.MeasureTheory.Function.LpSeminorm.SMul
+import MultilinearInterpolation.Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 import MultilinearInterpolation.Mathlib.MeasureTheory.Measure.Count
 import VersoBlueprint
 meta import VersoBlueprint
@@ -57,6 +60,67 @@ lemma discretePhiFunctional_reflect (θ : ℝ) (q : ℝ≥0∞) (f : ℤ → ℝ
     ring
   rw [discretePhiFunctional, discretePhiFunctional, h, eLpNorm_comp_measurePreserving
     .of_discrete (neg_bijective.measurePreserving_count .of_discrete)]
+
+/-- Monotonicity: $`f ≤ g` implies $`Φ_θ(f) ≤ Φ_θ(g)`. -/
+@[blueprint]
+lemma discretePhiFunctional_mono {f g : ℤ → ℝ≥0∞} (h : f ≤ g) :
+    discretePhiFunctional θ q f ≤ discretePhiFunctional θ q g :=
+  eLpNorm_mono_enorm .of_discrete fun k ↦ by simp only [enorm_eq_self]; gcongr; exact h k
+
+/-- For $`q ≠ 0` and $`r = \min(q,1)`, $`Φ_θ(f+g)^r ≤ Φ_θ(f)^r + Φ_θ(g)^r`. -/
+@[blueprint]
+lemma discretePhiFunctional_add_rpow_le (hq : q ≠ 0) (f g : ℤ → ℝ≥0∞) :
+    discretePhiFunctional θ q (f + g) ^ (min q 1).toReal ≤
+    discretePhiFunctional θ q f ^ (min q 1).toReal +
+    discretePhiFunctional θ q g ^ (min q 1).toReal := by
+  simp only [discretePhiFunctional, Pi.add_apply, mul_add]
+  exact eLpNorm_add_rpow_le hq
+
+/-- Shift: $`Φ_θ(k ↦ f(k+1)) = 2^θ Φ_θ(f)`. -/
+@[blueprint]
+lemma discretePhiFunctional_shift (f : ℤ → ℝ≥0∞) :
+    discretePhiFunctional θ q (fun k ↦ f (k + 1)) = 2 ^ θ * discretePhiFunctional θ q f := by
+  have h : (fun k : ℤ ↦ (2 : ℝ≥0∞) ^ (-k * θ) * f (k + 1)) =
+      fun k ↦ 2 ^ θ * ((fun k : ℤ ↦ (2 : ℝ≥0∞) ^ (-k * θ) * f k) ∘ (· + 1)) k := by
+    ext k
+    rw [Function.comp_apply, ← mul_assoc, ← ENNReal.rpow_add _ _ two_ne_zero ENNReal.ofNat_ne_top]
+    congr 2
+    push_cast
+    ring
+  rw [discretePhiFunctional, discretePhiFunctional, h,
+    eLpNorm_const_mul (by finiteness) .of_discrete,
+    eLpNorm_comp_measurePreserving .of_discrete
+      ((AddGroup.addRight_bijective 1).measurePreserving_count .of_discrete)]
+
+/-- A single term: for $`q ≠ 0`, $`Φ_θ` of the sequence equal to $`c` at $`i` and to $`0`
+elsewhere is $`2^{-iθ} c`. -/
+@[blueprint]
+lemma discretePhiFunctional_single (hq : q ≠ 0) (i : ℤ) (c : ℝ≥0∞) :
+    discretePhiFunctional θ q (Pi.single i c) = 2 ^ (-i * θ) * c := by
+  have h : (fun k : ℤ ↦ (2 : ℝ≥0∞) ^ (-k * θ) * (Pi.single i c : ℤ → ℝ≥0∞) k) =
+      Pi.single i (2 ^ (-i * θ) * c) :=
+    funext fun k ↦ (Pi.single_mul_right_apply i k (fun k : ℤ ↦ (2 : ℝ≥0∞) ^ (-k * θ)) c).symm
+  rw [discretePhiFunctional, h, eLpNorm_count_single i _ hq, enorm_eq_self]
+
+/-- A window of $`2N` equal terms: for $`θ ≥ 0`,
+$$`Φ_θ\bigl(c\,\mathbf 1_{\{-N,\dots,N-1\}}\bigr) ≤ 2^{Nθ} c\,(2N)^{1/q}.` -/
+@[blueprint]
+lemma discretePhiFunctional_indicator_Ico_le (hθ : 0 ≤ θ) (N : ℕ) (c : ℝ≥0∞) :
+    discretePhiFunctional θ q ((Ico (-N : ℤ) N).indicator fun _ ↦ c) ≤
+    2 ^ (N * θ) * c * (2 * N : ℝ≥0∞) ^ (1 / q.toReal) := by
+  have h := eLpNorm_count_indicator_finset_le (Finset.Ico (-N : ℤ) N) (2 ^ (N * θ) * c) q
+  rw [Finset.coe_Ico, Int.card_Ico, enorm_eq_self] at h
+  refine (eLpNorm_mono_enorm .of_discrete fun k ↦ ?_).trans (h.trans_eq ?_)
+  · simp only [enorm_eq_self]
+    by_cases hk : k ∈ Ico (-N : ℤ) N
+    · simp only [indicator_of_mem hk]
+      have : -(k : ℝ) ≤ N := by have := hk.1; rify at this; linarith
+      gcongr
+      exact one_le_two
+    · simp [indicator_of_notMem hk]
+  · congr 3
+    norm_cast
+    omega
 
 /-- The space $`K_{θ,q}(\bar{A})` in Section 3.1. -/
 @[blueprint]

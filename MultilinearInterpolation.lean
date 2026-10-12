@@ -8,6 +8,9 @@ import MultilinearInterpolation.JMethod
 import MultilinearInterpolation.Janson
 import MultilinearInterpolation.KMethod
 import MultilinearInterpolation.Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import MultilinearInterpolation.Mathlib.MeasureTheory.Function.LpSeminorm.Count
+import MultilinearInterpolation.Mathlib.MeasureTheory.Function.LpSeminorm.SMul
+import MultilinearInterpolation.Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 import MultilinearInterpolation.Mathlib.MeasureTheory.Measure.Count
 import MultilinearInterpolation.Mathlib.Topology.UniformSpace.OfFun
 import MultilinearInterpolation.Modulus
