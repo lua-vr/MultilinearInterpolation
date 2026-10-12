@@ -309,11 +309,10 @@ lemma sup_mono (h₀ : A₀ ≤ A₀') (h₁ : A₁ ≤ A₁') : A₀ ⊔ A₁ �
 lemma sup_equiv_sup (h₀ : A₀ ≈ A₀') (h₁ : A₁ ≈ A₁') : A₀ ⊔ A₁ ≈ A₀' ⊔ A₁' :=
   skewedSup_equiv_skewedSup h₀ h₁
 
--- Part of Lemma 3.1.1
--- assume t ≠ ∞ if needed
+/-- Part of Lemma 3.1.1: $`t ↦ K(t,x)` is monotone, for every $`x`. -/
 @[blueprint]
-lemma monotone_kNorm (hx : ‖x‖ₑ[A₀ ⊔ A₁] < ∞) : Monotone (kNorm A₀ A₁ · x) := by
-  sorry
+lemma monotone_kNorm : Monotone (kNorm A₀ A₁ · x) :=
+  fun _ _ _ ↦ iInf₂_mono fun _ _ ↦ by gcongr
 
 -- Part of Lemma 3.1.1 (if convenient: make the scalar ring `ℝ≥0`)
 -- assume t ≠ ∞ if needed

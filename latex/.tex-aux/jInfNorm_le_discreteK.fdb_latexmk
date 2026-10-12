@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1791491270.95287 "jInfNorm_le_discreteK.tex" "jInfNorm_le_discreteK.pdf" "jInfNorm_le_discreteK" 1791491271.3287 0
-  ".tex-aux/jInfNorm_le_discreteK.aux" 1791491271.25789 1444 921a67509c895487b4fcf51ff9577367 "pdflatex"
+["pdflatex"] 1791811950.96083 "jInfNorm_le_discreteK.tex" "jInfNorm_le_discreteK.pdf" "jInfNorm_le_discreteK" 1791811951.16971 0
+  ".tex-aux/jInfNorm_le_discreteK.aux" 1791811951.13382 1768 0f87d20c39e7c956242d3691be6d68dc "pdflatex"
   "/usr/share/texlive/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1136849721 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1095.tfm" 1136768653 1536 02c06700a42be0f5a28664c7273f82e7 ""
@@ -69,9 +69,9 @@
   "/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty" 1748806692 2671 d9941f4bf4750e9b0603c9a2ec54693b ""
   "/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def" 1774899586 30909 7dedb28cb21a1e79c47a35a35ae3c507 ""
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1777593600 43785 66587115382950aca692b5f6e3c2fb74 ""
-  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1780411107 4754230 fd73faac2c19779d61b8c317c9e61ffa ""
-  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1791463187 3527880 a7d2dd1c0142d8d90bb6b374aa5f3d85 ""
-  "jInfNorm_le_discreteK.tex" 1791490314.70672 20531 df2689362cb120ef0cc85715fd5dc6c6 ""
+  "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1791724759 4754216 4029f92e944aa7323f49e4256389b90a ""
+  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1791724514 3527881 8cd106774586b8013cbe3edcb2c73eac ""
+  "jInfNorm_le_discreteK.tex" 1791808252.55147 27609 b2c0f3ef6fa883c3a0804cb35d772cbc ""
   (generated)
   ".tex-aux/jInfNorm_le_discreteK.aux"
   ".tex-aux/jInfNorm_le_discreteK.log"
