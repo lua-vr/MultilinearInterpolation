@@ -280,13 +280,9 @@ end kNorm
 @[blueprint]
 def skewedSup (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨kNorm A₀ A₁ t⟩
-  C := A₀.C + A₁.C -- maybe!! (Todo)
-  C_ge_one := le_add_right A₀.C_ge_one
-  enorm_zero := by
-    simp_rw [← nonpos_iff_eq_zero]
-    apply iInf_le_of_le 0
-    simp
-  enorm_add_le_mul x y := (kNorm_add_le_mul t x y).trans (by gcongr <;> simp)
+  C := max A₀.C A₁.C
+  enorm_zero := kNorm_zero t
+  enorm_add_le_mul := kNorm_add_le_mul t
 
 lemma skewedSup_mono (h₀ : A₀ ≤ A₀') (h₁ : A₁ ≤ A₁') :
     skewedSup A₀ A₁ t ≤ skewedSup A₀' A₁' t := by
