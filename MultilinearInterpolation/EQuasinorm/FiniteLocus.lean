@@ -34,6 +34,12 @@ lemma finiteLocus_inf_comm (A₀ A₁ : EQuasinorm α) :
   change ‖x‖ₑ[A₁ ⊓ A₀] < ∞ ↔ ‖x‖ₑ[A₀ ⊓ A₁] < ∞
   rw [enorm_inf_comm]
 
+/-- An element is finite for $`A₀ ⊓ A₁` if and only if it is finite for $`A₀` and for $`A₁`. -/
+lemma mem_finiteLocus_inf {A₀ A₁ : EQuasinorm α} {x : α} :
+    x ∈ (A₀ ⊓ A₁).finiteLocus ↔ ‖x‖ₑ[A₀] < ∞ ∧ ‖x‖ₑ[A₁] < ∞ := by
+  change jNorm A₀ A₁ 1 x < ∞ ↔ _
+  rw [jNorm, one_mul, max_lt_iff]
+
 namespace FiniteLocus
 
 instance : Norm A.finiteLocus := ⟨(‖·‖ₑ[A].toReal)⟩

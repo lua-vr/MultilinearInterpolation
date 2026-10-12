@@ -278,30 +278,36 @@ every \(\nu \in \Z\). For \(\nu \notin I\) they hold because \(u_\nu = 0\) and
     \norm{y_\mu}{0} + 2^\mu \norm{z_\mu}{1} \le K_\mu(x) + \delta,
   \end{equation}
   and let \(u \colon \Z \to \alpha\) be given by Proposition~\ref{prop:split}. Put
-  \(E_{-N} = 2^{-N}\norm{x}{1}\), \(E_{N-1} = \norm{x}{0}\) and \(E_\nu = 0\) for the other
-  \(\nu \in \{-N, \dots, N-1\}\). Then for every \(\nu \in \{-N, \dots, N-1\}\),
+  \(E = 2^{-N}\norm{x}{1}\,\one_{\{-N\}} + \norm{x}{0}\,\one_{\{N-1\}}\). Then for every
+  \(\nu \in \Z\),
   \[
-    J_\nu(u_\nu) \le \max\bigl(K_{\nu+1}(x) + \delta,\ E_\nu\bigr).
+    J_\nu(u_\nu) \le K_{\nu+1}(x) + \delta\,\one_{\{-N, \dots, N-1\}}(\nu) + E_\nu .
   \]
 \end{lemma}
 
 \begin{proof}
-  Since \(N \ge 1\), the indices \(-N\) and \(N-1\) are distinct, so each \(\nu\) is
-  exceptional in at most one of the two entries of \(J_\nu(u_\nu)\). We bound both entries
-  by the right-hand side; solidity turns each modulus inequality of
-  Proposition~\ref{prop:split} into an inequality of quasinorms.
+  If \(\nu \notin \{-N, \dots, N-1\}\), then \(u_\nu = 0\), and \(J_\nu(0) = 0\) because
+  quasinorms vanish at \(0\). Let \(\nu \in \{-N, \dots, N-1\}\), so that the indicator
+  equals \(1\). We bound each of the two entries of
+  \(J_\nu(u_\nu) = \max\bigl(\norm{u_\nu}{0},\ 2^\nu\norm{u_\nu}{1}\bigr)\) by one summand of the
+  right-hand side; solidity turns each modulus inequality of Proposition~\ref{prop:split}
+  into an inequality of quasinorms.
 
   \emph{The entry \(\norm{u_\nu}{0}\).} If \(\nu \le N-2\), then by (a) and
   \eqref{eq:near-opt} at \(\mu = \nu+1\),
   \(\norm{u_\nu}{0} \le \norm{y_{\nu+1}}{0} \le K_{\nu+1}(x) + \delta\).
-  If \(\nu = N-1\), then by (c), \(\norm{u_\nu}{0} \le \norm{x}{0} = E_{N-1}\).
+  If \(\nu = N-1\), then by (c), \(\norm{u_\nu}{0} \le \norm{x}{0}\), which is the second
+  summand of \(E_{N-1}\).
 
   \emph{The entry \(2^\nu \norm{u_\nu}{1}\).} If \(\nu \ge -N+1\), then by (b),
   \eqref{eq:near-opt} at \(\mu = \nu\), and Lemma~\ref{lem:K-dyadic},
   \(2^\nu\norm{u_\nu}{1} \le 2^\nu\norm{z_\nu}{1} \le K_\nu(x) + \delta \le K_{\nu+1}(x) +
-  \delta\). If \(\nu = -N\), then by (c), \(2^{-N}\norm{u_\nu}{1} \le 2^{-N}\norm{x}{1} =
-  E_{-N}\).
+  \delta\). If \(\nu = -N\), then by (c), \(2^{-N}\norm{u_\nu}{1} \le 2^{-N}\norm{x}{1}\),
+  which is the first summand of \(E_{-N}\).
 \end{proof}
+
+In Lean this is \texttt{jNorm\_le\_kNorm\_add}, with the two indicator families of \(E\)
+written as \texttt{Pi.single}s.
 
 \section{The bound with \(2^\theta\)}
 
@@ -312,43 +318,37 @@ every \(\nu \in \Z\). For \(\nu \notin I\) they hold because \(u_\nu = 0\) and
 Fix \(x \in \Delta\), and put \(r = \min(q,1)\) and
 \(a_\mu = 2^{-\mu\theta} K_\mu(x)\) for \(\mu \in \Z\), so that
 \(\norm{a}{\ell^q} = \norm{x}{K}\). Fix \(N \ge 1\) and \(\delta > 0\), let \(u\) be as in
-Lemma~\ref{lem:pointwise}, and put
-\[
-  b_\nu = 2^{-\nu\theta} J_\nu(u_\nu) \quad (\nu \in \Z), \qquad
-  e_\nu = 2^{-\nu\theta} E_\nu \quad (\nu \in \{-N, \dots, N-1\}),
-\]
-and \(e_\nu = 0\) for the other \(\nu \in \Z\). The end terms are
+Lemma~\ref{lem:pointwise}, and put \(b_\nu = 2^{-\nu\theta} J_\nu(u_\nu)\) for \(\nu \in \Z\).
+The end terms are
 \[
   e_{-N} = 2^{N\theta} 2^{-N}\norm{x}{1} = 2^{-(1-\theta)N}\norm{x}{1},
   \qquad
-  e_{N-1} = 2^{-(N-1)\theta}\norm{x}{0}.
+  e_{N-1} = 2^{-(N-1)\theta}\norm{x}{0},
 \]
+so that \(2^{-\nu\theta}E_\nu = e_{-N}\one_{\{-N\}}(\nu) + e_{N-1}\one_{\{N-1\}}(\nu)\) for
+every \(\nu \in \Z\).
 Since \(u\) vanishes outside \(\{-N, \dots, N-1\}\) and \(\sum_{\nu \in \Z} u_\nu = x\), the
 family \(u\) is admissible in the definition of \(\cJ\), so \(\cJ(x) \le \norm{b}{\ell^q}\).
 
 \begin{lemma}\label{lem:termwise}
   For every \(\nu \in \Z\),
   \[
-    b_\nu \le 2^\theta a_{\nu+1} + \delta\, 2^{N\theta}\, \one_{\{-N, \dots, N-1\}}(\nu) + e_\nu .
+    b_\nu \le 2^\theta a_{\nu+1} + \delta\, 2^{N\theta}\, \one_{\{-N, \dots, N-1\}}(\nu)
+      + e_{-N}\one_{\{-N\}}(\nu) + e_{N-1}\one_{\{N-1\}}(\nu) .
   \]
 \end{lemma}
 
 \begin{proof}
-  Let \(\nu \in \{-N, \dots, N-1\}\). Bounding the maximum in Lemma~\ref{lem:pointwise} by the
-  sum gives \(J_\nu(u_\nu) \le K_{\nu+1}(x) + \delta + E_\nu\), and we multiply this by
-  \(2^{-\nu\theta}\). Since \(2^{-\nu\theta} = 2^\theta\, 2^{-(\nu+1)\theta}\), the first term
-  becomes \(2^\theta a_{\nu+1}\). Since \(\nu \ge -N\) and \(\theta > 0\), we have
-  \(2^{-\nu\theta} \le 2^{N\theta}\), which bounds the second term. The third term becomes
-  \(e_\nu\).
-
-  Let \(\nu \notin \{-N, \dots, N-1\}\). Then \(u_\nu = 0\), so
-  \(b_\nu = 2^{-\nu\theta} J_\nu(0) = 0\), because quasinorms vanish at \(0\).
+  Multiply the inequality of Lemma~\ref{lem:pointwise} by \(2^{-\nu\theta}\). Since
+  \(2^{-\nu\theta} = 2^\theta\, 2^{-(\nu+1)\theta}\), the first term becomes
+  \(2^\theta a_{\nu+1}\). The second term vanishes unless \(\nu \ge -N\), and then
+  \(\theta > 0\) gives \(2^{-\nu\theta} \le 2^{N\theta}\). The third term becomes
+  \(e_{-N}\one_{\{-N\}}(\nu) + e_{N-1}\one_{\{N-1\}}(\nu)\).
 \end{proof}
 
 The main term carries no indicator, so that Lemma~\ref{lem:lq-facts}(b) applies to it.
 
-Since \(N \ge 1\), the indices \(-N\) and \(N-1\) are distinct, so
-\(e = e_{-N}\one_{\{-N\}} + e_{N-1}\one_{\{N-1\}}\). By Lemma~\ref{lem:termwise} and
+By Lemma~\ref{lem:termwise} and
 Lemma~\ref{lem:lq-facts}(a) with \(c = 1\), \(\norm{b}{\ell^q}\) is at most the
 \(\ell^q\)-norm of the sum of the four families
 \[
@@ -367,28 +367,34 @@ Lemma~\ref{lem:lq-facts}(c), the norms of the other three are at most
     + e_{-N}^r + e_{N-1}^r .
 \end{equation}
 
-The left-hand side of \eqref{eq:fixed-N} depends on neither \(\delta\) nor \(N\). Fix \(N\)
-and let \(\delta \to 0\). Since \(2^{N\theta} (2N)^{1/q}\) is finite and \(r > 0\), the second
-term tends to \(0\), and since addition on \([0,\infty]\) is continuous,
+The left-hand side of \eqref{eq:fixed-N} depends on neither \(\delta\) nor \(N\), so
+\(\delta\) may be chosen depending on \(N\). For \(N \ge 1\) put
 \[
-  \cJ(x)^r \le 2^{\theta r}\norm{x}{K}^r + e_{-N}^r + e_{N-1}^r .
+  \delta_N = 2^{-N\theta} (2N)^{-1/q} N^{-1} ,
 \]
-Now let \(N \to \infty\). Since \(\theta < 1\) and \(\norm{x}{1} < \infty\), \(e_{-N} \to 0\);
-since \(\theta > 0\) and \(\norm{x}{0} < \infty\), \(e_{N-1} \to 0\). As \(r > 0\), their
-\(r\)-th powers tend to \(0\) as well. This gives
+which is positive because \(2^{N\theta} (2N)^{1/q}\) is finite. Then
+\(\delta_N\, 2^{N\theta} (2N)^{1/q} = N^{-1}\), and \eqref{eq:fixed-N} with
+\(\delta = \delta_N\) reads
+\[
+  \cJ(x)^r \le 2^{\theta r}\norm{x}{K}^r + N^{-r} + e_{-N}^r + e_{N-1}^r .
+\]
+Now let \(N \to \infty\). Since \(r > 0\), \(N^{-r} \to 0\). Since \(\theta < 1\) and
+\(\norm{x}{1} < \infty\), \(e_{-N} \to 0\); since \(\theta > 0\) and
+\(\norm{x}{0} < \infty\), \(e_{N-1} \to 0\). As \(r > 0\), their \(r\)-th powers tend to
+\(0\) as well. Since addition on \([0,\infty]\) is continuous, this gives
 \(\cJ(x)^r \le 2^{\theta r}\norm{x}{K}^r\), and taking \(r\)-th roots proves
 Proposition~\ref{prop:two-theta}.
 \qed
 
 \medskip
-The two limits are taken one after the other: \(\delta \to 0\) for fixed \(N\), then
-\(N \to \infty\). This is legitimate because \(\cJ(x)\) depends on neither, and the end terms
-do not depend on \(\delta\). No assumption \(\norm{x}{K} < \infty\) is needed, and no case
-distinction between \(q < \infty\) and \(q = \infty\). In Lean the first limit can be taken
-with \texttt{ge\_of\_tendsto'} along \(\delta = n^{-1}\), \(n \to \infty\)
-(\texttt{ENNReal.tendsto\_inv\_nat\_nhds\_zero}); in \([0,\infty]\), \(n^{-1} \ne 0\) also for
-\(n = 0\). The second limit needs \texttt{ge\_of\_tendsto} with
-\texttt{Filter.eventually\_ge\_atTop 1}, since \eqref{eq:fixed-N} holds only for \(N \ge 1\).
+No assumption \(\norm{x}{K} < \infty\) is needed, and no case distinction between
+\(q < \infty\) and \(q = \infty\). In Lean, \(\delta_N\) is not given by the formula above:
+\texttt{ENNReal.exists\_pos\_mul\_lt} gives some \(\delta_N > 0\) with
+\(\delta_N\, 2^{N\theta} (2N)^{1/q} < N^{-1}\), which avoids the algebra in \([0,\infty]\),
+and \texttt{choose} turns these into a sequence. The limit is taken with
+\texttt{ge\_of\_tendsto} and \texttt{Filter.eventually\_ge\_atTop 1}, since
+\eqref{eq:fixed-N} holds only for \(N \ge 1\); the term \(N^{-r}\) tends to \(0\) by
+\texttt{ENNReal.tendsto\_inv\_nat\_nhds\_zero}.
 
 \section{Symmetry, and the bound with \(2^{1-\theta}\)}
 
