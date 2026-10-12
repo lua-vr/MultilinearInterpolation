@@ -121,6 +121,24 @@ lemma enorm_fst_le_jNorm : ‖x‖ₑ[A₀] ≤ jNorm A₀ A₁ t x := le_max_le
 
 lemma mul_enorm_snd_le_jNorm : t * ‖x‖ₑ[A₁] ≤ jNorm A₀ A₁ t x := le_max_right ..
 
+@[simp, blueprint]
+lemma jNorm_zero (t : ℝ≥0∞) : A₀.jNorm A₁ t 0 = 0 := by
+  simp_rw [jNorm, EQuasinorm.enorm_zero, mul_zero, max_self]
+
+@[blueprint]
+lemma jNorm_add_le_mul (t : ℝ≥0∞) (x y : α) :
+    A₀.jNorm A₁ t (x + y) ≤ max A₀.C A₁.C * (A₀.jNorm A₁ t x + A₀.jNorm A₁ t y) :=
+  calc
+    max ‖x + y‖ₑ[A₀] (t * ‖x + y‖ₑ[A₁]) ≤
+      max (A₀.C * (‖x‖ₑ[A₀] + ‖y‖ₑ[A₀])) (A₁.C * (t * ‖x‖ₑ[A₁] + t * ‖y‖ₑ[A₁])) := by
+        rw [← mul_add t, mul_left_comm A₁.C t]
+        gcongr <;> apply enorm_add_le_mul
+    _ ≤ max A₀.C A₁.C * max (‖x‖ₑ[A₀] + ‖y‖ₑ[A₀]) (t * ‖x‖ₑ[A₁] + t * ‖y‖ₑ[A₁]) :=
+        max_mul_mul_le_max_mul_max'
+    _ ≤ max A₀.C A₁.C * (jNorm A₀ A₁ t x + jNorm A₀ A₁ t y) := by
+        gcongr
+        exact max_add_add_le_max_add_max
+
 lemma enorm_rpow_mul_enorm_rpow_le_jNorm (hθ₀ : 0 ≤ θ) (hθ₁ : θ ≤ 1) :
     t ^ θ * (‖x‖ₑ[A₀] ^ (1 - θ) * ‖x‖ₑ[A₁] ^ θ) ≤ jNorm A₀ A₁ t x :=
   calc
@@ -166,18 +184,8 @@ end jNorm
 def skewedInf (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨jNorm A₀ A₁ t⟩
   C := max A₀.C A₁.C
-  enorm_zero := by simp_rw [jNorm, EQuasinorm.enorm_zero, mul_zero, max_self]
-  enorm_add_le_mul x y := by
-    calc
-      max ‖x + y‖ₑ[A₀] (t * ‖x + y‖ₑ[A₁]) ≤
-        max (A₀.C * (‖x‖ₑ[A₀] + ‖y‖ₑ[A₀])) (A₁.C * (t * ‖x‖ₑ[A₁] + t * ‖y‖ₑ[A₁])) := by
-          rw [← mul_add t, mul_left_comm A₁.C t]
-          gcongr <;> apply enorm_add_le_mul
-      _ ≤ max A₀.C A₁.C * max (‖x‖ₑ[A₀] + ‖y‖ₑ[A₀]) (t * ‖x‖ₑ[A₁] + t * ‖y‖ₑ[A₁]) :=
-          max_mul_mul_le_max_mul_max'
-      _ ≤ max A₀.C A₁.C * (jNorm A₀ A₁ t x + jNorm A₀ A₁ t y) := by
-          gcongr
-          exact max_add_add_le_max_add_max
+  enorm_zero := jNorm_zero t
+  enorm_add_le_mul := jNorm_add_le_mul t
 
 /-- The minimum $`A₀ ⊓ A₁`, with norm $`J(t,1)`. -/
 @[blueprint]
@@ -217,7 +225,7 @@ lemma exists_decomp_lt_of_lt_kNorm {x : α} {b : ℝ≥0∞} (h : A₀.kNorm A�
 lemma kNorm_zero (t : ℝ≥0∞) : A₀.kNorm A₁ t 0 = 0 := by
   simpa using kNorm_le_of_decomp (add_zero (0 : α)).symm t
 
-@[simp, blueprint]
+@[blueprint]
 lemma kNorm_add_le_mul (t : ℝ≥0∞) (x y : α) :
     A₀.kNorm A₁ t (x + y) ≤ max A₀.C A₁.C * (A₀.kNorm A₁ t x + A₀.kNorm A₁ t y) := by
   suffices h : ∀ x₀ x₁, x = x₀ + x₁ → ∀ y₀ y₁, y = y₀ + y₁ →
@@ -277,7 +285,7 @@ lemma kNorm_swap_zpow (ν : ℤ) (x : α) :
 end kNorm
 
 /-- The supremum $`A₀ ⊔ A₁` equipped with the norm $`K(t,-)`. -/
-@[blueprint]
+@[simps, blueprint]
 def skewedSup (A₀ A₁ : EQuasinorm α) (t : ℝ≥0∞) : EQuasinorm α where
   enorm := ⟨kNorm A₀ A₁ t⟩
   C := max A₀.C A₁.C
