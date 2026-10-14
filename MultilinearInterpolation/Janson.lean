@@ -337,8 +337,6 @@ lemma jInfNorm_le_discreteKMethod [A.fst.IsSolid] [A.snd.IsSolid]
       ⟨sub_pos.2 hθ.2, sub_lt_self 1 hθ.1⟩ q x (finiteLocus_inf_comm A.fst A.snd ▸ hx)
     rwa [jInfNorm_swap, Couple.enorm_discreteKMethod_swap, sub_sub_cancel] at this
 
-#simp 2 + 2
-
 end Lemma1
 
 variable {ι : Type*} [Fintype ι] {α : ι → Type*} [∀ i, AddCommGroup (α i)] {β : Type*}
