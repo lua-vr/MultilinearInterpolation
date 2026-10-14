@@ -1,0 +1,498 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=2.8cm]{geometry}
+\emergencystretch=3em
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\abs}[1]{\lvert #1\rvert}
+\newcommand{\norm}[2]{\lVert #1\rVert_{#2}}
+\newcommand{\cJ}{\mathcal J}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\R}{\mathbb R}
+\newcommand{\one}{\mathbf 1}
+\newcommand{\upd}[3]{#1[#2 := #3]}
+
+\title{Janson's Lemma~2, direction (ii)\,\(\Rightarrow\)\,(i)\\
+\large (a proof plan for \texttt{mem\_\(\Omega\)\_of\_enorm\_le\_prod})}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Setting and statement}
+
+\paragraph{Quasinorms and moduli.}
+A quasinorm \(X\) on a commutative monoid \(\gamma\) is a map
+\(\norm{\cdot}{X}\colon \gamma \to [0,\infty]\) with \(\norm{0}{X} = 0\) and
+\(\norm{x+y}{X} \le C_X(\norm{x}{X} + \norm{y}{X})\) for a constant \(1 \le C_X < \infty\)
+(\texttt{EQuasinorm}, \(C_X\) = \texttt{X.C}). A modulus is a map
+\(\abs{\cdot}\colon\gamma\to M\) into a commutative monoid \(M\) with a preorder. It is
+\emph{decomposable} (\texttt{Modulus.IsDecomposable}) if \(\abs{0} = 0 \le \abs{x}\),
+\(\abs{x+y} \le \abs{x} + \abs{y}\), and \(\abs{x} \le \abs{y_0} + \abs{y_1}\) implies
+\(x = x_0 + x_1\) with \(\abs{x_j} \le \abs{y_j}\) and \(\abs{x_j} \le \abs{x}\). A quasinorm
+\(X\) is \emph{solid} (\texttt{IsSolid}) if \(\abs{x} \le \abs{y}\) implies
+\(\norm{x}{X} \le \norm{y}{X}\). Only transitivity of \(\le\) on \(M\) is available; in
+particular two inequalities in \(M\) cannot be added.
+
+\paragraph{The \(K\)- and \(J\)-functionals.}
+Let \(X = (X_0, X_1)\) be a couple of quasinorms on \(\gamma\) (\texttt{Couple}). For
+\(t \in [0,\infty]\) and \(x \in \gamma\),
+\[
+  K(t,x) = \inf_{x = x_0 + x_1}\bigl(\norm{x_0}{X_0} + t\norm{x_1}{X_1}\bigr)
+  \quad(\texttt{kNorm}),
+  \qquad
+  J(t,x) = \max\bigl(\norm{x}{X_0},\, t\norm{x}{X_1}\bigr)
+  \quad(\texttt{jNorm}),
+\]
+and \(\Delta(X) = \{x : \norm{x}{X_0} < \infty,\ \norm{x}{X_1} < \infty\}\), which is
+\texttt{X.inf.finiteLocus} by \texttt{mem\_finiteLocus\_inf}. For \(\theta \in \R\),
+\(q \in [0,\infty]\), \(\varphi\colon[0,\infty]\to[0,\infty]\) and
+\(f\colon\Z\to[0,\infty]\) put
+\begin{align*}
+  \Phi_{\theta,q}(\varphi) &= \bigl\lVert t \mapsto t^{-\theta}\varphi(t)\bigr\rVert_{L^q((0,\infty),\,dt/t)}
+  && (\texttt{phiFunctional}),\\
+  \Phi^{\Z}_{\theta,q}(f) &= \bigl\lVert k \mapsto 2^{-k\theta} f_k\bigr\rVert_{\ell^q(\Z)}
+  && (\texttt{discretePhiFunctional}).
+\end{align*}
+Both are defined through \texttt{eLpNorm}. The interpolation norms are
+\begin{align*}
+  \norm{x}{X_{\theta,q}} &= \Phi_{\theta,q}\bigl(K(\cdot,x)\bigr)
+  && (\texttt{X.kMethod}\ \theta\ q),\\
+  \norm{x}{X^{\Z}_{\theta,q}} &= \Phi^{\Z}_{\theta,q}\bigl(k \mapsto K(2^k,x)\bigr)
+  && (\texttt{X.discreteKMethod}\ \theta\ q),
+\end{align*}
+and the finite \(J\)-norm (\texttt{jInfNorm X \(\theta\) q x}) is
+\[
+  \cJ_{\theta,q}(x; X) = \inf\Bigl\{\Phi^{\Z}_{\theta,q}\bigl(k \mapsto J(2^k,u_k)\bigr)
+  : u\colon\Z\to\gamma \text{ finitely supported},\ \textstyle\sum_k u_k = x\Bigr\}.
+\]
+We call such \(u\) an \emph{admissible decomposition} of \(x\), and the value of
+\(\Phi^{\Z}_{\theta,q}\) its \emph{cost}.
+
+\paragraph{The data.}
+Let \(\iota\) be a finite type. For \(i\in\iota\) let \(\alpha_i\) be a commutative group with a
+decomposable modulus and \(A_i = (A_{i0}, A_{i1})\) a couple of solid quasinorms on
+\(\alpha_i\) (\texttt{A i}). Let \(\beta\) be a commutative monoid with a modulus
+\(\abs{\cdot}\colon\beta\to M\) and \(B = (B_0, B_1)\) a couple of quasinorms on \(\beta\).
+For \(f \in \prod_i\alpha_i\), \(i\in\iota\) and \(x\in\alpha_i\), write \(\upd{f}{i}{x}\) for
+\texttt{Function.update f i x}. The map \(T\colon\prod_i\alpha_i\to\beta\) is
+\emph{multisubadditive} (\texttt{MultisubadditiveMap}):
+\[
+  \abs{T(\upd{f}{i}{x+y})} \le \abs{T(\upd{f}{i}{x})} + \abs{T(\upd{f}{i}{y})}.
+\]
+For finite sets \(s_i\subseteq\kappa_i\), \(\prod_i s_i\) denotes the finite set of
+\(k\in\prod_i\kappa_i\) with \(k_i\in s_i\) for all \(i\) (\texttt{Fintype.piFinset s}).
+Fix reals \(\alpha_0\) and \((\alpha_i)_{i\in\iota}\) (\texttt{c\(\alpha_0\)}, \texttt{c\(\alpha\)}),
+and for \(\theta\in\R^\iota\) put \(\theta_0 = \alpha_0 + \sum_i \alpha_i\theta_i\).
+
+\begin{definition}[\(\Omega\), corrected]\label{def:Omega}
+  \(\theta\in\Omega\) if \(\theta_0 \ge 0\) and there are \(q_0, q_i \in (0,\infty]\) and
+  \(C<\infty\) with
+  \[
+    \norm{Ta}{B_{\theta_0,q_0}} \le C\prod_i \norm{a_i}{(A_i)_{\theta_i,q_i}}
+    \quad\text{whenever } a_i\in\Delta(A_i) \text{ and } \norm{a_i}{(A_i)_{\theta_i,q_i}} < \infty
+    \text{ for all } i.
+  \]
+\end{definition}
+
+The Lean definition \texttt{\(\Omega\)} differs only in that it allows \(q_0 = 0\) and
+\(q_i = 0\); Remark~\ref{rem:q0} shows that this must be changed.
+
+\begin{theorem}\label{thm:main}
+  Assume moreover that the modulus of \(\beta\) is decomposable and that \(B_0, B_1\) are solid.
+  Let \(\theta\in(0,1)^\iota\) with \(\theta_0\ge0\), and let \(C<\infty\) satisfy
+  \begin{equation}\label{eq:ii}
+    \norm{Ta}{B_{\theta_0,\infty}} \le C\prod_i \norm{a_i}{A_{i0}}^{1-\theta_i}\norm{a_i}{A_{i1}}^{\theta_i}
+    \qquad\Bigl(a\in\prod_i\Delta(A_i)\Bigr). \tag{ii}
+  \end{equation}
+  Let \(C_B\) be the constant of \(B_{\theta_0,\infty}\) and \(p>0\) with \((2C_B)^p = 2\).
+  Then there are constants \(D_i<\infty\), depending only on \(A_i\), \(\theta_i\) and \(p\), with
+  \[
+    \norm{Ta}{B_{\theta_0,\infty}} \le 2^{1/p}\, C \prod_i 2D_i\,\norm{a_i}{(A_i)_{\theta_i,p}}
+    \qquad\Bigl(a\in\prod_i\Delta(A_i)\Bigr).
+  \]
+  In particular \(\theta\in\Omega\), with \(q_0 = \infty\) and \(q_i = p\).
+\end{theorem}
+
+\paragraph{Idea of the proof.}
+This is Janson's argument (p.~295 of his paper). Decompose each \(a_i\) by a finite
+\(J\)-decomposition, expand \(Ta\) by multisubadditivity into a sum over tuples of pieces,
+bound each term by (ii) and by \(\norm{x}{0}^{1-\theta}\norm{x}{1}^{\theta} \le
+2^{-k\theta}J(2^k,x)\), and sum the \(p\)-th powers (Aoki--Rolewicz). The sum over tuples of
+a product factors into a product of \(\ell^p\)-sums. Janson's Lemma~1
+(\texttt{jInfNorm\_le\_discreteKMethod}) then replaces \(\cJ\) by the discrete \(K\)-norm.
+
+Two steps need more care than in Janson's two lines. First, \(M\) has no ordered addition and
+\(B_{\theta_0,\infty}\) has constant \(C_B \ge 1\), so the expansion of \(Ta\) has to produce
+a decomposition \(Ta = \sum_k w_k\) of the element itself (Lemma~\ref{lem:A2}); only then can
+Aoki--Rolewicz be applied to a single finite sum. Second, (ii) is available only on
+\(\prod_i\Delta(A_i)\), so the infimum over decompositions is taken over decompositions of
+finite cost only (Lemma~\ref{lem:F}).
+
+\section{Remarks on the statement}
+
+\begin{remark}[\(q_0 = 0\)]\label{rem:q0}
+  In the Lean definition of \(\Omega\) the exponent \(q_0\) may be \(0\). For \(q = 0\),
+  \texttt{eLpNorm} returns \(0\) on a.e.\ strongly measurable functions
+  (\texttt{eLpNorm\_exponent\_zero}). The integrand \(t\mapsto t^{-\theta}K(t,x)\) is
+  measurable because \(t\mapsto K(t,x)\) is monotone (\texttt{monotone\_kNorm},
+  \texttt{Monotone.measurable}). Hence \(\norm{x}{B_{\theta_0,0}} = 0\) for every \(x\), the
+  boundedness condition holds with \(C = 0\), and the current \texttt{\(\Omega\)} equals
+  \(\{\theta : \theta_0 \ge 0\}\). Then \texttt{mem\_\(\Omega\)\_of\_enorm\_le\_prod} is trivial
+  and \texttt{convex\_\(\Omega\)} says nothing. The fix is to require \(q_0 \ne 0\), as in
+  Janson (\(q\in(0,\infty]\)). The direction (i)\,\(\Rightarrow\)\,(ii) needs it as well,
+  because it uses \(\norm{\cdot}{B_{\theta_0,\infty}} \lesssim \norm{\cdot}{B_{\theta_0,q_0}}\).
+  Requiring \(q_i\ne0\) matches Janson. It is not needed for soundness, since \(q_i = 0\) only
+  makes the bound harder to satisfy.
+\end{remark}
+
+\begin{remark}[ranges of \(\theta\)]
+  Without \(\theta_0 \ge 0\) the theorem is false: \(T = 0\) satisfies (ii) for every
+  \(\theta\). In Janson, condition (ii) contains \(\theta_0\in[0,1]\). The restriction
+  \(\theta_i\in(0,1)\) is needed by \texttt{jInfNorm\_le\_discreteKMethod}. At
+  \(\theta_i\in\{0,1\}\), Janson uses the convention \(A_{i,0,q} = A_{i0}\), which differs
+  from the project's \texttt{kMethod}. Lemma~\ref{lem:C} and Proposition~\ref{prop:E} hold for
+  \(\theta_i\in[0,1]\).
+\end{remark}
+
+\begin{remark}[solidity of \(B\)]
+  Without solidity of \(B_0, B_1\), multisubadditivity in \(M\) says nothing about
+  \(\norm{T\cdot}{}\), and the theorem fails.
+\end{remark}
+
+\begin{example}
+  Let \(\iota\) be a singleton, \(\theta\in(0,1)\), \(\alpha_0 = 0\) and \(\alpha_1 = 1\), so
+  that \(\theta_0 = \theta\).
+  \begin{itemize}
+    \item Let \(\alpha\) be the measurable real functions on \((0,1]\) modulo a.e.\ equality,
+      with the pointwise modulus, \(A_0 = L^1\) and \(A_1 = L^\infty\) (extended norms). Both
+      are solid.
+    \item Let \(\beta = \R\) with \(B_0 = B_1 = \abs{\cdot}\) (absolute value), and the
+      modulus \(\mu\colon\R\to[0,\infty]\), \(\mu(0) = 0\) and \(\mu(x) = \infty\) for
+      \(x\ne0\). It is decomposable. Indeed, \(\mu(x+y)\le\mu(x)+\mu(y)\) because
+      \(x+y\ne0\) forces \(x\ne0\) or \(y\ne0\). If \(\mu(x)\le\mu(y_0)+\mu(y_1)\) and
+      \(x\ne0\), then some \(y_j\), say \(y_0\), is nonzero, and \(x = x + 0\) has the four
+      required properties. If \(x = 0\), take \(0+0\). The absolute value is not solid for
+      \(\mu\): \(\mu(1) = \mu(2)\) but \(1<2\).
+    \item Let \(G(a) = \norm{a}{1}^{1-\theta}\norm{a}{\infty}^{\theta}\) and \(T(a) = G(a)\)
+      if \(G(a)<\infty\), \(T(a) = 1\) otherwise. For \(a\ne0\) both norms are positive, so
+      \(T(a)\ne0\); and \(T(0) = 0\). Hence \(\mu(T(a))\) is \(\infty\) for \(a\ne0\) and
+      \(0\) for \(a = 0\). So \(T\) is subadditive for \(\mu\), because \(a+b\ne0\) forces
+      \(a\ne0\) or \(b\ne0\).
+  \end{itemize}
+  For \(x\in\R\) we have \(K(t,x;B) = \min(1,t)\abs{x}\), so
+  \(\norm{x}{B_{\theta,q_0}} = c_{q_0}\abs{x}\) with
+  \(c_{q_0} = \Phi_{\theta,q_0}(\min(1,\cdot))\in(0,\infty)\) for \(q_0\in(0,\infty]\), and
+  \(c_\infty = 1\). On \(\Delta = L^1\cap L^\infty\), \(G\) is finite, so (ii) holds with
+  \(C = 1\). Now let \(f_\varepsilon = x^{\theta-1}\one_{[\varepsilon,1]}\). Then
+  \(\norm{f_\varepsilon}{1} = (1-\varepsilon^\theta)/\theta\) and
+  \(\norm{f_\varepsilon}{\infty} = \varepsilon^{\theta-1}\), so
+  \(G(f_\varepsilon) \sim \theta^{\theta-1}\varepsilon^{-\theta(1-\theta)}\). On the other
+  hand, splitting \(f_\varepsilon\) at height \(t^{\theta-1}\) gives
+  \(K(t,f_\varepsilon) \le (1+1/\theta)t^\theta\). Together with
+  \(K(t,f_\varepsilon)\le\norm{f_\varepsilon}{1}\le1/\theta\) and
+  \(K(t,f_\varepsilon)\le t\varepsilon^{\theta-1}\), this gives
+  \(\norm{f_\varepsilon}{\theta,q_1} = O(\log(1/\varepsilon)^{1/q_1})\). So
+  \(\norm{Tf_\varepsilon}{B_{\theta,q_0}}/\norm{f_\varepsilon}{\theta,q_1}\to\infty\) for all
+  \(q_0,q_1\in(0,\infty]\), and \(\theta\notin\Omega\).
+\end{example}
+
+\section{Auxiliary lemmas}
+
+\begin{lemma}[Aoki--Rolewicz for finite sums]\label{lem:B}
+  Let \(X\) be a quasinorm on a commutative monoid and \(p>0\) with \((2C_X)^p = 2\). For
+  every finite family \((w_j)_{j\in s}\),
+  \(\norm{\sum_{j\in s} w_j}{X}^p \le 2\sum_{j\in s}\norm{w_j}{X}^p\).
+\end{lemma}
+
+\begin{proof}
+  This is \texttt{enorm\_sum\_rpow\_le\_two\_mul\_sum} in \texttt{Scratches/AokiRolewicz.lean}.
+  It is inequality~(5) of Bergh--L\"ofstr\"om, Lemma~3.10.1, which rests on
+  \(\norm{x+y}{X}^p \le 2\max(\norm{x}{X}^p,\norm{y}{X}^p)\).
+\end{proof}
+
+\begin{lemma}\label{lem:p}
+  For \(1\le C<\infty\) there is \(p>0\) with \((2C)^p = 2\).
+\end{lemma}
+
+\begin{proof}
+  Put \(r = 2C\in[2,\infty)\) and \(p = \log_r 2\). Then \(p>0\) because \(r>1\) and \(2>1\),
+  and \(r^p = 2\) by the definition of the logarithm.
+\end{proof}
+
+\begin{lemma}\label{lem:C}
+  Let \(X\) be a couple, \(\theta\in[0,1]\), \(k\in\Z\) and \(x\in\gamma\). Then
+  \(\norm{x}{X_0}^{1-\theta}\norm{x}{X_1}^{\theta} \le 2^{-k\theta}J(2^k,x)\).
+\end{lemma}
+
+\begin{proof}
+  Put \(t = 2^k\in(0,\infty)\). Since \(\norm{x}{X_0}\le J(t,x)\) and
+  \(t\norm{x}{X_1}\le J(t,x)\),
+  \[
+    t^\theta\norm{x}{X_0}^{1-\theta}\norm{x}{X_1}^{\theta}
+    = \norm{x}{X_0}^{1-\theta}\bigl(t\norm{x}{X_1}\bigr)^{\theta}
+    \le J(t,x)^{1-\theta}J(t,x)^{\theta} = J(t,x).
+  \]
+  Multiplying by \(t^{-\theta} = 2^{-k\theta}\) gives the claim.
+\end{proof}
+
+\begin{lemma}\label{lem:D}
+  Let \(0<p<\infty\), \(f\colon\Z\to[0,\infty]\) and \(s\subseteq\Z\) finite. Then
+  \(\sum_{k\in s}(2^{-k\theta}f_k)^p \le \Phi^{\Z}_{\theta,p}(f)^p\).
+\end{lemma}
+
+\begin{proof}
+  For \(0<p<\infty\), \(\Phi^{\Z}_{\theta,p}(f)^p = \sum_{k\in\Z}(2^{-k\theta}f_k)^p\). A
+  finite partial sum of a series with terms in \([0,\infty]\) is at most the full sum.
+\end{proof}
+
+\begin{corollary}\label{cor:D}
+  If \(0<p<\infty\) and \(\Phi^{\Z}_{\theta,p}(f)<\infty\), then \(f_k<\infty\) for every
+  \(k\in\Z\).
+\end{corollary}
+
+\begin{proof}
+  By Lemma~\ref{lem:D} with \(s = \{k\}\), \((2^{-k\theta}f_k)^p<\infty\). Since \(p>0\) and
+  \(2^{-k\theta}\ne0\), \(f_k<\infty\).
+\end{proof}
+
+The next two lemmas expand \(Ta\). Since \(M\) has no ordered addition, one cannot first bound
+\(\abs{T(\sum\cdots)}\) by a sum in \(M\) and decompose afterwards. Also,
+\texttt{exists\_decomp} only splits along two moduli of elements of \(\beta\). So the element
+\(z\) is decomposed along with the induction. The nonemptiness assumptions are needed because
+nothing is known about \(T\) at \(0\).
+
+\begin{lemma}[one coordinate]\label{lem:A1}
+  Assume the modulus of \(\beta\) is decomposable. Let \(f\in\prod_i\alpha_i\),
+  \(i\in\iota\), \(t\subseteq\kappa\) finite and nonempty, \(v\colon\kappa\to\alpha_i\), and
+  \(z\in\beta\) with \(\abs{z}\le\abs{T(\upd{f}{i}{\sum_{a\in t}v_a})}\). Then
+  \(z = \sum_{a\in t}z_a\) with \(\abs{z_a}\le\abs{T(\upd{f}{i}{v_a})}\) for \(a\in t\).
+\end{lemma}
+
+\begin{proof}
+  By induction on the nonempty set \(t\). If \(t = \{a\}\), take \(z_a = z\). Otherwise
+  \(t = \{a\}\cup t'\) with \(a\notin t'\) and \(t'\) nonempty. Then
+  \(\sum_t v = v_a + \sum_{t'}v\), and multisubadditivity together with transitivity gives
+  \[
+    \abs{z} \le \abs{T(\upd{f}{i}{v_a})} + \abs{T(\upd{f}{i}{\textstyle\sum_{t'}v})}.
+  \]
+  By decomposability, \(z = z_a + z'\) with \(\abs{z_a}\le\abs{T(\upd{f}{i}{v_a})}\) and
+  \(\abs{z'}\le\abs{T(\upd{f}{i}{\sum_{t'}v})}\). The induction hypothesis applied to
+  \(z'\) and \(t'\) gives \(z' = \sum_{b\in t'}z_b\) with the required bounds, so
+  \(z = \sum_{b\in t}z_b\).
+\end{proof}
+
+\begin{lemma}[all coordinates]\label{lem:A2}
+  Assume the modulus of \(\beta\) is decomposable. Let \(s_i\subseteq\kappa_i\) be finite and
+  nonempty, \(u_i\colon\kappa_i\to\alpha_i\), and \(z\in\beta\) with
+  \(\abs{z}\le\abs{T(i\mapsto\sum_{k\in s_i}u_{i,k})}\). Then there is
+  \(w\colon\prod_i\kappa_i\to\beta\) with
+  \[
+    z = \sum_{k\in\prod_i s_i} w_k
+    \qquad\text{and}\qquad
+    \abs{w_k}\le\abs{T(i\mapsto u_{i,k_i})}\quad\Bigl(k\in\prod_i s_i\Bigr).
+  \]
+\end{lemma}
+
+\begin{proof}
+  For \(S\subseteq\iota\) let \(P(S)\) be the statement: for every family \((t_i)\) of
+  nonempty finite sets \(t_i\subseteq\kappa_i\) such that \(t_i\) is a singleton for
+  \(i\notin S\), and every \(z\) with \(\abs{z}\le\abs{T(i\mapsto\sum_{t_i}u_i)}\), the
+  conclusion holds with \(t\) in place of \(s\). The lemma is \(P(\iota)\). We prove \(P(S)\)
+  by induction on \(S\).
+
+  If \(S = \emptyset\), then \(t_i = \{c_i\}\) for all \(i\), so \(\prod_i t_i = \{c\}\), the
+  hypothesis reads \(\abs{z}\le\abs{T(i\mapsto u_{i,c_i})}\), and \(w_c = z\) works.
+
+  Let \(j\notin S\), assume \(P(S)\), and let \(t\) be singletons outside \(S\cup\{j\}\). Put
+  \(f = (i\mapsto\sum_{t_i}u_i)\), so that \(f = \upd{f}{j}{\sum_{a\in t_j}u_{j,a}}\).
+  Lemma~\ref{lem:A1} at the coordinate \(j\) gives \(z = \sum_{a\in t_j}z_a\) with
+  \(\abs{z_a}\le\abs{T(\upd{f}{j}{u_{j,a}})}\). For \(a\in t_j\) let
+  \(t^a = \upd{t}{j}{\{a\}}\). Then \(\upd{f}{j}{u_{j,a}} = (i\mapsto\sum_{t^a_i}u_i)\), and
+  \(t^a_i\) is a singleton for \(i\notin S\). So \(P(S)\) gives \(w^a\) with
+  \(z_a = \sum_{k\in\prod t^a}w^a_k\) and the required bounds. Now
+  \(\prod_i t^a_i = \{k\in\prod_i t_i : k_j = a\}\), and these sets partition \(\prod_i t_i\)
+  as \(a\) ranges over \(t_j\). Put \(w_k = w^{k_j}_k\). Summing over the fibres of
+  \(k\mapsto k_j\),
+  \[
+    \sum_{k\in\prod t}w_k = \sum_{a\in t_j}\ \sum_{k\in\prod t,\ k_j = a}w^a_k
+    = \sum_{a\in t_j}z_a = z,
+  \]
+  and for \(k\in\prod t\) we have \(k\in\prod t^{k_j}\), hence
+  \(\abs{w_k}\le\abs{T(i\mapsto u_{i,k_i})}\).
+\end{proof}
+
+\begin{lemma}\label{lem:F}
+  Let \(f_i\colon\kappa_i\to[0,\infty]\) for \(i\in\iota\), each taking at least one finite
+  value. Let \(K<\infty\) and \(a\in[0,\infty]\) satisfy \(a\le K\prod_i f_i(g_i)\) for every
+  \(g\in\prod_i\kappa_i\) with \(f_i(g_i)<\infty\) for all \(i\). Then
+  \(a\le K\prod_i\inf_j f_i(j)\).
+\end{lemma}
+
+\begin{proof}
+  Let \(m_i = \inf_j f_i(j)\). Infinite values do not lower the infimum and a finite value
+  exists, so \(m_i\) is the infimum of the finite values of \(f_i\), and \(m_i<\infty\).
+  Choose \(g^n_i\) with \(f_i(g^n_i)<\infty\) and \(f_i(g^n_i)\to m_i\). Multiplication on
+  \([0,\infty]\) is continuous at pairs of finite numbers, and all \(m_i\) and \(K\) are
+  finite, so \(K\prod_i f_i(g^n_i)\to K\prod_i m_i\). Since \(a\le K\prod_i f_i(g^n_i)\) for
+  every \(n\), the claim follows.
+\end{proof}
+
+The finiteness of the limits matters. An algebraic induction based on
+\(a\le(\inf_i f_i)(\inf_j g_j)\) runs into \(\infty\cdot0 = 0\) at tuples where one factor
+is infinite, and those are exactly the tuples where (ii) is not available.
+
+\begin{lemma}\label{lem:solid}
+  Let \(X_0, X_1\) be solid quasinorms on \(\gamma\) for a decomposable modulus. Then
+  \(X_{\theta,q}\) is solid for all \(\theta, q\).
+\end{lemma}
+
+\begin{proof}
+  Let \(\abs{x}\le\abs{y}\) and \(t\in[0,\infty]\). For every decomposition
+  \(y = y_0 + y_1\), \(\abs{x}\le\abs{y}\le\abs{y_0}+\abs{y_1}\), so decomposability gives
+  \(x = x_0 + x_1\) with \(\abs{x_j}\le\abs{y_j}\). By solidity,
+  \(K(t,x)\le\norm{x_0}{X_0} + t\norm{x_1}{X_1}\le\norm{y_0}{X_0} + t\norm{y_1}{X_1}\), and
+  taking the infimum gives \(K(t,x)\le K(t,y)\). The function \(t\mapsto K(t,x)\) is monotone,
+  hence measurable, and \(\Phi_{\theta,q}\) is monotone on measurable functions. Hence
+  \(\norm{x}{X_{\theta,q}}\le\norm{y}{X_{\theta,q}}\).
+\end{proof}
+
+\section{The key estimate}
+
+\begin{proposition}\label{prop:E}
+  Assume the modulus of \(\beta\) is decomposable and \(B_0, B_1\) are solid. Let
+  \(\theta\in[0,1]^\iota\), assume (ii) with constant \(C<\infty\), and let \(p>0\) with
+  \((2C_B)^p = 2\). Then for all \(a\in\prod_i\Delta(A_i)\),
+  \[
+    \norm{Ta}{B_{\theta_0,\infty}} \le 2^{1/p}\,C\prod_i\cJ_{\theta_i,p}(a_i;A_i).
+  \]
+\end{proposition}
+
+\begin{proof}
+  \emph{Step 1: one choice of decompositions.} For each \(i\) let \(u_i\colon\Z\to\alpha_i\) be
+  an admissible decomposition of \(a_i\) with finite cost
+  \(c_i = \Phi^{\Z}_{\theta_i,p}(k\mapsto J(2^k,u_{i,k}))\). We show
+  \begin{equation}\label{eq:fixed-u}
+    \norm{Ta}{B_{\theta_0,\infty}} \le 2^{1/p}\,C\prod_i c_i .
+  \end{equation}
+  By Corollary~\ref{cor:D}, \(J(2^k,u_{i,k})<\infty\) for every \(k\). Since
+  \(\norm{u_{i,k}}{A_{i0}}\le J(2^k,u_{i,k})\) and
+  \(2^k\norm{u_{i,k}}{A_{i1}}\le J(2^k,u_{i,k})\) with \(2^k>0\), every \(u_{i,k}\) lies in
+  \(\Delta(A_i)\).
+
+  Let \(s_i\) be the support of \(u_i\) together with \(0\). It is finite and nonempty, and
+  \(\sum_{k\in s_i}u_{i,k} = a_i\). Lemma~\ref{lem:A2} with \(z = Ta\) gives
+  \(Ta = \sum_{k\in\prod_i s_i}w_k\) with \(\abs{w_k}\le\abs{Tu_k}\), where
+  \(u_k = (u_{i,k_i})_i\in\prod_i\Delta(A_i)\). With all sums over \(k\in\prod_i s_i\),
+  \begin{align*}
+    \norm{Ta}{B_{\theta_0,\infty}}^p
+    &\le 2\sum_k\norm{w_k}{B_{\theta_0,\infty}}^p
+    && \text{(Lemma~\ref{lem:B})}\\
+    &\le 2\sum_k\norm{Tu_k}{B_{\theta_0,\infty}}^p
+    && \text{(Lemma~\ref{lem:solid})}\\
+    &\le 2C^p\sum_k\prod_i\bigl(\norm{u_{i,k_i}}{A_{i0}}^{1-\theta_i}\norm{u_{i,k_i}}{A_{i1}}^{\theta_i}\bigr)^p
+    && \text{((ii), as } u_k\in\textstyle\prod_i\Delta(A_i))\\
+    &\le 2C^p\sum_k\prod_i\bigl(2^{-k_i\theta_i}J(2^{k_i},u_{i,k_i})\bigr)^p
+    && \text{(Lemma~\ref{lem:C})}\\
+    &= 2C^p\prod_i\sum_{k\in s_i}\bigl(2^{-k\theta_i}J(2^{k},u_{i,k})\bigr)^p
+    && \text{(distributivity)}\\
+    &\le 2C^p\prod_i c_i^p
+    && \text{(Lemma~\ref{lem:D}).}
+  \end{align*}
+  Taking \(p\)-th roots gives \eqref{eq:fixed-u}.
+
+  \emph{Step 2: the infimum.} For each \(i\), let \(f_i(u)\) be the cost of \(u\) if \(u\) is
+  an admissible decomposition of \(a_i\), and \(\infty\) otherwise; then
+  \(\inf_u f_i(u) = \cJ_{\theta_i,p}(a_i;A_i)\). The decomposition with \(u_0 = a_i\) and
+  \(u_k = 0\) for \(k\ne0\) has cost \(J(1,a_i)\), which is finite since
+  \(a_i\in\Delta(A_i)\). By Step~1, the hypothesis of Lemma~\ref{lem:F} holds with
+  \(a = \norm{Ta}{B_{\theta_0,\infty}}\) and \(K = 2^{1/p}C<\infty\), and the lemma gives the
+  claim.
+\end{proof}
+
+\section{Proof of Theorem~\ref{thm:main}}
+
+Since \(1\le C_B<\infty\), Lemma~\ref{lem:p} provides \(p\). Let
+\(a\in\prod_i\Delta(A_i)\). Proposition~\ref{prop:E} gives
+\(\norm{Ta}{B_{\theta_0,\infty}}\le2^{1/p}C\prod_i\cJ_{\theta_i,p}(a_i;A_i)\). Since
+\(\theta_i\in(0,1)\), \(a_i\in\Delta(A_i)\) and \(A_{i0}, A_{i1}\) are solid,
+\texttt{jInfNorm\_le\_discreteKMethod} gives
+\[
+  \cJ_{\theta_i,p}(a_i;A_i)\le2^{\min(\theta_i,1-\theta_i)}\norm{a_i}{(A_i)^{\Z}_{\theta_i,p}}
+  \le2\norm{a_i}{(A_i)^{\Z}_{\theta_i,p}}.
+\]
+By \texttt{discreteKMethod\_equiv\_kmethod} there is \(D_i<\infty\) with
+\(\norm{x}{(A_i)^{\Z}_{\theta_i,p}}\le D_i\norm{x}{(A_i)_{\theta_i,p}}\) for all \(x\). This is the
+half \texttt{.ge} of the equivalence, since \(X\le Y\) means
+\(\exists D<\infty,\ \forall x,\ \norm{x}{Y}\le D\norm{x}{X}\). Combining the three bounds
+proves the inequality of the theorem. Its constant is finite, \(q_0 = \infty\) and
+\(q_i = p\) are nonzero, and \(\theta_0\ge0\). So \(\theta\in\Omega\). \qed
+
+\medskip
+The bound holds on all of \(\prod_i\Delta(A_i)\), without
+\(\norm{a_i}{(A_i)_{\theta_i,p}}<\infty\). The hypothesis \(\alpha_i\ne0\)
+(\texttt{h\(\alpha\)}) is not used.
+
+\section{Lean plan}
+\raggedright
+
+\paragraph{Statement changes.}
+\begin{itemize}
+  \item \texttt{\(\Omega\)}: add \texttt{q\(_0\) \(\ne\) 0 \(\wedge\) \(\forall\) i, q i \(\ne\) 0}.
+  \item \texttt{mem\_\(\Omega\)\_of\_enorm\_le\_prod} (and \texttt{mem\_\(\Omega\)\_iff}): add
+    \texttt{(h\(\theta\) : \(\forall\) i, \(\theta\) i \(\in\) Ioo 0 1)},
+    \texttt{(h\(\theta_0\) : 0 \(\le\) c\(\alpha_0\) + \(\sum\) i, c\(\alpha\) i * \(\theta\) i)} and
+    \texttt{[Modulus.IsDecomposable \(\beta\) M] [B.fst.IsSolid] [B.snd.IsSolid]}.
+\end{itemize}
+
+\paragraph{New declarations} (suggested names).
+\begin{itemize}
+  \item Lemma~\ref{lem:B}: move the \texttt{Dyadic} section and
+    \texttt{enorm\_add\_rpow\_le\_two\_mul\_max}, \texttt{enorm\_sum\_rpow\_le\_of\_weights},
+    \texttt{enorm\_sum\_rpow\_le\_two\_mul\_sum} from \texttt{Scratches/AokiRolewicz.lean} (not
+    built, not a \texttt{module}) into \texttt{MultilinearInterpolation/AokiRolewicz.lean}.
+  \item Lemma~\ref{lem:p}: \texttt{EQuasinorm.exists\_rpow\_two\_mul\_C\_eq\_two}, next to
+    \texttt{pos\_of\_rpow\_two\_mul\_C\_eq\_two}. Uses \texttt{Real.logb\_pos},
+    \texttt{Real.rpow\_logb}, \texttt{ENNReal.ofReal\_rpow\_of\_pos},
+    \texttt{ENNReal.ofReal\_toReal}. (The \texttt{C\_eq\_rpow\_iff} cited in the scratch
+    docstring does not exist.)
+  \item Lemma~\ref{lem:C}: no new lemma. Use
+    \texttt{enorm\_rpow\_mul\_enorm\_rpow\_le\_rpow\_neg\_mul\_jNorm} with \(t = 2^k\) and
+    \texttt{ENNReal.rpow\_intCast\_mul}.
+  \item Lemma~\ref{lem:D}: general form
+    \(\sum_{k\in s}\norm{g_k}{}^{p} \le (\texttt{eLpNorm}\ g\ p\ \texttt{count})^{p}\) in the
+    project's \texttt{Mathlib/\dots/LpSeminorm/Count.lean}, via
+    \texttt{eLpNorm\_eq\_lintegral\_rpow\_enorm\_toReal}, \texttt{ENNReal.rpow\_inv\_rpow},
+    \texttt{lintegral\_count}, \texttt{ENNReal.sum\_le\_tsum}.
+  \item Lemma~\ref{lem:A1}: \texttt{MultisubadditiveMap.exists\_sum\_eq\_of\_modulus\_le\_update};
+    \texttt{Finset.Nonempty.cons\_induction}, \texttt{Finset.sum\_cons},
+    \texttt{Modulus.IsDecomposable.exists\_decomp}.
+  \item Lemma~\ref{lem:A2}: \texttt{MultisubadditiveMap.exists\_sum\_eq\_of\_modulus\_le};
+    \texttt{Finset.induction\_on}, \texttt{Fintype.piFinset\_singleton},
+    \texttt{Fintype.piFinset\_update\_singleton\_eq\_filter\_piFinset\_eq},
+    \texttt{Finset.sum\_fiberwise\_of\_maps\_to}. Needs
+    \texttt{[\(\forall\) i, DecidableEq (\(\kappa\) i)]}. The hard step is identifying
+    \(\upd{f}{j}{u_{j,a}}\) with the sum over \(t^a\) (dependent \texttt{Function.update}).
+  \item Lemma~\ref{lem:F}: e.g.\ \texttt{ENNReal.le\_mul\_prod\_iInf}; via
+    \texttt{iInf\_ne\_top\_subtype}, \texttt{exists\_seq\_tendsto\_sInf},
+    \texttt{ENNReal.tendsto\_finsetProd\_of\_ne\_top}, \texttt{ge\_of\_tendsto'}.
+  \item Lemma~\ref{lem:solid}: \texttt{phiFunctional\_mono} (via \texttt{eLpNorm\_mono\_enorm},
+    measurability from \texttt{Monotone.measurable}) and an instance
+    \texttt{IsSolid.kMethod} (via \texttt{kNorm\_le\_kNorm\_of\_modulus\_le},
+    \texttt{monotone\_kNorm}).
+  \item Proposition~\ref{prop:E}: e.g.\ \texttt{enorm\_le\_mul\_prod\_jInfNorm}; also uses
+    \texttt{mem\_finiteLocus\_inf}, \texttt{finsum\_eq\_sum\_of\_support\_subset},
+    \texttt{Finset.prod\_univ\_sum}, \texttt{ENNReal.prod\_rpow\_of\_nonneg},
+    \texttt{discretePhiFunctional\_single}.
+\end{itemize}
+
+\end{document}
