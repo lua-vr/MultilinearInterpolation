@@ -34,7 +34,10 @@ notation "|" e "|ₑ" => Modulus.modulus e
 variable (β) in
 /--
 A decomposable modulus, following the lattice-normed spaces of Kantorovich (see Kusraev,
-*Dominated Operators*, Ch. 2), with decomposability weakened to bounds by values of $`|\cdot|`.
+*Dominated Operators*, Ch. 2): if $`|x| ≤ m_0 + m_1` with $`0 ≤ m_0, m_1` in $`M`, then
+$`x = x_0 + x_1` with $`|x_j| ≤ m_j` and $`|x_j| ≤ |x|`. In a vector lattice $`M`, this follows
+from Kantorovich's condition ($`|x| = m_0 + m_1` gives $`|x_j| = m_j`) and the Riesz
+decomposition property of $`M`.
 
 todo: what about definition 3.5.1 in BL ("is of class")? a different possible approach would be to
 quantify over all spaces that are of the class of the couple.
@@ -52,9 +55,9 @@ class Modulus.IsDecomposable (M : outParam Type*) [AddCommMonoid M] [Preorder M]
   modulus_nonneg (x : β) : 0 ≤ |x|ₑ
   /-- subadditivity -/
   modulus_add_le (x y : β) : |x + y|ₑ ≤ |x|ₑ + |y|ₑ
-  /-- decomposability -/
-  exists_decomp {x y₀ y₁ : β} (h : |x|ₑ ≤ |y₀|ₑ + |y₁|ₑ) :
-    ∃ x₀ x₁, x = x₀ + x₁ ∧ |x₀|ₑ ≤ |y₀|ₑ ∧ |x₁|ₑ ≤ |y₁|ₑ ∧ |x₀|ₑ ≤ |x|ₑ ∧ |x₁|ₑ ≤ |x|ₑ
+  /-- decomposability along nonnegative bounds -/
+  exists_decomp {x : β} {m₀ m₁ : M} (h₀ : 0 ≤ m₀) (h₁ : 0 ≤ m₁) (h : |x|ₑ ≤ m₀ + m₁) :
+    ∃ x₀ x₁, x = x₀ + x₁ ∧ |x₀|ₑ ≤ m₀ ∧ |x₁|ₑ ≤ m₁ ∧ |x₀|ₑ ≤ |x|ₑ ∧ |x₁|ₑ ≤ |x|ₑ
 
 attribute [simp] Modulus.IsDecomposable.modulus_zero Modulus.IsDecomposable.modulus_nonneg
 
@@ -62,6 +65,12 @@ attribute [simp] Modulus.IsDecomposable.modulus_zero Modulus.IsDecomposable.modu
 lemma Modulus.IsDecomposable.modulus_zero_le [AddCommMonoid M] [Preorder M] [Modulus β M]
     [Modulus.IsDecomposable β M] (x : β) : |(0 : β)|ₑ ≤ |x|ₑ :=
   modulus_zero (β := β) ▸ modulus_nonneg x
+
+/-- {lit}`Modulus.IsDecomposable.exists_decomp` with bounds given by moduli of elements. -/
+lemma Modulus.IsDecomposable.exists_decomp_of_le_modulus_add [AddCommMonoid M] [Preorder M]
+    [Modulus β M] [Modulus.IsDecomposable β M] {x y₀ y₁ : β} (h : |x|ₑ ≤ |y₀|ₑ + |y₁|ₑ) :
+    ∃ x₀ x₁, x = x₀ + x₁ ∧ |x₀|ₑ ≤ |y₀|ₑ ∧ |x₁|ₑ ≤ |y₁|ₑ ∧ |x₀|ₑ ≤ |x|ₑ ∧ |x₁|ₑ ≤ |x|ₑ :=
+  exists_decomp (modulus_nonneg y₀) (modulus_nonneg y₁) h
 
 section Instances
 
@@ -80,8 +89,9 @@ instance Pi.instIsDecomposable [∀ j, AddCommMonoid (γ j)] [∀ j, AddCommMono
   modulus_zero := funext fun j ↦ Modulus.IsDecomposable.modulus_zero (β := γ j)
   modulus_nonneg x j := Modulus.IsDecomposable.modulus_nonneg (x j)
   modulus_add_le f g j := Modulus.IsDecomposable.modulus_add_le (f j) (g j)
-  exists_decomp h := by
-    choose u v huv hu hv hu' hv' using fun j ↦ Modulus.IsDecomposable.exists_decomp (h j)
+  exists_decomp h₀ h₁ h := by
+    choose u v huv hu hv hu' hv' using
+      fun j ↦ Modulus.IsDecomposable.exists_decomp (h₀ j) (h₁ j) (h j)
     exact ⟨u, v, funext huv, hu, hv, hu', hv'⟩
 
 /-- The extended norm as a modulus. Not an instance: on a finite product, which carries the sup
@@ -90,36 +100,43 @@ norm, it would compete with {lit}`Pi.instModulus`. Enable it per type with
 abbrev Modulus.ofENorm (ε : Type*) [ENorm ε] : Modulus ε ℝ≥0∞ := ⟨enorm⟩
 
 /-- In a real normed space, the extended norm is decomposable: split $`x` proportionally,
-$`x = c x + (1 - c) x` with $`c = \min(1, ‖y₀‖ / ‖x‖)`. -/
+$`x = c x + (1 - c) x` with $`c = \min(1, m₀ / ‖x‖)`. -/
 lemma Modulus.isDecomposable_ofENorm (E : Type*) [SeminormedAddCommGroup E] [NormedSpace ℝ E] :
     -- todo: is this the right way to use the instance?
     letI := Modulus.ofENorm E; Modulus.IsDecomposable E ℝ≥0∞ := by
-  -- review: llm proof
+  -- todo: review llm proof
   let := Modulus.ofENorm E
-  refine ⟨?_, fun _ ↦ zero_le, fun x y ↦ ?_, fun {x y₀ y₁} h ↦ ?_⟩
+  refine ⟨?_, fun _ ↦ zero_le, fun x y ↦ ?_, fun {x m₀ m₁} _ _ h ↦ ?_⟩
   · simp [Modulus.modulus, ← ofReal_norm]
   · simp only [Modulus.modulus, ← ofReal_norm]
     rw [← ENNReal.ofReal_add (norm_nonneg _) (norm_nonneg _)]
     exact ENNReal.ofReal_le_ofReal (norm_add_le x y)
   simp only [Modulus.modulus, ← ofReal_norm] at h ⊢
-  rw [← ENNReal.ofReal_add (norm_nonneg _) (norm_nonneg _),
-    ENNReal.ofReal_le_ofReal_iff (by positivity)] at h
-  set c : ℝ := min 1 (‖y₀‖ / ‖x‖)
-  have hc0 : 0 ≤ c := le_min zero_le_one (by positivity)
+  rcases eq_or_ne m₀ ∞ with rfl | hm₀
+  · exact ⟨x, 0, (add_zero x).symm, le_top, by simp, le_rfl, by simp⟩
+  rcases eq_or_ne m₁ ∞ with rfl | hm₁
+  · exact ⟨0, x, (zero_add x).symm, by simp, le_top, by simp, le_rfl⟩
+  rw [ENNReal.ofReal_le_iff_le_toReal (by finiteness), ENNReal.toReal_add hm₀ hm₁] at h
+  simp only [ENNReal.ofReal_le_iff_le_toReal hm₀, ENNReal.ofReal_le_iff_le_toReal hm₁,
+    ENNReal.ofReal_le_ofReal_iff (norm_nonneg _)]
+  set a₀ := m₀.toReal
+  set a₁ := m₁.toReal
+  have ha₀ : 0 ≤ a₀ := ENNReal.toReal_nonneg
+  set c : ℝ := min 1 (a₀ / ‖x‖)
+  have hc0 : 0 ≤ c := le_min zero_le_one (div_nonneg ha₀ (norm_nonneg _))
   have hc1 : c ≤ 1 := min_le_left ..
-  have hcx : c * ‖x‖ ≤ ‖y₀‖ := by
+  have hcx : c * ‖x‖ ≤ a₀ := by
     rcases (norm_nonneg x).eq_or_lt with hx | hx
-    · simp [← hx]
+    · simpa [← hx] using ha₀
     · exact (le_div_iff₀ hx).1 (min_le_right ..)
-  have hcx' : (1 - c) * ‖x‖ ≤ ‖y₁‖ := by
-    rcases min_choice 1 (‖y₀‖ / ‖x‖) with hc | hc <;> simp only [c, hc]
-    · simp
+  have hcx' : (1 - c) * ‖x‖ ≤ a₁ := by
+    rcases min_choice 1 (a₀ / ‖x‖) with hc | hc <;> simp only [c, hc]
+    · simp [ENNReal.toReal_nonneg, a₁]
     · rcases (norm_nonneg x).eq_or_lt with hx | hx
-      · simp [← hx]
+      · simp [← hx, ENNReal.toReal_nonneg, a₁]
       · rw [sub_mul, div_mul_cancel₀ _ hx.ne']; linarith
   refine ⟨c • x, (1 - c) • x, by rw [← add_smul]; simp, ?_⟩
-  simp only [norm_smul, Real.norm_of_nonneg hc0, Real.norm_of_nonneg (sub_nonneg.2 hc1),
-    ENNReal.ofReal_le_ofReal_iff (norm_nonneg _)]
+  simp only [norm_smul, Real.norm_of_nonneg hc0, Real.norm_of_nonneg (sub_nonneg.2 hc1)]
   refine ⟨hcx, hcx', ?_, ?_⟩ <;> nlinarith [norm_nonneg x]
 
 /-- A real number is measured by its extended norm. -/
@@ -147,7 +164,7 @@ instance ENNReal.instIsDecomposable : Modulus.IsDecomposable ℝ≥0∞ ℝ≥0�
   modulus_zero := by simp
   modulus_nonneg _ := zero_le
   modulus_add_le _ _ := le_rfl
-  exists_decomp {a b c} h := by
+  exists_decomp {a b c} _ _ h := by
     simp only [ENNReal.modulus_eq] at h
     refine ⟨min a b, a - min a b, (add_tsub_cancel_of_le (min_le_left ..)).symm,
       min_le_right .., ?_, min_le_left .., tsub_le_self⟩
@@ -180,7 +197,7 @@ subadditivity constant. -/
 @[blueprint]
 lemma IsSolid.enorm_le_mul_of_modulus_le [Modulus.IsDecomposable β M] [B.IsSolid]
     (h : |a|ₑ ≤ |b|ₑ + |c|ₑ) : ‖a‖ₑ[B] ≤ B.C * (‖b‖ₑ[B] + ‖c‖ₑ[B]) := by
-  obtain ⟨u, v, huv, hu, hv, -⟩ := Modulus.IsDecomposable.exists_decomp h
+  obtain ⟨u, v, huv, hu, hv, -⟩ := Modulus.IsDecomposable.exists_decomp_of_le_modulus_add h
   calc ‖a‖ₑ[B] = ‖u + v‖ₑ[B] := by rw [huv]
     _ ≤ B.C * (‖u‖ₑ[B] + ‖v‖ₑ[B]) := B.enorm_add_le_mul u v
     _ ≤ _ := by gcongr <;> exact IsSolid.solid ‹_›
@@ -200,7 +217,8 @@ lemma kNorm_le_kNorm_of_modulus_le [Modulus.IsDecomposable β M] [A₀.IsSolid] 
     (h : |x|ₑ ≤ |y|ₑ) (t : ℝ≥0∞) : A₀.kNorm A₁ t x ≤ A₀.kNorm A₁ t y := by
   refine le_iInf₂ fun a ha ↦ ?_
   have hy : |y|ₑ ≤ |a.1|ₑ + |a.2|ₑ := ha ▸ Modulus.IsDecomposable.modulus_add_le a.1 a.2
-  obtain ⟨x₀, x₁, hx, h₀, h₁, -⟩ := Modulus.IsDecomposable.exists_decomp (h.trans hy)
+  obtain ⟨x₀, x₁, hx, h₀, h₁, -⟩ :=
+    Modulus.IsDecomposable.exists_decomp_of_le_modulus_add (h.trans hy)
   refine (kNorm_le_of_decomp hx t).trans (add_le_add (IsSolid.solid h₀) ?_)
   gcongr
   exact IsSolid.solid h₁

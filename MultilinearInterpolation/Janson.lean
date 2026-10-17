@@ -28,6 +28,8 @@ section Lemma1
 
 variable {α : Type*} [AddCommMonoid α] (A : Couple α)
 
+section JleK
+
 /-- Let $`x \in \alpha`, $`\delta > 0` and $`\nu \in \mathbb{Z}`. There is a decomposition
 $`x = y + z` with $$`\|y\|_0 + 2^\nu \|z\|_1 \le K_\nu(x) + \delta`. -/
 @[blueprint]
@@ -107,7 +109,7 @@ lemma exists_decomp_Icc {x : α} {y z : ℤ → α} (hyz : ∀ μ, y μ + z μ =
       ∑ᶠ ν, u ν = r ∧
       ∀ ν, |u ν|ₑ ≤ |r|ₑ ∧
         (ν < a + m → |u ν|ₑ ≤ |y (ν + 1)|ₑ) ∧ (a < ν → |u ν|ₑ ≤ |z ν|ₑ) := by
-  -- review: llm proof
+  -- todo: review llm proof
   have h0 := Modulus.IsDecomposable.modulus_zero_le (β := α)
   induction m generalizing a r with
   | zero =>
@@ -123,7 +125,8 @@ lemma exists_decomp_Icc {x : α} {y z : ℤ → α} (hyz : ∀ μ, y μ + z μ =
   | succ m ih =>
     have hr' : |r|ₑ ≤ |y (a + 1)|ₑ + |z (a + 1)|ₑ :=
       hr.trans (by rw [← hyz (a + 1)]; exact Modulus.IsDecomposable.modulus_add_le _ _)
-    obtain ⟨v, r', rfl, hvy, hrz, hvr, hrr⟩ := Modulus.IsDecomposable.exists_decomp hr'
+    obtain ⟨v, r', rfl, hvy, hrz, hvr, hrr⟩ :=
+      Modulus.IsDecomposable.exists_decomp_of_le_modulus_add hr'
     obtain ⟨u', hsupp, hsum, hu'⟩ := ih (a + 1) (hrr.trans hr)
     have hu'a : u' a = 0 := by
       by_contra h
@@ -337,6 +340,12 @@ lemma jInfNorm_le_discreteKMethod [A.fst.IsSolid] [A.snd.IsSolid]
       ⟨sub_pos.2 hθ.2, sub_lt_self 1 hθ.1⟩ q x (finiteLocus_inf_comm A.fst A.snd ▸ hx)
     rwa [jInfNorm_swap, Couple.enorm_discreteKMethod_swap, sub_sub_cancel] at this
 
+end JleK 
+
+section KleJ
+
+end KleJ
+
 end Lemma1
 
 variable {ι : Type*} [Fintype ι] {α : ι → Type*} [∀ i, AddCommGroup (α i)] {β : Type*}
@@ -361,15 +370,15 @@ for the points of this set. Boundedness is only required on $`∏_i (A_i)_0 ∩ 
 -/
 @[blueprint]
 def Ω : Set (ι → ℝ) :=
-  {θ | let θ₀ := cα₀ + ∑ i, cα i * θ i
-    ∃ (q₀ : ℝ≥0∞) (q : ι → ℝ≥0∞),
+  {θ | let θ₀ := cα₀ + ∑ i, cα i * θ i;
+    θ₀ ≥ 0 ∧ ∃ (q₀ : Ioi (0 :ℝ≥0∞)) (q : ι → ℝ≥0∞) (C : ℝ≥0∞),
     0 ≤ cα₀ + ∑ i, cα i * θ i ∧
-    ∃ C, T.IsBoundedForOn (fun i ↦ (A i).kMethod (θ i) (q i)) (B.kMethod θ₀ q₀) C
+    T.IsBoundedForOn
+      (fun i ↦ (A i).kMethod (θ i) (q i)) (B.kMethod θ₀ q₀) C
       (fun i x ↦ x ∈ (A i).inf.finiteLocus ∧ ‖x‖ₑ[(A i).kMethod (θ i) (q i)] < ∞)}
 
 /- The source couples are solid with respect to decomposable moduli, as required by
-`jInfNorm_le_discreteKMethod`. They are not mentioned in the statements below, hence the
-`include`. -/
+`jInfNorm_le_discreteKMethod`. -/
 variable {Mα : ι → Type*} [∀ i, AddCommMonoid (Mα i)] [∀ i, Preorder (Mα i)]
   [∀ i, Modulus (α i) (Mα i)] [hMα : ∀ i, Modulus.IsDecomposable (α i) (Mα i)]
   [hA₀ : ∀ i, (A i).fst.IsSolid] [hA₁ : ∀ i, (A i).snd.IsSolid]

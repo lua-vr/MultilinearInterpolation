@@ -41,8 +41,10 @@ and the following \emph{refined Riesz decomposition}:
     \abs{x_0} \le \abs{x},\quad \abs{x_1} \le \abs{x}.
   \]
 \end{itemize}
-These four conditions are the fields \texttt{modulus\_zero}, \texttt{modulus\_nonneg},
-\texttt{modulus\_add\_le} and \texttt{exists\_decomp} of \texttt{Modulus.IsDecomposable}. The
+The first three conditions are the fields \texttt{modulus\_zero}, \texttt{modulus\_nonneg} and
+\texttt{modulus\_add\_le} of \texttt{Modulus.IsDecomposable}. Its field \texttt{exists\_decomp}
+allows arbitrary bounds \(0 \le m_0, m_1\) in \(M\) in place of \(\abs{y}, \abs{z}\); (R) is
+the special case \texttt{exists\_decomp\_of\_le\_modulus\_add}. The
 first two give \(\abs{0} \le \abs{x}\) (\texttt{modulus\_zero\_le}). The instances are the
 following.
 \begin{itemize}
