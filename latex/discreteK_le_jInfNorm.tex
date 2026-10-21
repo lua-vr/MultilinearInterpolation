@@ -1,0 +1,407 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=2.8cm]{geometry}
+\usepackage[htt]{hyphenat}
+\usepackage{hyperref}
+\emergencystretch=3em
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\norm}[2]{\lVert #1\rVert_{#2}}
+\newcommand{\cJ}{\mathcal J}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\N}{\mathbb N}
+\newcommand{\one}{\mathbf 1}
+\newcommand{\tsum}{\textstyle\sum}
+
+\title{The discrete \(K\)-norm is dominated by the finite \(J\)-norm\\
+\large (the first half of Bergh--L\"ofstr\"om, Theorem~3.3.1, discretised, for quasinorms)}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Setting and statement}
+
+Let \(\alpha\) be an additive commutative monoid and let \(A_0, A_1\) be quasinorms on
+\(\alpha\) with values in \([0,\infty]\) (\texttt{EQuasinorm}): \(\norm{0}{i} = 0\) and
+\(\norm{x+y}{i} \le C_i(\norm{x}{i} + \norm{y}{i})\) with \(1 \le C_i < \infty\). Put
+\(C = \max(C_0, C_1)\). Nothing else is assumed; in particular neither solidity nor a modulus
+is used, in contrast to the converse inequality (\texttt{jInfNorm\_le\_discreteKMethod}).
+
+Fix \(\theta \in \mathbb R\) and \(q \in [0,\infty]\). For \(t \in [0,\infty]\),
+\(\mu, n \in \Z\) and \(x, u \in \alpha\) put
+\[
+  K(t,x) = \inf_{x = x_0 + x_1}\bigl(\norm{x_0}{0} + t\norm{x_1}{1}\bigr),\qquad
+  J(t,u) = \max\bigl(\norm{u}{0},\ t\norm{u}{1}\bigr),
+\]
+\(K_\mu(x) = K(2^\mu,x)\) (\texttt{kNorm}) and \(J_n(u) = J(2^n,u)\) (\texttt{jNorm}). For
+\(f \colon \Z \to [0,\infty]\) let
+\[
+  \Phi_{\theta,q}(f) = \bigl\lVert (2^{-\mu\theta} f(\mu))_{\mu \in \Z}\bigr\rVert_{\ell^q}
+  \qquad (\texttt{discretePhiFunctional}\ \theta\ q\ f),
+\]
+where \(\norm{g}{\ell^q} = (\sum_\mu g(\mu)^q)^{1/q}\) for \(0 < q < \infty\),
+\(\norm{g}{\ell^\infty} = \sup_\mu g(\mu)\), and \(\norm{g}{\ell^0} = 0\) (the convention of
+\texttt{eLpNorm}). The two quantities to be compared are
+\[
+  \norm{x}{K} = \Phi_{\theta,q}\bigl(\mu \mapsto K_\mu(x)\bigr)
+  \qquad (\text{the norm of } \texttt{discreteKMethod}),
+\]
+\[
+  \cJ(x) = \inf\Bigl\{\Phi_{\theta,q}\bigl(n \mapsto J_n(a_n)\bigr) :
+  a \colon \Z \to \alpha \text{ finitely supported},\ \tsum_{n} a_n = x\Bigr\}
+  \qquad (\texttt{jInfNorm}).
+\]
+A sequence \(a\) as in the infimum is called \emph{admissible} for \(x\).
+
+The proof needs a substitute for the triangle inequality of \(K(t,\cdot)\), which fails for
+quasinorms with a constant independent of the number of summands.
+
+\begin{definition}\label{def:H}
+  Let \(p > 0\) and \(D \in [0,\infty)\). A quasinorm \(B\) on \(\alpha\) satisfies
+  \((\mathrm H_{p,D})\) if for every finite family \((a_n)_{n \in S}\) in \(\alpha\)
+  \[
+    \Bigl\lVert \sum_{n \in S} a_n \Bigr\rVert_B^p \le D \sum_{n \in S} \norm{a_n}{B}^p .
+  \]
+\end{definition}
+
+For each \(t\), \(K(t,\cdot)\) is the quasinorm \texttt{skewedSup A\(_0\) A\(_1\) t}, with
+constant \(C\) independent of \(t\) (\texttt{kNorm\_add\_le\_mul}).
+
+\begin{theorem}\label{thm:main}
+  Let \(0 < \theta < 1\), \(q \ne 0\), and suppose that \(K(2^\mu,\cdot)\) satisfies
+  \((\mathrm H_{p,D})\) for every \(\mu \in \Z\). Put \(r' = \min(q/p, 1)\),
+  \(\sigma = p\,r' = \min(q,p)\) and
+  \[
+    M_\sigma = \sum_{k \in \Z}\bigl(\min(1,2^{-k})\,2^{k\theta}\bigr)^\sigma
+    = \frac{1}{1 - 2^{-(1-\theta)\sigma}} + \frac{1}{2^{\theta\sigma} - 1} < \infty .
+  \]
+  Then for every \(x \in \alpha\),
+  \[
+    \norm{x}{K}^{\sigma} \le D^{r'} M_\sigma\, \cJ(x)^{\sigma},
+    \qquad\text{equivalently}\qquad
+    \norm{x}{K} \le D^{1/p} M_\sigma^{1/\sigma}\, \cJ(x).
+  \]
+\end{theorem}
+
+For \(q = 0\) both sides vanish (\texttt{discretePhiFunctional\_exponent\_zero},
+\texttt{jInfNorm\_exponent\_zero}), so the inequality holds trivially.
+
+\begin{corollary}\label{cor:instances}
+  Let \(0 < \theta < 1\) and \(q \ne 0\).
+  \begin{enumerate}
+    \item[(a)] If \(C_0 = C_1 = 1\) (\texttt{ESeminorm.Couple}), then with
+      \(r = \min(q,1)\), \(\norm{x}{K} \le M_r^{1/r}\,\cJ(x)\).
+    \item[(b)] In general, let \(p > 0\) be such that \((2C)^p = 2\), so \(0 < p \le 1\). Then
+      \(\norm{x}{K} \le 2C\, M_{\min(q,p)}^{1/\min(q,p)}\,\cJ(x)\).
+  \end{enumerate}
+\end{corollary}
+
+\begin{proof}
+  (a) By Lemma~\ref{lem:H}(a), \((\mathrm H_{1,1})\) holds, and \(\sigma = \min(q,1) = r\).
+  (b) By Lemma~\ref{lem:H}(b), \((\mathrm H_{p,2})\) holds, and \(2^{1/p} = 2C\) because
+  \((2C)^p = 2\).
+\end{proof}
+
+For \(q \ge 1\), (a) gives the constant \(M_1 = \frac{1}{1-2^{\theta-1}} + \frac{1}{2^\theta - 1}\),
+the discrete counterpart of
+\(\int_0^\infty s^{\theta}\min(1,s^{-1})\,\frac{ds}{s} = \frac1\theta + \frac1{1-\theta}\) in
+Bergh--L\"ofstr\"om. In the seminorm case (b) also applies, with \(p = 1\), but with the worse
+constant \(2M_1\); this is why (a) is kept.
+
+\paragraph{Idea of the proof.}
+Write \(x = \sum_n a_n\) with \(a\) admissible. By \((\mathrm H_{p,D})\) and the elementary
+comparison \(K_\mu(u) \le \min(1,2^{\mu-n})J_n(u)\), the sequence \(\mu \mapsto K_\mu(x)^p\) is
+bounded by \(D\) times a discrete convolution of \(n \mapsto J_n(a_n)^p\) with the kernel
+\(k \mapsto \min(1,2^{-k})^p\). Raising \(\Phi_{\theta,q}\) to the power \(p\) turns it into
+\(\Phi_{p\theta,q/p}\) applied to \(p\)-th powers, so that the convolution can be estimated in
+\(\Phi_{p\theta,q/p}\). Splitting it by the offset \(k\) gives translates of the \(J\)-sequence,
+each costing a factor \(2^{k\theta}\). The \(\ell^{q/p}\)-quasinorm is
+\(r'\)-subadditive, also for countable sums, and the resulting coefficients are
+\(r'\)-th power summable exactly when \(0 < \theta < 1\).
+
+\section{The hypothesis \texorpdfstring{\((\mathrm H_{p,D})\)}{(H)}}
+
+\begin{lemma}\label{lem:exponent}
+  For every quasinorm \(B\) with constant \(C_B\) there is \(p \in (0,1]\) with
+  \((2C_B)^p = 2\).
+\end{lemma}
+
+\begin{proof}
+  The number \(b = 2C_B\) is real with \(b \ge 2\), because \(1 \le C_B < \infty\). Put
+  \(p = \log_b 2\). Then \(b^p = 2\). Since \(b > 1\) and \(2 > 1\), \(p > 0\); since
+  \(2 \le b\), \(p = \log_b 2 \le \log_b b = 1\).
+\end{proof}
+
+In Lean: \texttt{Real.logb\_pos}, \texttt{Real.rpow\_logb}, transferred to \([0,\infty]\) by
+\texttt{ENNReal.ofReal\_rpow\_of\_pos}. The bound \(p \le 1\) is not used below.
+
+\begin{lemma}\label{lem:H}
+  For every \(t \in [0,\infty]\):
+  \begin{enumerate}
+    \item[(a)] if \(C_0 = C_1 = 1\), then \(K(t,\cdot)\) satisfies \((\mathrm H_{1,1})\);
+    \item[(b)] if \((2C)^p = 2\), then \(K(t,\cdot)\) satisfies \((\mathrm H_{p,2})\).
+  \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+  (a) By \texttt{kNorm\_add\_le\_mul},
+  \(K(t,x+y) \le \max(C_0,C_1)\,(K(t,x) + K(t,y)) = K(t,x) + K(t,y)\), and \(K(t,0) = 0\)
+  (\texttt{kNorm\_zero}). Induction on the finite set (\texttt{Finset.le\_sum\_of\_subadditive})
+  gives the claim.
+
+  (b) \(K(t,\cdot)\) is the quasinorm \(B = \texttt{skewedSup}\ A_0\ A_1\ t\), whose constant is
+  \(C_B = C\). The Aoki--Rolewicz inequality (\texttt{enorm\_sum\_rpow\_le\_two\_mul\_sum}, the
+  inequality behind Bergh--L\"ofstr\"om, Lemma~3.10.1) states exactly
+  \(\lVert\sum_{n\in S} a_n\rVert_B^p \le 2\sum_{n\in S}\norm{a_n}{B}^p\) whenever
+  \((2C_B)^p = 2\).
+\end{proof}
+
+\section{Elementary estimates for \texorpdfstring{\(K\)}{K} and \texorpdfstring{\(J\)}{J}}
+
+\begin{lemma}[Bergh--L\"ofstr\"om, Lemma 3.2.1]\label{lem:KJ}
+  For all \(s, t \in [0,\infty]\), \(u \in \alpha\) and \(\mu, n \in \Z\):
+  \begin{enumerate}
+    \item[(a)] \(K(t,u) \le J(s,u)\);
+    \item[(b)] \(s\,K(t,u) \le t\,J(s,u)\);
+    \item[(c)] \(K_\mu(u) \le \min(1, 2^{\mu-n})\,J_n(u)\).
+  \end{enumerate}
+\end{lemma}
+
+\begin{proof}
+  (a) The decomposition \(u = u + 0\) gives
+  \(K(t,u) \le \norm{u}{0} \le J(s,u)\). (b) The decomposition \(u = 0 + u\) gives
+  \(K(t,u) \le t\norm{u}{1}\), hence \(sK(t,u) \le t\,(s\norm{u}{1}) \le t\,J(s,u)\).
+  (c) By (b) with \(t = 2^\mu\), \(s = 2^n\), and since \(0 < 2^n < \infty\),
+  \(K_\mu(u) \le 2^{\mu-n}J_n(u)\). Together with (a),
+  \(K_\mu(u) \le \min(J_n(u), 2^{\mu-n}J_n(u)) = \min(1,2^{\mu-n})J_n(u)\).
+\end{proof}
+
+In Lean these are \texttt{kNorm\_le\_jNorm}, \texttt{mul\_kNorm\_le\_mul\_jNorm} and
+\texttt{kNorm\_zpow\_le\_min\_mul\_jNorm\_zpow} in \texttt{EQuasinorm/Basic.lean}.
+
+Throughout, put \(c_k = \min(1, 2^{-k})\) for \(k \in \Z\).
+
+\begin{lemma}[pointwise bound]\label{lem:pointwise}
+  Assume \((\mathrm H_{p,D})\) for \(K(2^\mu,\cdot)\). Let \(a\) be admissible for \(x\) and put
+  \(j(n) = J_n(a_n)\). Then
+  \[
+    K_\mu(x)^p \le D\sum_{k \in \Z} c_k^p\, j(\mu+k)^p .
+  \]
+\end{lemma}
+
+\begin{proof}
+  Let \(S\) be the finite support of \(a\), so \(x = \sum_{n \in S} a_n\)
+  (\texttt{finsum\_eq\_sum}). By \((\mathrm H_{p,D})\) at \(t = 2^\mu\) and
+  Lemma~\ref{lem:KJ}(c), raised to the power \(p > 0\),
+  \[
+    K_\mu(x)^p \le D \sum_{n \in S} K_\mu(a_n)^p
+    \le D \sum_{n \in S} \min(1,2^{\mu-n})^p\, j(n)^p
+    \le D \sum_{n \in \Z} \min(1,2^{\mu-n})^p\, j(n)^p ,
+  \]
+  where the last step adds non-negative terms (\texttt{ENNReal.sum\_le\_tsum}). The substitution
+  \(n = \mu + k\) is a bijection of \(\Z\) (\texttt{Equiv.tsum\_eq} with
+  \texttt{Equiv.addLeft \(\mu\)}), and \(\min(1,2^{\mu-n}) = c_k\).
+\end{proof}
+
+\section{Properties of \texorpdfstring{\(\Phi_{\theta,q}\)}{Phi}}
+
+The lemmas of this section hold for every \(\theta \in \mathbb R\) and \(q \in [0,\infty]\);
+they are applied below with \((p\theta, q/p)\) in place of \((\theta, q)\).
+
+\begin{lemma}[power]\label{lem:power}
+  For real \(p > 0\) and \(f \colon \Z \to [0,\infty]\),
+  \(\Phi_{\theta,q}(f)^p = \Phi_{p\theta,\,q/p}(f^p)\).
+\end{lemma}
+
+\begin{proof}
+  Put \(F(\mu) = 2^{-\mu\theta}f(\mu)\). Then \(F(\mu)^p = 2^{-\mu p\theta}f(\mu)^p\), so the
+  claim reads \(\norm{F^p}{\ell^{q/p}} = \norm{F}{\ell^q}^p\). For \(0 < q < \infty\) both
+  sides equal \((\sum_\mu F(\mu)^q)^{p/q}\); for \(q = \infty\), \(q/p = \infty\) and both sides
+  equal \(\sup_\mu F(\mu)^p\), because \(y \mapsto y^p\) is an increasing bijection of
+  \([0,\infty]\); for \(q = 0\) both sides vanish.
+\end{proof}
+
+In Lean this is \texttt{MeasureTheory.eLpNorm\_enorm\_rpow} with \texttt{.of\_discrete},
+together with \((q/p)\cdot p = q\) (\texttt{ENNReal.div\_mul\_cancel}, using \(p \ne 0\) and
+\(p \ne \infty\)).
+
+\begin{lemma}[translation and homogeneity]\label{lem:shift}
+  For \(k \in \Z\), \(c \in [0,\infty)\) and \(f \colon \Z \to [0,\infty]\),
+  \[
+    \Phi_{\theta,q}\bigl(\mu \mapsto f(\mu+k)\bigr) = 2^{k\theta}\,\Phi_{\theta,q}(f),
+    \qquad
+    \Phi_{\theta,q}(c f) = c\,\Phi_{\theta,q}(f).
+  \]
+\end{lemma}
+
+\begin{proof}
+  Since \(2^{-\mu\theta} f(\mu+k) = 2^{k\theta}\cdot 2^{-(\mu+k)\theta}f(\mu+k)\), the first
+  identity follows from positive homogeneity of the \(\ell^q\)-norm and its invariance under the
+  translation \(\mu \mapsto \mu + k\) of \(\Z\). The second is positive homogeneity of the
+  \(\ell^q\)-norm.
+\end{proof}
+
+In Lean: the proof of \texttt{discretePhiFunctional\_shift} (the case \(k = 1\)) with
+\texttt{AddGroup.addRight\_bijective k}, and the project lemma
+\texttt{MeasureTheory.eLpNorm\_const\_mul}, which requires \(c \ne \infty\).
+
+The next two lemmas replace the change of variables and Minkowski's integral inequality in
+Bergh--L\"ofstr\"om. A passage to the limit is unavoidable here: for fixed \(\mu\), only the
+offsets \(k \in S - \mu\) contribute in Lemma~\ref{lem:pointwise}, and this set moves with
+\(\mu\), so no finite set of offsets serves all \(\mu\) at once.
+
+\begin{lemma}[monotone convergence]\label{lem:mct}
+  Let \(\iota\) be countable and \((g_i)_{i \in \iota}\) a family of functions
+  \(\Z \to [0,\infty]\) that is directed for the pointwise order. Then
+  \(\norm{\sup_i g_i}{\ell^q} = \sup_i \norm{g_i}{\ell^q}\).
+\end{lemma}
+
+\begin{proof}
+  The inequality \(\ge\) is monotonicity of the \(\ell^q\)-norm. For \(\le\):
+  if \(q = 0\), both sides vanish. If \(q = \infty\), both sides are iterated suprema over
+  \(\Z \times \iota\), which commute. Let \(0 < q < \infty\). Since \(y \mapsto y^q\) is an
+  order isomorphism of \([0,\infty]\), it commutes with suprema, so
+  \((\sup_i g_i)^q = \sup_i g_i^q\), and \((g_i^q)_i\) is still directed. By the monotone
+  convergence theorem for directed countable families,
+  \(\sum_\mu \sup_i g_i(\mu)^q = \sup_i \sum_\mu g_i(\mu)^q\). Finally \(y \mapsto y^{1/q}\)
+  commutes with the supremum for the same reason.
+\end{proof}
+
+In Lean: \texttt{eLpNorm\_exponent\_top}, \texttt{eLpNormEssSup\_count}, \texttt{iSup\_comm};
+\texttt{eLpNorm\_eq\_lintegral\_rpow\_enorm\_toReal}, \texttt{ENNReal.orderIsoRpow} with
+\texttt{OrderIso.map\_iSup}, and \texttt{lintegral\_iSup\_directed}. Mathlib's
+\texttt{Lp.eLpNorm\_lim\_le\_liminf\_eLpNorm} does not apply, because it requires a
+\texttt{SeminormedAddGroup}, which excludes \([0,\infty]\).
+
+\begin{lemma}[countable \(r\)-subadditivity]\label{lem:countable}
+  Let \(q \ne 0\), \(r = \min(q,1)\), and \(f_k \colon \Z \to [0,\infty]\) for \(k \in \Z\).
+  Then
+  \[
+    \Phi_{\theta,q}\Bigl(\mu \mapsto \sum_{k \in \Z} f_k(\mu)\Bigr)^r
+    \le \sum_{k \in \Z} \Phi_{\theta,q}(f_k)^r .
+  \]
+\end{lemma}
+
+\begin{proof}
+  Put \(F_k(\mu) = 2^{-\mu\theta} f_k(\mu)\). Multiplication by \(2^{-\mu\theta}\) commutes with
+  the sum over \(k\) (\texttt{ENNReal.tsum\_mul\_left}), so the left side is
+  \(\norm{\sum_k F_k}{\ell^q}^r\).
+
+  \emph{Finite sums.} The map \(F \mapsto \norm{F}{\ell^q}^r\) vanishes at \(0\) (as \(r > 0\))
+  and is subadditive: for \(q \ge 1\) this is Minkowski's inequality, and for \(q < 1\) it is the
+  subadditivity of \(\sum_\mu F(\mu)^q\), which follows from \((s+t)^q \le s^q + t^q\)
+  (\texttt{eLpNorm\_add\_rpow\_le}). By induction, for every finite \(T \subseteq \Z\),
+  \(\norm{\sum_{k \in T} F_k}{\ell^q}^r \le \sum_{k \in T}\norm{F_k}{\ell^q}^r\).
+
+  \emph{Passage to the limit.} Pointwise, \(\sum_{k \in \Z} F_k = \sup_T \sum_{k \in T} F_k\),
+  the supremum over finite \(T \subseteq \Z\) (\texttt{ENNReal.tsum\_eq\_iSup\_sum}). The family
+  \(T \mapsto \sum_{k\in T} F_k\) is monotone, hence directed, and the finite subsets of \(\Z\)
+  form a countable set. By Lemma~\ref{lem:mct}, and since \(y \mapsto y^r\) commutes with suprema,
+  \[
+    \Bigl\lVert\sum_{k \in \Z} F_k\Bigr\rVert_{\ell^q}^r
+    = \sup_T \Bigl\lVert\sum_{k \in T} F_k\Bigr\rVert_{\ell^q}^r
+    \le \sup_T \sum_{k \in T}\norm{F_k}{\ell^q}^r
+    \le \sum_{k \in \Z}\norm{F_k}{\ell^q}^r . \qedhere
+  \]
+\end{proof}
+
+\section{Proof of Theorem~\ref{thm:main}}
+
+Fix \(x \in \alpha\) and an admissible \(a\), and put \(j(n) = J_n(a_n)\). Write
+\(\theta' = p\theta\) and \(q' = q/p\). Since \(q \ne 0\) and \(p < \infty\), \(q' \ne 0\);
+moreover \(r' = \min(q',1)\) and \(p r' = \min(q, p) = \sigma\). (If \(q = \infty\), then
+\(q' = \infty\), \(r' = 1\) and \(\sigma = p\); if \(q < p\), then \(r' = q/p\) and
+\(\sigma = q\).)
+
+\emph{Step 1.} By Lemma~\ref{lem:power}, Lemma~\ref{lem:pointwise} together with monotonicity of
+\(\Phi_{\theta',q'}\), and homogeneity (Lemma~\ref{lem:shift}, with \(D < \infty\)),
+\[
+  \norm{x}{K}^p = \Phi_{\theta',q'}\bigl(\mu \mapsto K_\mu(x)^p\bigr)
+  \le D\,\Phi_{\theta',q'}\Bigl(\mu \mapsto \sum_{k \in \Z} c_k^p\, j(\mu+k)^p\Bigr).
+\]
+
+\emph{Step 2.} Raise to the power \(r'\) and apply Lemma~\ref{lem:countable} with
+\((\theta',q')\) and \(f_k(\mu) = c_k^p\, j(\mu+k)^p\). By Lemma~\ref{lem:shift} (with
+\(c_k^p \le 1\)), \(\Phi_{\theta',q'}(f_k) = c_k^p\, 2^{k\theta'}\,\Phi_{\theta',q'}(j^p)\), and
+\(2^{k\theta'} = (2^{k\theta})^p\). By Lemma~\ref{lem:power} once more,
+\(\Phi_{\theta',q'}(j^p) = \Phi_{\theta,q}(j)^p\). Hence
+\[
+  \norm{x}{K}^{\sigma}
+  \le D^{r'}\sum_{k\in\Z}\bigl(c_k^p\,2^{k\theta p}\,\Phi_{\theta,q}(j)^p\bigr)^{r'}
+  = D^{r'}\sum_{k\in\Z}\bigl(c_k\,2^{k\theta}\bigr)^{\sigma}\;\Phi_{\theta,q}(j)^{\sigma}
+  = D^{r'} M_\sigma\,\Phi_{\theta,q}(j)^{\sigma}.
+\]
+The exponents combine by \((y^p)^{r'} = y^{\sigma}\) and \((yz)^{r'} = y^{r'}z^{r'}\) in
+\([0,\infty]\) (\texttt{ENNReal.rpow\_mul}, \texttt{ENNReal.mul\_rpow\_of\_nonneg}), and the
+common factor leaves the sum by \texttt{ENNReal.tsum\_mul\_right}.
+
+\emph{Step 3.} Taking \(\sigma\)-th roots, \(\norm{x}{K} \le D^{r'/\sigma} M_\sigma^{1/\sigma}
+\Phi_{\theta,q}(j)\), and \(r'/\sigma = 1/p\). The constant \(D^{1/p}M_\sigma^{1/\sigma}\) is
+finite by the computation below; if it is \(0\) (i.e.\ \(D = 0\)) the claim is trivial, and
+otherwise multiplication by it commutes with infima (\texttt{ENNReal.mul\_iInf\_of\_ne}). Taking
+the infimum over admissible \(a\) gives \(\norm{x}{K} \le D^{1/p}M_\sigma^{1/\sigma}\cJ(x)\).
+
+\emph{The constant.} For \(k \ge 0\), \(c_k 2^{k\theta} = 2^{-k(1-\theta)}\); for
+\(k = -(m+1)\) with \(m \in \N\), \(c_k 2^{k\theta} = 2^{-(m+1)\theta}\). Splitting the sum
+over \(\Z\) into these two parts (\texttt{tsum\_of\_nat\_of\_neg\_add\_one}) gives two geometric
+series:
+\[
+  M_\sigma = \sum_{k \ge 0}\bigl(2^{-(1-\theta)\sigma}\bigr)^k
+  + 2^{-\theta\sigma}\sum_{m \ge 0}\bigl(2^{-\theta\sigma}\bigr)^m
+  = \frac{1}{1 - 2^{-(1-\theta)\sigma}} + \frac{1}{2^{\theta\sigma} - 1}.
+\]
+Both ratios are \(< 1\) because \(\sigma > 0\), \(\theta < 1\) and \(\theta > 0\)
+(\texttt{ENNReal.rpow\_lt\_one\_of\_one\_lt\_of\_neg}, \texttt{ENNReal.tsum\_geometric}). This is
+the only place where \(0 < \theta < 1\) is used. Also \(M_\sigma \ge 1\), from the term
+\(k = 0\). \qed
+
+\section{Remarks}
+
+\paragraph{Comparison with Bergh--L\"ofstr\"om.}
+In the book, \(K(t,a) \le \int_0^\infty \min(1,t/s)J(s,u(s))\,ds/s\) follows from
+Lemma~3.2.1 and the triangle inequality for the Bochner integral, and the bound
+\(\Phi_{\theta,q}(K(\cdot,a)) \le C\,\Phi_{\theta,q}(J(\cdot,u(\cdot)))\) from a change of
+variables and Minkowski's integral inequality (\(q \ge 1\)). Here the integral becomes a finite
+sum (admissible sequences are finitely supported), the triangle inequality becomes
+\((\mathrm H_{p,D})\), the change of variables becomes Lemma~\ref{lem:shift}, and Minkowski's
+inequality becomes Lemma~\ref{lem:countable} applied in \(\ell^{q/p}\), which also covers
+\(q < 1\).
+
+\paragraph{Why the power \(p\).}
+Taking \(p\)-th roots in Lemma~\ref{lem:pointwise} pointwise would leave the \(\ell^q\)-norm of
+an \(\ell^p\)-sum over \(k\), which cannot be split by the offset \(k\) when \(p < 1\).
+Lemma~\ref{lem:power} moves the power \(p\) into the functional, where the sum over \(k\) is
+a sum of functions and Lemma~\ref{lem:countable} applies.
+
+\paragraph{Why not via an Aoki--Rolewicz norm.}
+Replacing \(K(t,\cdot)\) by an equivalent \(1\)-norm \(K^*_t\) with
+\(K^*_t \le K(t,\cdot)^p \le 2K^*_t\) (Bergh--L\"ofstr\"om, Lemma~3.10.1) gives
+\(K(t,\sum a_n)^p \le 2K^*_t(\sum a_n) \le 2\sum K^*_t(a_n) \le 2\sum K(t,a_n)^p\), i.e.\
+\((\mathrm H_{p,2})\) again, with \texttt{starNorm} as an extra intermediate. Using
+\texttt{enorm\_sum\_rpow\_le\_two\_mul\_sum} directly is shorter.
+
+\paragraph{Formalization notes.}
+\begin{itemize}
+  \item \texttt{enorm\_sum\_rpow\_le\_two\_mul\_sum} lives in \texttt{Scratches/AokiRolewicz.lean},
+    which is not a \texttt{module}; it and its auxiliary lemmas
+    (\texttt{Finset.exists\_subset\_sum\_eq\_of\_dvd}, \texttt{Finset.exists\_split\_sum\_le},
+    \texttt{enorm\_sum\_rpow\_le\_of\_weights}) must be moved to
+    \texttt{MultilinearInterpolation/AokiRolewicz.lean} before \texttt{Janson.lean} can use them.
+  \item Lemma~\ref{lem:shift} generalizes \texttt{discretePhiFunctional\_shift} from \(k=1\) to
+    \(k \in \Z\); Lemma~\ref{lem:power} would be \texttt{discretePhiFunctional\_rpow}.
+  \item Lemmas~\ref{lem:mct} and~\ref{lem:countable} are best stated for \texttt{eLpNorm} on
+    \texttt{Measure.count} over a countable discrete space; neither is in Mathlib.
+  \item The theorem is most conveniently stated with exponent \(p\,r'\) as in its first form;
+    the identity \(p\,r' = \min(q,p)\) is needed only for the closed form of \(M_\sigma\).
+\end{itemize}
+
+\end{document}
