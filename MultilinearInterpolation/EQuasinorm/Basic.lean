@@ -282,6 +282,31 @@ lemma kNorm_swap_zpow (ν : ℤ) (x : α) :
   rw [kNorm_swap (ENNReal.zpow_pos two_ne_zero ofNat_ne_top ν).ne'
     (ENNReal.zpow_ne_top two_ne_zero ofNat_ne_top ν), ENNReal.zpow_neg]
 
+/-- $`K(t,x) ≤ J(s,x)` for all $`s, t`. -/
+@[blueprint]
+lemma kNorm_le_jNorm (s t : ℝ≥0∞) (x : α) : kNorm A₀ A₁ t x ≤ jNorm A₀ A₁ s x := by
+  grw [kNorm_le_of_decomp (add_zero x).symm t, EQuasinorm.enorm_zero, mul_zero, add_zero]
+  exact enorm_fst_le_jNorm
+
+/-- $`s\,K(t,x) ≤ t\,J(s,x)` for all $`s, t`; a division-free form of $`K(t,x) ≤ (t/s)\,J(s,x)`. -/
+@[blueprint]
+lemma mul_kNorm_le_mul_jNorm (s t : ℝ≥0∞) (x : α) :
+    s * kNorm A₀ A₁ t x ≤ t * jNorm A₀ A₁ s x := by
+  grw [kNorm_le_of_decomp (zero_add x).symm t, EQuasinorm.enorm_zero, zero_add, mul_left_comm,
+    mul_enorm_snd_le_jNorm]
+
+/-- The dyadic form of {name}`kNorm_le_jNorm` and {name}`mul_kNorm_le_mul_jNorm`:
+$`K(2^\mu,x) ≤ \min(1,2^{\mu-n})\,J(2^n,x)`. -/
+@[blueprint]
+lemma kNorm_zpow_le_min_mul_jNorm_zpow (μ n : ℤ) (x : α) :
+    kNorm A₀ A₁ (2 ^ μ) x ≤ min 1 (2 ^ (μ - n)) * jNorm A₀ A₁ (2 ^ n) x := by
+  rw [min_mul, one_mul]
+  refine le_min (kNorm_le_jNorm _ _ x) ?_
+  rw [ENNReal.zpow_sub two_ne_zero ofNat_ne_top, mul_right_comm, ← div_eq_mul_inv,
+    ENNReal.le_div_iff_mul_le (.inl (ENNReal.zpow_pos two_ne_zero ofNat_ne_top n).ne')
+      (.inl (by finiteness)), mul_comm]
+  exact mul_kNorm_le_mul_jNorm _ _ x
+
 end kNorm
 
 /-- The supremum $`A₀ ⊔ A₁` equipped with the norm $`K(t,-)`. -/
