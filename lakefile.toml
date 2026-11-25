@@ -17,7 +17,7 @@ rev = "refactor/module-system-v434"
 [[require]]
 name = "verso"
 scope = "leanprover"
-rev = "main"
+rev = "v4.35.0-rc4"
 
 # [[require]]
 # name = "carleson"
@@ -27,6 +27,7 @@ rev = "main"
 [[require]]
 name = "mathlib"
 scope = "leanprover-community"
+rev = "v4.35.0"
 
 [[lean_lib]]
 name = "Blueprint"
